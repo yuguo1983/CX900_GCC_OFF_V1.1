@@ -158,9 +158,11 @@ pause
 
 try {
     if ($isRemote) {
-        # 远程模式：从 GitHub 下载仓库源码归档
-        Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        $zipUrl = 'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1/archive/main.zip'
+        # 远程模式：从 AtomGit 或 GitHub 下载源码归档
+        $zipUrls = @(
+            'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1/archive/main.zip',   # 首选 AtomGit (国内快)
+            'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/archive/refs/heads/main.zip'  # 备选 GitHub
+        )
         $tempZip = "$env:TEMP\CX900.zip"
         $tempDir = "$env:TEMP\CX900_Install"
 
@@ -168,18 +170,29 @@ try {
         if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
         $null = New-Item -Path $tempDir -ItemType Directory -Force
 
-        try {
-            Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip -UseBasicParsing
-        } catch {
-            Write-Error '下载安装包失败！请检查网络连接。'
-            Write-Host "  下载地址: $zipUrl" -ForegroundColor Yellow
-            Write-Host '  提示: 确保仓库是 Public 且已推送到 main 分支' -ForegroundColor Yellow
+        $downloaded = $false
+        foreach ($url in $zipUrls) {
+            Write-Host ">>> 正在下载安装包 ($url)..." -ForegroundColor Yellow
+            try {
+                Invoke-WebRequest -Uri $url -OutFile $tempZip -UseBasicParsing
+                $downloaded = $true
+                Write-Host '   下载成功！' -ForegroundColor Green
+                break
+            } catch {
+                Write-Host "   下载失败，尝试下一个源..." -ForegroundColor DarkYellow
+            }
+        }
+
+        if (-not $downloaded) {
+            Write-Error '所有下载源都失败了！请检查网络连接。'
+            Write-Host '  下载地址列表:' -ForegroundColor Yellow
+            foreach ($url in $zipUrls) { Write-Host "    - $url" -ForegroundColor Yellow }
             exit 1
         }
 
         Expand-Archive -Path $tempZip -DestinationPath $tempDir -Force
 
-        # GitHub 归档会多一层目录: CX900_GCC_OFF_V1.1-main/
+        # 归档会多一层目录，自动定位
         $srcDir = Get-ChildItem -Path $tempDir -Directory | Select-Object -First 1 -ExpandProperty FullName
         Install-CX900 -SourceDir $srcDir
 
