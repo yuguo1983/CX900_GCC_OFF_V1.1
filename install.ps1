@@ -160,7 +160,7 @@ try {
     if ($isRemote) {
         # 远程模式：从 GitHub 下载仓库源码归档
         Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        $zipUrl = 'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/archive/refs/heads/main.zip'
+        $zipUrl = 'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1/archive/main.zip'
         $tempZip = "$env:TEMP\CX900.zip"
         $tempDir = "$env:TEMP\CX900_Install"
 
