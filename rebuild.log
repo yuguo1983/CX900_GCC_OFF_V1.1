@@ -1,0 +1,20 @@
+================================================
+编译环境信息
+================================================
+工作目录: I:\csharp\CX900_GCC_OFF_V1.1\bin\x86\Debug
+GCC版本:
+arm-none-eabi-gcc (GNU Arm Embedded Toolchain 10.3-2021.10) 10.3.1 20210824 (release)
+
+================================================
+开始编译...
+================================================
+gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc build/malloc.o build/power_task.o build/TouchPoint.o build/user_config.o build/app.o build/lcd_cfg.o build/ssd_2832.o build/systick.o build/gd32f30x_it.o build/main.o build/gd32f303e_eval.o -mcpu=cortex-m4 -mthumb   -u_printf_float -specs=nosys.specs -TFirmware/Ld/Link.ld -L./  -lGD32F303VET6 -Wl,-Map=build/GD32F303VET6.map,--cref -Wl,--gc-sections -static -o build/GD32F303VET6.elf
+gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-size build/GD32F303VET6.elf
+   text	   data	    bss	    dec	    hex	filename
+ 167204	   8584	  52688	 228476	  37c7c	build/GD32F303VET6.elf
+gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-objcopy -O ihex build/GD32F303VET6.elf build/GD32F303VET6.hex
+gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-objcopy -O binary  build/GD32F303VET6.elf build/GD32F303VET6.bin	
+
+================================================
+编译成功完成
+================================================

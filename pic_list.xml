@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<piclist>
+  <图片0>Color(0xff808080)</图片0>
+  <图片1>Color(0xffffffff)</图片1>
+  <图片2>GradientRow(0xffffffff,255)</图片2>
+  <图片3>GradientCol(0xffffffff,255)</图片3>
+  <图片4>BlackWight(0xffffffff,0xff000000)</图片4>
+  <图片5>Color(0xff00ff00)</图片5>
+  <图片6>Color(0xffff0000)</图片6>
+  <图片7>Color(0xff0000ff)</图片7>
+  <图片8>Color(0xff000000)</图片8>
+  <图片9>CrossTalk(0xffffffff,0xff000000)</图片9>
+  <图片10>Picture(1)</图片10>
+</piclist>

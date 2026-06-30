@@ -1,0 +1,246 @@
+/**
+  ************************************* Copyright ****************************** 
+  *
+  *                 (C) Copyright 2022,--,China, GCU.
+  *                            All Rights Reserved
+  *                              
+  *                     By(--)
+  *                     
+  *    
+  * FileName   : timer.c   
+  * Version    : v1.0		
+  * Author     : --			
+  * Date       : 2022-10-08         
+  * Description:    
+  * Function List:  
+  	1. ....
+  	   <version>: 		
+  <modify staff>:
+  		  <data>:
+   <description>:  
+  	2. ...
+  ******************************************************************************
+ */
+ 
+/*include----------------------------------------------------------------------*/
+//#include "timer.h"
+
+/*define-----------------------------------------------------------------------*/
+
+
+/*variate----------------------------------------------------------------------*/
+
+
+/*statement--------------------------------------------------------------------*/
+
+
+/*Function prototype Begin*****************************************************/
+
+
+/*Function prototype End*******************************************************/
+/*
+--*/
+
+
+#include "timer.h"
+#include "ina220.h"
+
+
+
+
+extern void bsp_Idle(void);
+
+static volatile uint32_t  _mstimes = 0;
+static volatile uint8_t  ms10count = 0;
+
+
+/***********************************************************
+*@fuction	:tick_callback
+*@brief		:
+*@param		:--
+*@return	:void
+*@author	:--
+*@date		:2022-10-08
+***********************************************************/
+
+static void tick_callback(void)
+{
+    if(++ms10count > 1)
+    {
+        ms10count = 0;
+        _mstimes++;
+    }
+
+
+}
+/***********************************************************
+*@fuction	:get_coretick
+*@brief		:
+*@param		:--
+*@return	:uint32_t
+*@author	:--
+*@date		:2022-10-08
+***********************************************************/
+
+uint32_t get_coretick(void)
+{
+    return _mstimes;
+}
+
+/***********************************************************
+*@fuction	:bsp_DelayUS
+*@brief		:
+*@param		:--
+*@return	:void
+*@author	:--
+*@date		:2022-10-08
+***********************************************************/
+
+void bsp_DelayUS(uint32_t n)
+{
+    uint32_t ticks;
+    uint32_t told;
+    uint32_t tnow;
+    uint32_t tcnt = 0;
+    uint32_t reload;
+
+    reload = SysTick->LOAD;
+    ticks = n * (SystemCoreClock / 1000000); /* 需要的节拍数 */
+
+    tcnt = 0;
+    told = SysTick->VAL; /* 刚进入时的计数器值 */
+
+    while (1)
+    {
+        tnow = SysTick->VAL;
+        if (tnow != told)
+        {
+            /* SYSTICK是一个递减的计数器 */
+            if (tnow < told)
+            {
+                tcnt += told - tnow;
+            }
+            /* 重新装载递减 */
+            else
+            {
+                tcnt += reload - tnow + told;
+            }
+            told = tnow;
+
+            /* 时间超过/等于要延迟的时间,则退出 */
+            if (tcnt >= ticks)
+            {
+                break;
+            }
+        }
+    }
+}
+/* 这2个全局变量专用于 bsp_DelayMS() 函数 */
+static volatile uint32_t s_uiDelayCount = 0;
+static volatile uint8_t s_ucTimeOutFlag = 0;
+/*
+*********************************************************************************************************
+*    函 数 名: bsp_DelayMS
+*    功能说明: ms级延迟，延迟精度为正负1ms
+*    形    参:  n : 延迟长度，单位1 ms。 n 应大于2
+*    返 回 值: 无
+*********************************************************************************************************
+*/
+void bsp_DelayMS(uint32_t n)
+{
+    if (n == 0)
+    {
+        return;
+    }
+    else if (n == 1)
+    {
+        n = 2;
+    }
+
+    DISABLE_INT(); /* 关中断 */
+
+    s_uiDelayCount = n;
+    s_ucTimeOutFlag = 0;
+
+    ENABLE_INT(); /* 开中断 */
+
+    while (1)
+    {
+        bsp_Idle(); /* CPU空闲执行的操作， 见 bsp.c 和 bsp.h 文件 */
+
+        /*
+            等待延迟时间到
+            注意：编译器认为 s_ucTimeOutFlag = 0，所以可能优化错误，因此 s_ucTimeOutFlag 变量必须申明为 volatile
+        */
+        if (s_ucTimeOutFlag == 1)
+        {
+            break;
+        }
+    }
+}
+
+
+
+/***********************************************************
+*@fuction	:SysTick_ISR
+*@brief		:
+*@param		:--
+*@return	:void
+*@author	:--
+*@date		:2022-10-08
+***********************************************************/
+
+void SysTick_ISR(void)
+{
+    static uint8_t s_count, s_conut2 = 0;
+    tick_callback();
+
+    /* 每隔1ms进来1次 （仅用于 bsp_DelayMS） */
+    if (s_uiDelayCount > 0)
+    {
+        if (--s_uiDelayCount == 0)
+        {
+            s_ucTimeOutFlag = 1;
+        }
+    }
+    if (++s_count >= 10)
+    {
+        s_count = 0;
+
+        bsp_RunPer10ms(); /* 每隔10ms调用一次此函数，此函数在 bsp.c */
+    }
+    if (++s_conut2 >= 80)
+    {
+        s_conut2 = 0;
+        ina_220.triger = 1;
+
+    }
+
+}
+
+extern ina_220_t ina_220 ;
+/***********************************************************
+*@fuction	:bsp_RunPer10ms
+*@brief		:
+*@param		:--
+*@return	:void
+*@author	:--
+*@date		:2022-10-08
+***********************************************************/
+
+static void bsp_RunPer10ms(void)
+{
+    static uint16_t  count2 = 0;
+    //	bsp_KeyScan10ms();
+    if(++count2 > 50)
+    {
+        count2 = 0;
+
+
+        //		led_type.trige=1;
+    }
+
+}
+
+
+

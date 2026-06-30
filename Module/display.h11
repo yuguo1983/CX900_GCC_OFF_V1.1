@@ -1,0 +1,31 @@
+#ifndef __DISPLAY_H
+#define __DISPLAY_H
+
+#include "stdio.h"
+#include "gd32f30x.h"
+#include "GPU_SDIO.h"
+#include "function.h"
+
+
+void Send_Alarm(uint8_t cmd, uint16_t value);
+void Usart3_Init(uint32_t SetBaudRate);
+void Timer4_Configuration(void);
+void Timer4_Enable(void);
+void Timer4_DISABLE(void);
+void Uart3Process(void);
+void SetCodeValid(const char *p);
+void SetDispColor(uint16_t fcolor,uint16_t bcolor);
+void SetDispString(uint16_t width,uint16_t hight,const char *p);
+void SetDispFill(uint16_t xstart,uint16_t xend,uint16_t ystart,uint16_t yend,uint16_t color);
+void GetVolCur(uint8_t lane);
+void SetDispPic(uint8_t pic);
+void SetVolCur(void);
+void SetMAXCurrent(uint16_t vio,uint16_t vcc,uint16_t delay,uint16_t minVIO,uint16_t minVcc);
+
+
+
+
+
+
+#endif /* __DISPLAY_H */
+

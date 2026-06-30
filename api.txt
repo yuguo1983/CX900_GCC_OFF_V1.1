@@ -1,0 +1,35 @@
+开放函数
+
+void bsp_DelayMS(uint32_t value);
+void SSD2828_WritePackageSize(uint8_t value);
+void SSD2828_SPI_Write_Data(uint8_t value);
+void SPI_WriteCmd(uint8_t value);
+void SPI_WriteData(uint8_t value);
+void set_tim_iovcc(uint32_t value);
+void set_tim_vsp(uint32_t value);
+void set_tim_vsn(uint32_t value);
+void set_vcc(uint8_t value);
+void set_iovcc(uint8_t value);
+void set_vspvol(uint8_t value);
+void set_vsnvol(uint8_t value);
+void set_eniovcc(uint8_t value);
+void set_envcc(uint8_t value);
+void set_envsp(uint8_t value);
+void set_envsn(uint8_t value);
+void Ssd2828ON(uint8_t value);
+void O_LCD_RESET(uint8_t value);
+void O_SSD2828_RESET(uint8_t value);
+void GPU_BL(uint8_t value);
+void KeyUp_Process(uint8_t value);
+void set_tim_vcc1(uint32_t value);
+void set_tim_vcc2(uint32_t value);
+void set_tim_vcc3(uint32_t value);
+void set_tim_vcc4(uint32_t value);
+void set_tim_vcc5(uint32_t value);
+void set_tim_vcc6(uint32_t value);
+void set_vcc1(uint16_t value);
+void set_vcc2(uint16_t value);
+void set_vcc3(uint16_t value);
+void set_vcc4(uint16_t value);
+void set_vcc5(uint16_t value);
+void set_vcc6(uint16_t value);

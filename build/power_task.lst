@@ -1,0 +1,2090 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"power_task.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Power_Off,"ax",%progbits
+  18              		.align	1
+  19              		.global	Power_Off
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	Power_Off:
+  25              	.LFB119:
+  26              		.file 1 "Module/power_task.c"
+   1:Module/power_task.c **** #include "power_task.h"
+   2:Module/power_task.c **** #include "pport_spi.h"
+   3:Module/power_task.c **** #include "app.h"
+   4:Module/power_task.c **** #include "user_config.h"
+   5:Module/power_task.c **** #include "GPU_Cfg.h"
+   6:Module/power_task.c **** #include "timer.h"
+   7:Module/power_task.c **** #include "mipi_Cfg.h"
+   8:Module/power_task.c **** #include "file_opration.h"
+   9:Module/power_task.c **** #include "log.h"
+  10:Module/power_task.c **** #include "usartfifo.h"
+  11:Module/power_task.c **** #include "ina220.h"
+  12:Module/power_task.c **** #include "ncs8805_edp.h"
+  13:Module/power_task.c **** #include "ssd_2832.h"
+  14:Module/power_task.c **** #include "GPU_GPIO.h"
+  15:Module/power_task.c **** #include "GPU_Show.h"
+  16:Module/power_task.c **** #include "GPU_SPI.h"
+  17:Module/power_task.c **** #include "lcd_cfg.h"
+  18:Module/power_task.c **** #include "log.h"
+  19:Module/power_task.c **** //////////////////////
+  20:Module/power_task.c **** 
+  21:Module/power_task.c **** void Init_NT36523B(void);
+  22:Module/power_task.c **** void init_nt35516(void);
+  23:Module/power_task.c **** void Power_Off()
+  24:Module/power_task.c **** {
+  27              		.loc 1 24 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 08B5     		push	{r3, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 2
+
+
+  35              		.cfi_offset 14, -4
+  25:Module/power_task.c ****     SPI_WriteCmd(0xB7);
+  36              		.loc 1 25 5 view .LVU1
+  37 0002 B720     		movs	r0, #183
+  38 0004 FFF7FEFF 		bl	SPI_WriteCmd
+  39              	.LVL0:
+  26:Module/power_task.c ****     SPI_WriteData(0x50);//10=TX_CLK 50=PCLK
+  40              		.loc 1 26 5 view .LVU2
+  41 0008 5020     		movs	r0, #80
+  42 000a FFF7FEFF 		bl	SPI_WriteData
+  43              	.LVL1:
+  27:Module/power_task.c ****     SPI_WriteData(0x02);
+  44              		.loc 1 27 5 view .LVU3
+  45 000e 0220     		movs	r0, #2
+  46 0010 FFF7FEFF 		bl	SPI_WriteData
+  47              	.LVL2:
+  28:Module/power_task.c ****     SPI_WriteCmd(0xBD);
+  48              		.loc 1 28 5 view .LVU4
+  49 0014 BD20     		movs	r0, #189
+  50 0016 FFF7FEFF 		bl	SPI_WriteCmd
+  51              	.LVL3:
+  29:Module/power_task.c ****     SPI_WriteData(0x00);
+  52              		.loc 1 29 5 view .LVU5
+  53 001a 0020     		movs	r0, #0
+  54 001c FFF7FEFF 		bl	SPI_WriteData
+  55              	.LVL4:
+  30:Module/power_task.c ****     SPI_WriteData(0x00);
+  56              		.loc 1 30 5 view .LVU6
+  57 0020 0020     		movs	r0, #0
+  58 0022 FFF7FEFF 		bl	SPI_WriteData
+  59              	.LVL5:
+  31:Module/power_task.c ****     SSD2828_WritePackageSize(1);
+  60              		.loc 1 31 5 view .LVU7
+  61 0026 0120     		movs	r0, #1
+  62 0028 FFF7FEFF 		bl	SSD2828_WritePackageSize
+  63              	.LVL6:
+  32:Module/power_task.c ****   	SPI_WriteData(0x28);		   	  //SleepIn
+  64              		.loc 1 32 4 view .LVU8
+  65 002c 2820     		movs	r0, #40
+  66 002e FFF7FEFF 		bl	SPI_WriteData
+  67              	.LVL7:
+  33:Module/power_task.c ****    	bsp_DelayMS(10);
+  68              		.loc 1 33 5 view .LVU9
+  69 0032 0A20     		movs	r0, #10
+  70 0034 FFF7FEFF 		bl	bsp_DelayMS
+  71              	.LVL8:
+  34:Module/power_task.c ****    	SSD2828_WritePackageSize(1);
+  72              		.loc 1 34 5 view .LVU10
+  73 0038 0120     		movs	r0, #1
+  74 003a FFF7FEFF 		bl	SSD2828_WritePackageSize
+  75              	.LVL9:
+  35:Module/power_task.c ****     SPI_WriteData(0x10);		     //display OFF
+  76              		.loc 1 35 5 view .LVU11
+  77 003e 1020     		movs	r0, #16
+  78 0040 FFF7FEFF 		bl	SPI_WriteData
+  79              	.LVL10:
+  36:Module/power_task.c ****   	bsp_DelayMS(5);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 3
+
+
+  80              		.loc 1 36 4 view .LVU12
+  81 0044 0520     		movs	r0, #5
+  82 0046 FFF7FEFF 		bl	bsp_DelayMS
+  83              	.LVL11:
+  37:Module/power_task.c ****     O_PWR_5V_EN(0);
+  84              		.loc 1 37 5 view .LVU13
+  85 004a 0020     		movs	r0, #0
+  86 004c FFF7FEFF 		bl	O_PWR_5V_EN
+  87              	.LVL12:
+  38:Module/power_task.c ****     set_envcc(0);
+  88              		.loc 1 38 5 view .LVU14
+  89 0050 0020     		movs	r0, #0
+  90 0052 FFF7FEFF 		bl	set_envcc
+  91              	.LVL13:
+  39:Module/power_task.c ****     set_eniovcc(0);
+  92              		.loc 1 39 5 view .LVU15
+  93 0056 0020     		movs	r0, #0
+  94 0058 FFF7FEFF 		bl	set_eniovcc
+  95              	.LVL14:
+  40:Module/power_task.c ****     set_envsp(0);
+  96              		.loc 1 40 5 view .LVU16
+  97 005c 0020     		movs	r0, #0
+  98 005e FFF7FEFF 		bl	set_envsp
+  99              	.LVL15:
+  41:Module/power_task.c ****     set_envsn(0);
+ 100              		.loc 1 41 5 view .LVU17
+ 101 0062 0020     		movs	r0, #0
+ 102 0064 FFF7FEFF 		bl	set_envsn
+ 103              	.LVL16:
+  42:Module/power_task.c ****     SetGpuExgpio(1,0);
+ 104              		.loc 1 42 5 view .LVU18
+ 105 0068 0021     		movs	r1, #0
+ 106 006a 0120     		movs	r0, #1
+ 107 006c FFF7FEFF 		bl	SetGpuExgpio
+ 108              	.LVL17:
+  43:Module/power_task.c ****     set_vcc(0);
+ 109              		.loc 1 43 5 view .LVU19
+ 110 0070 0020     		movs	r0, #0
+ 111 0072 FFF7FEFF 		bl	set_vcc
+ 112              	.LVL18:
+  44:Module/power_task.c ****     set_iovcc(0);
+ 113              		.loc 1 44 5 view .LVU20
+ 114 0076 0020     		movs	r0, #0
+ 115 0078 FFF7FEFF 		bl	set_iovcc
+ 116              	.LVL19:
+  45:Module/power_task.c ****     set_resetvcc(0);
+ 117              		.loc 1 45 5 view .LVU21
+ 118 007c 0020     		movs	r0, #0
+ 119 007e FFF7FEFF 		bl	set_resetvcc
+ 120              	.LVL20:
+  46:Module/power_task.c ****     set_vspvol(0);
+ 121              		.loc 1 46 5 view .LVU22
+ 122 0082 0020     		movs	r0, #0
+ 123 0084 FFF7FEFF 		bl	set_vspvol
+ 124              	.LVL21:
+  47:Module/power_task.c ****     set_vsnvol(0);
+ 125              		.loc 1 47 5 view .LVU23
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 4
+
+
+ 126 0088 0020     		movs	r0, #0
+ 127 008a FFF7FEFF 		bl	set_vsnvol
+ 128              	.LVL22:
+  48:Module/power_task.c ****     SetGpuExgpio(2,0);//GPIO_2
+ 129              		.loc 1 48 5 view .LVU24
+ 130 008e 0021     		movs	r1, #0
+ 131 0090 0220     		movs	r0, #2
+ 132 0092 FFF7FEFF 		bl	SetGpuExgpio
+ 133              	.LVL23:
+  49:Module/power_task.c ****     Lcd_Reset(0); //LCD reset 
+ 134              		.loc 1 49 5 view .LVU25
+ 135 0096 0020     		movs	r0, #0
+ 136 0098 FFF7FEFF 		bl	Lcd_Reset
+ 137              	.LVL24:
+  50:Module/power_task.c ****     bridge_RSTPIN_reset();
+ 138              		.loc 1 50 5 view .LVU26
+ 139 009c FFF7FEFF 		bl	bridge_RSTPIN_reset
+ 140              	.LVL25:
+  51:Module/power_task.c ****     RGB_Disable();
+ 141              		.loc 1 51 5 view .LVU27
+ 142 00a0 FFF7FEFF 		bl	RGB_Disable
+ 143              	.LVL26:
+  52:Module/power_task.c ****     Ssd2828ON(1);
+ 144              		.loc 1 52 5 view .LVU28
+ 145 00a4 0120     		movs	r0, #1
+ 146 00a6 FFF7FEFF 		bl	Ssd2828ON
+ 147              	.LVL27:
+  53:Module/power_task.c ****     O_PWR_BL_EN(0); //BL_EN
+ 148              		.loc 1 53 5 view .LVU29
+ 149 00aa 0020     		movs	r0, #0
+ 150 00ac FFF7FEFF 		bl	O_PWR_BL_EN
+ 151              	.LVL28:
+  54:Module/power_task.c ****     O_LCM_5V_EN(0);
+ 152              		.loc 1 54 5 view .LVU30
+ 153 00b0 0020     		movs	r0, #0
+ 154 00b2 FFF7FEFF 		bl	O_LCM_5V_EN
+ 155              	.LVL29:
+  55:Module/power_task.c ****     O_PWR_LED(0);
+ 156              		.loc 1 55 5 view .LVU31
+ 157 00b6 0020     		movs	r0, #0
+ 158 00b8 FFF7FEFF 		bl	O_PWR_LED
+ 159              	.LVL30:
+  56:Module/power_task.c ****     O_SSD2828_SPI_CS(0);
+ 160              		.loc 1 56 5 view .LVU32
+ 161 00bc 0020     		movs	r0, #0
+ 162 00be FFF7FEFF 		bl	O_SSD2828_SPI_CS
+ 163              	.LVL31:
+  57:Module/power_task.c ****     O_SSD2828_SPI_CLK(0);
+ 164              		.loc 1 57 5 view .LVU33
+ 165 00c2 0020     		movs	r0, #0
+ 166 00c4 FFF7FEFF 		bl	O_SSD2828_SPI_CLK
+ 167              	.LVL32:
+  58:Module/power_task.c ****     O_SSD2828_SPI_SDI(0);
+ 168              		.loc 1 58 5 view .LVU34
+ 169 00c8 0020     		movs	r0, #0
+ 170 00ca FFF7FEFF 		bl	O_SSD2828_SPI_SDI
+ 171              	.LVL33:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 5
+
+
+  59:Module/power_task.c ****     O_SSD2828_RESET(0);	
+ 172              		.loc 1 59 5 view .LVU35
+ 173 00ce 0020     		movs	r0, #0
+ 174 00d0 FFF7FEFF 		bl	O_SSD2828_RESET
+ 175              	.LVL34:
+  60:Module/power_task.c ****     GPU_Beep(15);
+ 176              		.loc 1 60 5 view .LVU36
+ 177 00d4 0F20     		movs	r0, #15
+ 178 00d6 FFF7FEFF 		bl	GPU_Beep
+ 179              	.LVL35:
+  61:Module/power_task.c ****     SetGpuGpio(1,0);
+ 180              		.loc 1 61 5 view .LVU37
+ 181 00da 0021     		movs	r1, #0
+ 182 00dc 0120     		movs	r0, #1
+ 183 00de FFF7FEFF 		bl	SetGpuGpio
+ 184              	.LVL36:
+  62:Module/power_task.c ****     SetGpuGpio(2,0);
+ 185              		.loc 1 62 5 view .LVU38
+ 186 00e2 0021     		movs	r1, #0
+ 187 00e4 0220     		movs	r0, #2
+ 188 00e6 FFF7FEFF 		bl	SetGpuGpio
+ 189              	.LVL37:
+  63:Module/power_task.c ****     SetGpuGpio(3,0);
+ 190              		.loc 1 63 5 view .LVU39
+ 191 00ea 0021     		movs	r1, #0
+ 192 00ec 0320     		movs	r0, #3
+ 193 00ee FFF7FEFF 		bl	SetGpuGpio
+ 194              	.LVL38:
+  64:Module/power_task.c ****     SetGpuGpio(4,0);
+ 195              		.loc 1 64 5 view .LVU40
+ 196 00f2 0021     		movs	r1, #0
+ 197 00f4 0420     		movs	r0, #4
+ 198 00f6 FFF7FEFF 		bl	SetGpuGpio
+ 199              	.LVL39:
+  65:Module/power_task.c **** }
+ 200              		.loc 1 65 1 is_stmt 0 view .LVU41
+ 201 00fa 08BD     		pop	{r3, pc}
+ 202              		.cfi_endproc
+ 203              	.LFE119:
+ 205              		.section	.text.Power_On,"ax",%progbits
+ 206              		.align	1
+ 207              		.global	Power_On
+ 208              		.syntax unified
+ 209              		.thumb
+ 210              		.thumb_func
+ 212              	Power_On:
+ 213              	.LFB120:
+  66:Module/power_task.c **** 
+  67:Module/power_task.c **** 
+  68:Module/power_task.c **** 
+  69:Module/power_task.c **** 
+  70:Module/power_task.c **** 
+  71:Module/power_task.c **** uint8_t tempbuf[10];
+  72:Module/power_task.c **** uint8_t rdbuf[100];
+  73:Module/power_task.c ****  int jd9365tg_Read_FW_RegMultiSpi(uint32_t addr, uint8_t *rdata, uint16_t rlen);
+  74:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegMulti(uint32_t addr, uint8_t *rdata, uint16_t rlen);
+  75:Module/power_task.c **** static int jd9365tg_Write_BackDoor_RegSingle(uint32_t addr, uint8_t wdata);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 6
+
+
+  76:Module/power_task.c ****  int jd9365tg_Read_FW_RegSingleSpi(uint32_t addr, uint8_t *rdata);
+  77:Module/power_task.c **** static int jd9365tg_Write_FW_RegSingleSpi(uint32_t addr, uint8_t wdata);
+  78:Module/power_task.c **** static int jd9365tg_EnterBackDoor(void);
+  79:Module/power_task.c **** static int jd9365tg_ExitBackDoor(void);
+  80:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegSingle(uint32_t addr, uint8_t *rdata);
+  81:Module/power_task.c **** 
+  82:Module/power_task.c **** #define SSD2832
+  83:Module/power_task.c **** 
+  84:Module/power_task.c **** void Power_On(void)
+  85:Module/power_task.c **** {
+ 214              		.loc 1 85 1 is_stmt 1 view -0
+ 215              		.cfi_startproc
+ 216              		@ args = 0, pretend = 0, frame = 48
+ 217              		@ frame_needed = 0, uses_anonymous_args = 0
+ 218 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 219              	.LCFI1:
+ 220              		.cfi_def_cfa_offset 36
+ 221              		.cfi_offset 4, -36
+ 222              		.cfi_offset 5, -32
+ 223              		.cfi_offset 6, -28
+ 224              		.cfi_offset 7, -24
+ 225              		.cfi_offset 8, -20
+ 226              		.cfi_offset 9, -16
+ 227              		.cfi_offset 10, -12
+ 228              		.cfi_offset 11, -8
+ 229              		.cfi_offset 14, -4
+ 230 0004 8DB0     		sub	sp, sp, #52
+ 231              	.LCFI2:
+ 232              		.cfi_def_cfa_offset 88
+  86:Module/power_task.c ****     unsigned char mipi_dataarray[20] ;
+ 233              		.loc 1 86 5 view .LVU43
+  87:Module/power_task.c ****     struct mipi_port srtmipiport;
+ 234              		.loc 1 87 5 view .LVU44
+  88:Module/power_task.c ****     uint8_t readbuf[10]={0};
+ 235              		.loc 1 88 5 view .LVU45
+  89:Module/power_task.c ****     uint8_t ret=0;
+ 236              		.loc 1 89 5 view .LVU46
+ 237              	.LVL40:
+  90:Module/power_task.c ****     BeepOn();
+ 238              		.loc 1 90 5 view .LVU47
+ 239 0006 FFF7FEFF 		bl	BeepOn
+ 240              	.LVL41:
+  91:Module/power_task.c ****     set_tim_vcc(10, 100);
+ 241              		.loc 1 91 5 view .LVU48
+ 242 000a 6421     		movs	r1, #100
+ 243 000c 0A20     		movs	r0, #10
+ 244 000e FFF7FEFF 		bl	set_tim_vcc
+ 245              	.LVL42:
+  92:Module/power_task.c ****     set_tim_iovcc(30, 100);
+ 246              		.loc 1 92 5 view .LVU49
+ 247 0012 6421     		movs	r1, #100
+ 248 0014 1E20     		movs	r0, #30
+ 249 0016 FFF7FEFF 		bl	set_tim_iovcc
+ 250              	.LVL43:
+  93:Module/power_task.c ****     set_tim_reset(30, 100);
+ 251              		.loc 1 93 5 view .LVU50
+ 252 001a 6421     		movs	r1, #100
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 7
+
+
+ 253 001c 1E20     		movs	r0, #30
+ 254 001e FFF7FEFF 		bl	set_tim_reset
+ 255              	.LVL44:
+  94:Module/power_task.c ****     set_tim_vsp(50, 100);
+ 256              		.loc 1 94 5 view .LVU51
+ 257 0022 6421     		movs	r1, #100
+ 258 0024 3220     		movs	r0, #50
+ 259 0026 FFF7FEFF 		bl	set_tim_vsp
+ 260              	.LVL45:
+  95:Module/power_task.c ****     set_tim_vsn(50, 100);
+ 261              		.loc 1 95 5 view .LVU52
+ 262 002a 6421     		movs	r1, #100
+ 263 002c 3220     		movs	r0, #50
+ 264 002e FFF7FEFF 		bl	set_tim_vsn
+ 265              	.LVL46:
+  96:Module/power_task.c ****     set_vspvol(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVSPSET);
+ 266              		.loc 1 96 5 view .LVU53
+ 267              		.loc 1 96 30 is_stmt 0 view .LVU54
+ 268 0032 494D     		ldr	r5, .L7
+ 269 0034 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 270 0036 494C     		ldr	r4, .L7+4
+ 271              		.loc 1 96 5 view .LVU55
+ 272 0038 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 273 003c B3F8AE00 		ldrh	r0, [r3, #174]
+ 274 0040 FFF7FEFF 		bl	set_vspvol
+ 275              	.LVL47:
+  97:Module/power_task.c ****     set_vsnvol(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVSNSET);
+ 276              		.loc 1 97 5 is_stmt 1 view .LVU56
+ 277              		.loc 1 97 30 is_stmt 0 view .LVU57
+ 278 0044 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 279              		.loc 1 97 5 view .LVU58
+ 280 0046 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 281 004a B3F8B800 		ldrh	r0, [r3, #184]
+ 282 004e FFF7FEFF 		bl	set_vsnvol
+ 283              	.LVL48:
+  98:Module/power_task.c ****     set_vcc1(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC1SET);
+ 284              		.loc 1 98 5 is_stmt 1 view .LVU59
+ 285              		.loc 1 98 28 is_stmt 0 view .LVU60
+ 286 0052 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 287              		.loc 1 98 5 view .LVU61
+ 288 0054 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 289 0058 B3F87200 		ldrh	r0, [r3, #114]
+ 290 005c FFF7FEFF 		bl	set_vcc1
+ 291              	.LVL49:
+  99:Module/power_task.c ****     set_vcc2(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC2SET);
+ 292              		.loc 1 99 5 is_stmt 1 view .LVU62
+ 293              		.loc 1 99 28 is_stmt 0 view .LVU63
+ 294 0060 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 295              		.loc 1 99 5 view .LVU64
+ 296 0062 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 297 0066 B3F87C00 		ldrh	r0, [r3, #124]
+ 298 006a FFF7FEFF 		bl	set_vcc2
+ 299              	.LVL50:
+ 100:Module/power_task.c ****     set_vcc3(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC3SET);
+ 300              		.loc 1 100 5 is_stmt 1 view .LVU65
+ 301              		.loc 1 100 28 is_stmt 0 view .LVU66
+ 302 006e 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 8
+
+
+ 303              		.loc 1 100 5 view .LVU67
+ 304 0070 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 305 0074 B3F88600 		ldrh	r0, [r3, #134]
+ 306 0078 FFF7FEFF 		bl	set_vcc3
+ 307              	.LVL51:
+ 101:Module/power_task.c ****     set_vcc4(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC4SET);
+ 308              		.loc 1 101 5 is_stmt 1 view .LVU68
+ 309              		.loc 1 101 28 is_stmt 0 view .LVU69
+ 310 007c 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 311              		.loc 1 101 5 view .LVU70
+ 312 007e 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 313 0082 B3F89000 		ldrh	r0, [r3, #144]
+ 314 0086 FFF7FEFF 		bl	set_vcc4
+ 315              	.LVL52:
+ 102:Module/power_task.c ****     set_vcc5(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC5SET);
+ 316              		.loc 1 102 5 is_stmt 1 view .LVU71
+ 317              		.loc 1 102 28 is_stmt 0 view .LVU72
+ 318 008a 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 319              		.loc 1 102 5 view .LVU73
+ 320 008c 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 321 0090 B3F89A00 		ldrh	r0, [r3, #154]
+ 322 0094 FFF7FEFF 		bl	set_vcc5
+ 323              	.LVL53:
+ 103:Module/power_task.c ****     set_vcc6(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC6SET);
+ 324              		.loc 1 103 5 is_stmt 1 view .LVU74
+ 325              		.loc 1 103 28 is_stmt 0 view .LVU75
+ 326 0098 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 327              		.loc 1 103 5 view .LVU76
+ 328 009a 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 329 009e B3F8A400 		ldrh	r0, [r3, #164]
+ 330 00a2 FFF7FEFF 		bl	set_vcc6
+ 331              	.LVL54:
+ 104:Module/power_task.c ****     set_envcc1(1);
+ 332              		.loc 1 104 5 is_stmt 1 view .LVU77
+ 333 00a6 0120     		movs	r0, #1
+ 334 00a8 FFF7FEFF 		bl	set_envcc1
+ 335              	.LVL55:
+ 105:Module/power_task.c ****     set_envcc2(1);
+ 336              		.loc 1 105 5 view .LVU78
+ 337 00ac 0120     		movs	r0, #1
+ 338 00ae FFF7FEFF 		bl	set_envcc2
+ 339              	.LVL56:
+ 106:Module/power_task.c ****     set_envcc3(1);
+ 340              		.loc 1 106 5 view .LVU79
+ 341 00b2 0120     		movs	r0, #1
+ 342 00b4 FFF7FEFF 		bl	set_envcc3
+ 343              	.LVL57:
+ 107:Module/power_task.c ****     set_envcc4(1);
+ 344              		.loc 1 107 5 view .LVU80
+ 345 00b8 0120     		movs	r0, #1
+ 346 00ba FFF7FEFF 		bl	set_envcc4
+ 347              	.LVL58:
+ 108:Module/power_task.c ****     set_envcc5(1);
+ 348              		.loc 1 108 5 view .LVU81
+ 349 00be 0120     		movs	r0, #1
+ 350 00c0 FFF7FEFF 		bl	set_envcc5
+ 351              	.LVL59:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 9
+
+
+ 109:Module/power_task.c ****     set_envcc6(1);
+ 352              		.loc 1 109 5 view .LVU82
+ 353 00c4 0120     		movs	r0, #1
+ 354 00c6 FFF7FEFF 		bl	set_envcc6
+ 355              	.LVL60:
+ 110:Module/power_task.c **** 
+ 111:Module/power_task.c ****     set_envsp(1);
+ 356              		.loc 1 111 5 view .LVU83
+ 357 00ca 0120     		movs	r0, #1
+ 358 00cc FFF7FEFF 		bl	set_envsp
+ 359              	.LVL61:
+ 112:Module/power_task.c ****     set_envsn(1);
+ 360              		.loc 1 112 5 view .LVU84
+ 361 00d0 0120     		movs	r0, #1
+ 362 00d2 FFF7FEFF 		bl	set_envsn
+ 363              	.LVL62:
+ 113:Module/power_task.c ****     O_PWR_5V_EN(1);
+ 364              		.loc 1 113 5 view .LVU85
+ 365 00d6 0120     		movs	r0, #1
+ 366 00d8 FFF7FEFF 		bl	O_PWR_5V_EN
+ 367              	.LVL63:
+ 114:Module/power_task.c ****     Ssd2828ON(0);
+ 368              		.loc 1 114 5 view .LVU86
+ 369 00dc 0020     		movs	r0, #0
+ 370 00de FFF7FEFF 		bl	Ssd2828ON
+ 371              	.LVL64:
+ 115:Module/power_task.c ****     //	  O_PWR_EN_OTP(1,500);
+ 116:Module/power_task.c **** #ifdef  SSD2832
+ 117:Module/power_task.c **** 
+ 118:Module/power_task.c **** 
+ 119:Module/power_task.c **** 
+ 120:Module/power_task.c **** 
+ 121:Module/power_task.c **** #else
+ 122:Module/power_task.c ****     O_SSD2828_RESET(1);
+ 123:Module/power_task.c ****     O_SSD2828_SHUT(0);
+ 124:Module/power_task.c ****     O_SSD2828_SPI_CS(1);
+ 125:Module/power_task.c ****     Reset(1);
+ 126:Module/power_task.c ****     bsp_DelayMS(10);
+ 127:Module/power_task.c ****     Reset(0);
+ 128:Module/power_task.c ****     bsp_DelayMS(50);
+ 129:Module/power_task.c ****     Reset(1);
+ 130:Module/power_task.c ****     bsp_DelayMS(50);	
+ 131:Module/power_task.c **** #endif
+ 132:Module/power_task.c ****     O_LCD_RESET(1);
+ 372              		.loc 1 132 5 view .LVU87
+ 373 00e2 0120     		movs	r0, #1
+ 374 00e4 FFF7FEFF 		bl	O_LCD_RESET
+ 375              	.LVL65:
+ 133:Module/power_task.c ****     O_PWR_LED(1);
+ 376              		.loc 1 133 5 view .LVU88
+ 377 00e8 0120     		movs	r0, #1
+ 378 00ea FFF7FEFF 		bl	O_PWR_LED
+ 379              	.LVL66:
+ 134:Module/power_task.c ****     bsp_DelayMS(50);
+ 380              		.loc 1 134 5 view .LVU89
+ 381 00ee 3220     		movs	r0, #50
+ 382 00f0 FFF7FEFF 		bl	bsp_DelayMS
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 10
+
+
+ 383              	.LVL67:
+ 135:Module/power_task.c ****     O_LCD_RESET(0);
+ 384              		.loc 1 135 5 view .LVU90
+ 385 00f4 0020     		movs	r0, #0
+ 386 00f6 FFF7FEFF 		bl	O_LCD_RESET
+ 387              	.LVL68:
+ 136:Module/power_task.c ****     GPU_Beep(15);
+ 388              		.loc 1 136 5 view .LVU91
+ 389 00fa 0F20     		movs	r0, #15
+ 390 00fc FFF7FEFF 		bl	GPU_Beep
+ 391              	.LVL69:
+ 137:Module/power_task.c ****     bsp_DelayMS(50);
+ 392              		.loc 1 137 5 view .LVU92
+ 393 0100 3220     		movs	r0, #50
+ 394 0102 FFF7FEFF 		bl	bsp_DelayMS
+ 395              	.LVL70:
+ 138:Module/power_task.c ****     O_LCD_RESET(1);
+ 396              		.loc 1 138 5 view .LVU93
+ 397 0106 0120     		movs	r0, #1
+ 398 0108 FFF7FEFF 		bl	O_LCD_RESET
+ 399              	.LVL71:
+ 139:Module/power_task.c ****     bsp_DelayMS(50);
+ 400              		.loc 1 139 5 view .LVU94
+ 401 010c 3220     		movs	r0, #50
+ 402 010e FFF7FEFF 		bl	bsp_DelayMS
+ 403              	.LVL72:
+ 140:Module/power_task.c **** //////////////TPRESET//////////		
+ 141:Module/power_task.c ****     SetGpuExgpio(2,1);
+ 404              		.loc 1 141 5 view .LVU95
+ 405 0112 0121     		movs	r1, #1
+ 406 0114 0220     		movs	r0, #2
+ 407 0116 FFF7FEFF 		bl	SetGpuExgpio
+ 408              	.LVL73:
+ 142:Module/power_task.c ****     bsp_DelayMS(50);
+ 409              		.loc 1 142 5 view .LVU96
+ 410 011a 3220     		movs	r0, #50
+ 411 011c FFF7FEFF 		bl	bsp_DelayMS
+ 412              	.LVL74:
+ 143:Module/power_task.c ****     SetGpuExgpio(2,0);
+ 413              		.loc 1 143 5 view .LVU97
+ 414 0120 0021     		movs	r1, #0
+ 415 0122 0220     		movs	r0, #2
+ 416 0124 FFF7FEFF 		bl	SetGpuExgpio
+ 417              	.LVL75:
+ 144:Module/power_task.c ****     bsp_DelayMS(50);
+ 418              		.loc 1 144 5 view .LVU98
+ 419 0128 3220     		movs	r0, #50
+ 420 012a FFF7FEFF 		bl	bsp_DelayMS
+ 421              	.LVL76:
+ 145:Module/power_task.c ****     SetGpuExgpio(2,1);
+ 422              		.loc 1 145 5 view .LVU99
+ 423 012e 0121     		movs	r1, #1
+ 424 0130 0220     		movs	r0, #2
+ 425 0132 FFF7FEFF 		bl	SetGpuExgpio
+ 426              	.LVL77:
+ 146:Module/power_task.c **** //////////////TPRESET//////////	
+ 147:Module/power_task.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 11
+
+
+ 148:Module/power_task.c ****     GPU_BL(ptr_MIPI_TABLE[gMipiTableIndex]->BLMASET); //PWM
+ 427              		.loc 1 148 5 view .LVU100
+ 428              		.loc 1 148 26 is_stmt 0 view .LVU101
+ 429 0136 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 430              		.loc 1 148 43 view .LVU102
+ 431 0138 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 432              		.loc 1 148 5 view .LVU103
+ 433 013c 93F8CC00 		ldrb	r0, [r3, #204]	@ zero_extendqisi2
+ 434 0140 FFF7FEFF 		bl	GPU_BL
+ 435              	.LVL78:
+ 149:Module/power_task.c ****     if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode <= 2)
+ 436              		.loc 1 149 5 is_stmt 1 view .LVU104
+ 437              		.loc 1 149 22 is_stmt 0 view .LVU105
+ 438 0144 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 439              		.loc 1 149 39 view .LVU106
+ 440 0146 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 441              		.loc 1 149 7 view .LVU107
+ 442 014a 93F86130 		ldrb	r3, [r3, #97]	@ zero_extendqisi2
+ 443 014e 022B     		cmp	r3, #2
+ 444 0150 40F29181 		bls	.L6
+ 445 0154 04E0     		b	.L8
+ 446              	.L9:
+ 447 0156 00BF     		.align	2
+ 448              	.L7:
+ 449 0158 00000000 		.word	gMipiTableIndex
+ 450 015c 00000000 		.word	ptr_MIPI_TABLE
+ 451              	.L8:
+ 452              	.L4:
+ 150:Module/power_task.c ****     RGB_Enable();else ;
+ 151:Module/power_task.c ****     Lcd_ShowMode(0);
+ 453              		.loc 1 151 5 is_stmt 1 view .LVU108
+ 454 0160 0020     		movs	r0, #0
+ 455 0162 FFF7FEFF 		bl	Lcd_ShowMode
+ 456              	.LVL79:
+ 152:Module/power_task.c **** 		
+ 153:Module/power_task.c **** //   Ssd2828_ID_OK_check();
+ 154:Module/power_task.c **** //   int temp=SSD2828_SPI_Read_Chip_ID();
+ 155:Module/power_task.c **** //	 log_info("0x%x 0x%x",temp>>16,(uint16_t)temp);
+ 156:Module/power_task.c **** 	
+ 157:Module/power_task.c **** /////////////////////////////////////////
+ 158:Module/power_task.c **** 
+ 159:Module/power_task.c **** #ifdef SSD2832
+ 160:Module/power_task.c **** 		SSD2832_GPIO_Init();
+ 457              		.loc 1 160 3 view .LVU109
+ 458 0166 FFF7FEFF 		bl	SSD2832_GPIO_Init
+ 459              	.LVL80:
+ 161:Module/power_task.c **** 		bsp_DelayMS(20);
+ 460              		.loc 1 161 3 view .LVU110
+ 461 016a 1420     		movs	r0, #20
+ 462 016c FFF7FEFF 		bl	bsp_DelayMS
+ 463              	.LVL81:
+ 162:Module/power_task.c **** 		bridge_init();
+ 464              		.loc 1 162 3 view .LVU111
+ 465 0170 FFF7FEFF 		bl	bridge_init
+ 466              	.LVL82:
+ 163:Module/power_task.c **** 
+ 164:Module/power_task.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 12
+
+
+ 165:Module/power_task.c **** 	srtmipiport.hs_or_lp = 0;
+ 467              		.loc 1 165 2 view .LVU112
+ 468              		.loc 1 165 23 is_stmt 0 view .LVU113
+ 469 0174 0025     		movs	r5, #0
+ 470 0176 0295     		str	r5, [sp, #8]
+ 166:Module/power_task.c **** 
+ 167:Module/power_task.c **** 	srtmipiport.dual = 3;  		
+ 471              		.loc 1 167 2 is_stmt 1 view .LVU114
+ 472              		.loc 1 167 19 is_stmt 0 view .LVU115
+ 473 0178 0327     		movs	r7, #3
+ 474 017a 0697     		str	r7, [sp, #24]
+ 168:Module/power_task.c **** 	srtmipiport.video_or_cmd = 0;
+ 475              		.loc 1 168 2 is_stmt 1 view .LVU116
+ 476              		.loc 1 168 27 is_stmt 0 view .LVU117
+ 477 017c 0195     		str	r5, [sp, #4]
+ 169:Module/power_task.c **** 	srtmipiport.port = 0;
+ 478              		.loc 1 169 2 is_stmt 1 view .LVU118
+ 479              		.loc 1 169 19 is_stmt 0 view .LVU119
+ 480 017e 0595     		str	r5, [sp, #20]
+ 170:Module/power_task.c **** 
+ 171:Module/power_task.c **** 
+ 172:Module/power_task.c **** 	srtmipiport.data_type = 0x15;
+ 481              		.loc 1 172 2 is_stmt 1 view .LVU120
+ 482              		.loc 1 172 24 is_stmt 0 view .LVU121
+ 483 0180 4FF01509 		mov	r9, #21
+ 484 0184 CDF80C90 		str	r9, [sp, #12]
+ 173:Module/power_task.c **** 
+ 174:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 485              		.loc 1 174 2 is_stmt 1 view .LVU122
+ 486              		.loc 1 174 20 is_stmt 0 view .LVU123
+ 487 0188 4FF0FF08 		mov	r8, #255
+ 488 018c 8DF81C80 		strb	r8, [sp, #28]
+ 175:Module/power_task.c **** 	mipi_dataarray[1] = 0xd0;
+ 489              		.loc 1 175 2 is_stmt 1 view .LVU124
+ 490              		.loc 1 175 20 is_stmt 0 view .LVU125
+ 491 0190 4FF0D00A 		mov	r10, #208
+ 492 0194 8DF81DA0 		strb	r10, [sp, #29]
+ 176:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 493              		.loc 1 176 2 is_stmt 1 view .LVU126
+ 494 0198 0222     		movs	r2, #2
+ 495 019a 07A9     		add	r1, sp, #28
+ 496 019c 01A8     		add	r0, sp, #4
+ 497 019e FFF7FEFF 		bl	mipi_write_regs
+ 498              	.LVL83:
+ 177:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 499              		.loc 1 177 2 view .LVU127
+ 500 01a2 0A20     		movs	r0, #10
+ 501 01a4 FFF7FEFF 		bl	bsp_DelayMS
+ 502              	.LVL84:
+ 178:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 503              		.loc 1 178 2 view .LVU128
+ 504              		.loc 1 178 20 is_stmt 0 view .LVU129
+ 505 01a8 FB26     		movs	r6, #251
+ 506 01aa 8DF81C60 		strb	r6, [sp, #28]
+ 179:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 507              		.loc 1 179 2 is_stmt 1 view .LVU130
+ 508              		.loc 1 179 20 is_stmt 0 view .LVU131
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 13
+
+
+ 509 01ae 0124     		movs	r4, #1
+ 510 01b0 8DF81D40 		strb	r4, [sp, #29]
+ 180:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 511              		.loc 1 180 2 is_stmt 1 view .LVU132
+ 512 01b4 0222     		movs	r2, #2
+ 513 01b6 07A9     		add	r1, sp, #28
+ 514 01b8 01A8     		add	r0, sp, #4
+ 515 01ba FFF7FEFF 		bl	mipi_write_regs
+ 516              	.LVL85:
+ 181:Module/power_task.c **** 	mipi_dataarray[0] = 0x09;
+ 517              		.loc 1 181 2 view .LVU133
+ 518              		.loc 1 181 20 is_stmt 0 view .LVU134
+ 519 01be 4FF0090B 		mov	fp, #9
+ 520 01c2 8DF81CB0 		strb	fp, [sp, #28]
+ 182:Module/power_task.c **** 	mipi_dataarray[1] = 0xa6;
+ 521              		.loc 1 182 2 is_stmt 1 view .LVU135
+ 522              		.loc 1 182 20 is_stmt 0 view .LVU136
+ 523 01c6 A623     		movs	r3, #166
+ 524 01c8 8DF81D30 		strb	r3, [sp, #29]
+ 183:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 525              		.loc 1 183 2 is_stmt 1 view .LVU137
+ 526 01cc 0222     		movs	r2, #2
+ 527 01ce 07A9     		add	r1, sp, #28
+ 528 01d0 01A8     		add	r0, sp, #4
+ 529 01d2 FFF7FEFF 		bl	mipi_write_regs
+ 530              	.LVL86:
+ 184:Module/power_task.c **** 	mipi_dataarray[0] = 0x1c;
+ 531              		.loc 1 184 2 view .LVU138
+ 532              		.loc 1 184 20 is_stmt 0 view .LVU139
+ 533 01d6 1C23     		movs	r3, #28
+ 534 01d8 8DF81C30 		strb	r3, [sp, #28]
+ 185:Module/power_task.c **** 	mipi_dataarray[1] = 0x99;
+ 535              		.loc 1 185 2 is_stmt 1 view .LVU140
+ 536              		.loc 1 185 20 is_stmt 0 view .LVU141
+ 537 01dc 9923     		movs	r3, #153
+ 538 01de 8DF81D30 		strb	r3, [sp, #29]
+ 186:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 539              		.loc 1 186 2 is_stmt 1 view .LVU142
+ 540 01e2 0222     		movs	r2, #2
+ 541 01e4 07A9     		add	r1, sp, #28
+ 542 01e6 01A8     		add	r0, sp, #4
+ 543 01e8 FFF7FEFF 		bl	mipi_write_regs
+ 544              	.LVL87:
+ 187:Module/power_task.c **** 	mipi_dataarray[0] = 0x1d;
+ 545              		.loc 1 187 2 view .LVU143
+ 546              		.loc 1 187 20 is_stmt 0 view .LVU144
+ 547 01ec 1D23     		movs	r3, #29
+ 548 01ee 8DF81C30 		strb	r3, [sp, #28]
+ 188:Module/power_task.c **** 	mipi_dataarray[1] = 0x09;
+ 549              		.loc 1 188 2 is_stmt 1 view .LVU145
+ 550              		.loc 1 188 20 is_stmt 0 view .LVU146
+ 551 01f2 8DF81DB0 		strb	fp, [sp, #29]
+ 189:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 552              		.loc 1 189 2 is_stmt 1 view .LVU147
+ 553 01f6 0222     		movs	r2, #2
+ 554 01f8 07A9     		add	r1, sp, #28
+ 555 01fa 01A8     		add	r0, sp, #4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 14
+
+
+ 556 01fc FFF7FEFF 		bl	mipi_write_regs
+ 557              	.LVL88:
+ 190:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 558              		.loc 1 190 2 view .LVU148
+ 559              		.loc 1 190 20 is_stmt 0 view .LVU149
+ 560 0200 8DF81C80 		strb	r8, [sp, #28]
+ 191:Module/power_task.c **** 	mipi_dataarray[1] = 0xe0;
+ 561              		.loc 1 191 2 is_stmt 1 view .LVU150
+ 562              		.loc 1 191 20 is_stmt 0 view .LVU151
+ 563 0204 E023     		movs	r3, #224
+ 564 0206 8DF81D30 		strb	r3, [sp, #29]
+ 192:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 565              		.loc 1 192 2 is_stmt 1 view .LVU152
+ 566 020a 0222     		movs	r2, #2
+ 567 020c 07A9     		add	r1, sp, #28
+ 568 020e 01A8     		add	r0, sp, #4
+ 569 0210 FFF7FEFF 		bl	mipi_write_regs
+ 570              	.LVL89:
+ 193:Module/power_task.c **** 	bsp_DelayMS(10);		
+ 571              		.loc 1 193 2 view .LVU153
+ 572 0214 0A20     		movs	r0, #10
+ 573 0216 FFF7FEFF 		bl	bsp_DelayMS
+ 574              	.LVL90:
+ 194:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 575              		.loc 1 194 2 view .LVU154
+ 576              		.loc 1 194 20 is_stmt 0 view .LVU155
+ 577 021a 8DF81C60 		strb	r6, [sp, #28]
+ 195:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 578              		.loc 1 195 2 is_stmt 1 view .LVU156
+ 579              		.loc 1 195 20 is_stmt 0 view .LVU157
+ 580 021e 8DF81D40 		strb	r4, [sp, #29]
+ 196:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 581              		.loc 1 196 2 is_stmt 1 view .LVU158
+ 582 0222 0222     		movs	r2, #2
+ 583 0224 07A9     		add	r1, sp, #28
+ 584 0226 01A8     		add	r0, sp, #4
+ 585 0228 FFF7FEFF 		bl	mipi_write_regs
+ 586              	.LVL91:
+ 197:Module/power_task.c **** 	mipi_dataarray[0] = 0x92;
+ 587              		.loc 1 197 2 view .LVU159
+ 588              		.loc 1 197 20 is_stmt 0 view .LVU160
+ 589 022c 9223     		movs	r3, #146
+ 590 022e 8DF81C30 		strb	r3, [sp, #28]
+ 198:Module/power_task.c **** 	mipi_dataarray[1] = 0xd0;
+ 591              		.loc 1 198 2 is_stmt 1 view .LVU161
+ 592              		.loc 1 198 20 is_stmt 0 view .LVU162
+ 593 0232 8DF81DA0 		strb	r10, [sp, #29]
+ 199:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 594              		.loc 1 199 2 is_stmt 1 view .LVU163
+ 595 0236 0222     		movs	r2, #2
+ 596 0238 07A9     		add	r1, sp, #28
+ 597 023a 01A8     		add	r0, sp, #4
+ 598 023c FFF7FEFF 		bl	mipi_write_regs
+ 599              	.LVL92:
+ 200:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 600              		.loc 1 200 2 view .LVU164
+ 601              		.loc 1 200 20 is_stmt 0 view .LVU165
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 15
+
+
+ 602 0240 8DF81C80 		strb	r8, [sp, #28]
+ 201:Module/power_task.c **** 	mipi_dataarray[1] = 0xf0;
+ 603              		.loc 1 201 2 is_stmt 1 view .LVU166
+ 604              		.loc 1 201 20 is_stmt 0 view .LVU167
+ 605 0244 4FF0F00A 		mov	r10, #240
+ 606 0248 8DF81DA0 		strb	r10, [sp, #29]
+ 202:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 607              		.loc 1 202 2 is_stmt 1 view .LVU168
+ 608 024c 0222     		movs	r2, #2
+ 609 024e 07A9     		add	r1, sp, #28
+ 610 0250 01A8     		add	r0, sp, #4
+ 611 0252 FFF7FEFF 		bl	mipi_write_regs
+ 612              	.LVL93:
+ 203:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 613              		.loc 1 203 2 view .LVU169
+ 614 0256 0A20     		movs	r0, #10
+ 615 0258 FFF7FEFF 		bl	bsp_DelayMS
+ 616              	.LVL94:
+ 204:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 617              		.loc 1 204 2 view .LVU170
+ 618              		.loc 1 204 20 is_stmt 0 view .LVU171
+ 619 025c 8DF81C60 		strb	r6, [sp, #28]
+ 205:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 620              		.loc 1 205 2 is_stmt 1 view .LVU172
+ 621              		.loc 1 205 20 is_stmt 0 view .LVU173
+ 622 0260 8DF81D40 		strb	r4, [sp, #29]
+ 206:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 623              		.loc 1 206 2 is_stmt 1 view .LVU174
+ 624 0264 0222     		movs	r2, #2
+ 625 0266 07A9     		add	r1, sp, #28
+ 626 0268 01A8     		add	r0, sp, #4
+ 627 026a FFF7FEFF 		bl	mipi_write_regs
+ 628              	.LVL95:
+ 207:Module/power_task.c **** 	mipi_dataarray[0] = 0xc6;
+ 629              		.loc 1 207 2 view .LVU175
+ 630              		.loc 1 207 20 is_stmt 0 view .LVU176
+ 631 026e C623     		movs	r3, #198
+ 632 0270 8DF81C30 		strb	r3, [sp, #28]
+ 208:Module/power_task.c **** 	mipi_dataarray[1] = 0x00;
+ 633              		.loc 1 208 2 is_stmt 1 view .LVU177
+ 634              		.loc 1 208 20 is_stmt 0 view .LVU178
+ 635 0274 8DF81D50 		strb	r5, [sp, #29]
+ 209:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 636              		.loc 1 209 2 is_stmt 1 view .LVU179
+ 637 0278 0222     		movs	r2, #2
+ 638 027a 07A9     		add	r1, sp, #28
+ 639 027c 01A8     		add	r0, sp, #4
+ 640 027e FFF7FEFF 		bl	mipi_write_regs
+ 641              	.LVL96:
+ 210:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 642              		.loc 1 210 2 view .LVU180
+ 643              		.loc 1 210 20 is_stmt 0 view .LVU181
+ 644 0282 8DF81C80 		strb	r8, [sp, #28]
+ 211:Module/power_task.c **** 	mipi_dataarray[1] = 0x27;
+ 645              		.loc 1 211 2 is_stmt 1 view .LVU182
+ 646              		.loc 1 211 20 is_stmt 0 view .LVU183
+ 647 0286 2723     		movs	r3, #39
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 16
+
+
+ 648 0288 8DF81D30 		strb	r3, [sp, #29]
+ 212:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 649              		.loc 1 212 2 is_stmt 1 view .LVU184
+ 650 028c 0222     		movs	r2, #2
+ 651 028e 07A9     		add	r1, sp, #28
+ 652 0290 01A8     		add	r0, sp, #4
+ 653 0292 FFF7FEFF 		bl	mipi_write_regs
+ 654              	.LVL97:
+ 213:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 655              		.loc 1 213 2 view .LVU185
+ 656 0296 0A20     		movs	r0, #10
+ 657 0298 FFF7FEFF 		bl	bsp_DelayMS
+ 658              	.LVL98:
+ 214:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 659              		.loc 1 214 2 view .LVU186
+ 660              		.loc 1 214 20 is_stmt 0 view .LVU187
+ 661 029c 8DF81C60 		strb	r6, [sp, #28]
+ 215:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 662              		.loc 1 215 2 is_stmt 1 view .LVU188
+ 663              		.loc 1 215 20 is_stmt 0 view .LVU189
+ 664 02a0 8DF81D40 		strb	r4, [sp, #29]
+ 216:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 665              		.loc 1 216 2 is_stmt 1 view .LVU190
+ 666 02a4 0222     		movs	r2, #2
+ 667 02a6 07A9     		add	r1, sp, #28
+ 668 02a8 01A8     		add	r0, sp, #4
+ 669 02aa FFF7FEFF 		bl	mipi_write_regs
+ 670              	.LVL99:
+ 217:Module/power_task.c **** 	mipi_dataarray[0] = 0x3f;
+ 671              		.loc 1 217 2 view .LVU191
+ 672              		.loc 1 217 20 is_stmt 0 view .LVU192
+ 673 02ae 3F23     		movs	r3, #63
+ 674 02b0 8DF81C30 		strb	r3, [sp, #28]
+ 218:Module/power_task.c **** 	mipi_dataarray[1] = 0x35;
+ 675              		.loc 1 218 2 is_stmt 1 view .LVU193
+ 676              		.loc 1 218 20 is_stmt 0 view .LVU194
+ 677 02b4 3523     		movs	r3, #53
+ 678 02b6 8DF81D30 		strb	r3, [sp, #29]
+ 219:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 679              		.loc 1 219 2 is_stmt 1 view .LVU195
+ 680 02ba 0222     		movs	r2, #2
+ 681 02bc 07A9     		add	r1, sp, #28
+ 682 02be 01A8     		add	r0, sp, #4
+ 683 02c0 FFF7FEFF 		bl	mipi_write_regs
+ 684              	.LVL100:
+ 220:Module/power_task.c **** 	mipi_dataarray[0] = 0x40;
+ 685              		.loc 1 220 2 view .LVU196
+ 686              		.loc 1 220 20 is_stmt 0 view .LVU197
+ 687 02c4 4023     		movs	r3, #64
+ 688 02c6 8DF81C30 		strb	r3, [sp, #28]
+ 221:Module/power_task.c **** 	mipi_dataarray[1] = 0x28;
+ 689              		.loc 1 221 2 is_stmt 1 view .LVU198
+ 690              		.loc 1 221 20 is_stmt 0 view .LVU199
+ 691 02ca 2823     		movs	r3, #40
+ 692 02cc 8DF81D30 		strb	r3, [sp, #29]
+ 222:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 693              		.loc 1 222 2 is_stmt 1 view .LVU200
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 17
+
+
+ 694 02d0 0222     		movs	r2, #2
+ 695 02d2 07A9     		add	r1, sp, #28
+ 696 02d4 01A8     		add	r0, sp, #4
+ 697 02d6 FFF7FEFF 		bl	mipi_write_regs
+ 698              	.LVL101:
+ 223:Module/power_task.c **** 	mipi_dataarray[0] = 0x41;
+ 699              		.loc 1 223 2 view .LVU201
+ 700              		.loc 1 223 20 is_stmt 0 view .LVU202
+ 701 02da 4123     		movs	r3, #65
+ 702 02dc 8DF81C30 		strb	r3, [sp, #28]
+ 224:Module/power_task.c **** 	mipi_dataarray[1] = 0x30;
+ 703              		.loc 1 224 2 is_stmt 1 view .LVU203
+ 704              		.loc 1 224 20 is_stmt 0 view .LVU204
+ 705 02e0 3023     		movs	r3, #48
+ 706 02e2 8DF81D30 		strb	r3, [sp, #29]
+ 225:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 707              		.loc 1 225 2 is_stmt 1 view .LVU205
+ 708 02e6 0222     		movs	r2, #2
+ 709 02e8 07A9     		add	r1, sp, #28
+ 710 02ea 01A8     		add	r0, sp, #4
+ 711 02ec FFF7FEFF 		bl	mipi_write_regs
+ 712              	.LVL102:
+ 226:Module/power_task.c **** 	mipi_dataarray[0] = 0x4d;
+ 713              		.loc 1 226 2 view .LVU206
+ 714              		.loc 1 226 20 is_stmt 0 view .LVU207
+ 715 02f0 4D23     		movs	r3, #77
+ 716 02f2 8DF81C30 		strb	r3, [sp, #28]
+ 227:Module/power_task.c **** 	mipi_dataarray[1] = 0xfb;
+ 717              		.loc 1 227 2 is_stmt 1 view .LVU208
+ 718              		.loc 1 227 20 is_stmt 0 view .LVU209
+ 719 02f6 8DF81D60 		strb	r6, [sp, #29]
+ 228:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 720              		.loc 1 228 2 is_stmt 1 view .LVU210
+ 721 02fa 0222     		movs	r2, #2
+ 722 02fc 07A9     		add	r1, sp, #28
+ 723 02fe 01A8     		add	r0, sp, #4
+ 724 0300 FFF7FEFF 		bl	mipi_write_regs
+ 725              	.LVL103:
+ 229:Module/power_task.c **** 	mipi_dataarray[0] = 0x4e;
+ 726              		.loc 1 229 2 view .LVU211
+ 727              		.loc 1 229 20 is_stmt 0 view .LVU212
+ 728 0304 4E23     		movs	r3, #78
+ 729 0306 8DF81C30 		strb	r3, [sp, #28]
+ 230:Module/power_task.c **** 	mipi_dataarray[1] = 0x9f;
+ 730              		.loc 1 230 2 is_stmt 1 view .LVU213
+ 731              		.loc 1 230 20 is_stmt 0 view .LVU214
+ 732 030a 9F23     		movs	r3, #159
+ 733 030c 8DF81D30 		strb	r3, [sp, #29]
+ 231:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 734              		.loc 1 231 2 is_stmt 1 view .LVU215
+ 735 0310 0222     		movs	r2, #2
+ 736 0312 07A9     		add	r1, sp, #28
+ 737 0314 01A8     		add	r0, sp, #4
+ 738 0316 FFF7FEFF 		bl	mipi_write_regs
+ 739              	.LVL104:
+ 232:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 740              		.loc 1 232 2 view .LVU216
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 18
+
+
+ 741              		.loc 1 232 20 is_stmt 0 view .LVU217
+ 742 031a 8DF81C80 		strb	r8, [sp, #28]
+ 233:Module/power_task.c **** 	mipi_dataarray[1] = 0x10;
+ 743              		.loc 1 233 2 is_stmt 1 view .LVU218
+ 744              		.loc 1 233 20 is_stmt 0 view .LVU219
+ 745 031e 4FF01008 		mov	r8, #16
+ 746 0322 8DF81D80 		strb	r8, [sp, #29]
+ 234:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);			
+ 747              		.loc 1 234 2 is_stmt 1 view .LVU220
+ 748 0326 0222     		movs	r2, #2
+ 749 0328 07A9     		add	r1, sp, #28
+ 750 032a 01A8     		add	r0, sp, #4
+ 751 032c FFF7FEFF 		bl	mipi_write_regs
+ 752              	.LVL105:
+ 235:Module/power_task.c **** 	bsp_DelayMS(10);		
+ 753              		.loc 1 235 2 view .LVU221
+ 754 0330 0A20     		movs	r0, #10
+ 755 0332 FFF7FEFF 		bl	bsp_DelayMS
+ 756              	.LVL106:
+ 236:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 757              		.loc 1 236 2 view .LVU222
+ 758              		.loc 1 236 20 is_stmt 0 view .LVU223
+ 759 0336 8DF81C60 		strb	r6, [sp, #28]
+ 237:Module/power_task.c **** 	mipi_dataarray[1] = 0x00;
+ 760              		.loc 1 237 2 is_stmt 1 view .LVU224
+ 761              		.loc 1 237 20 is_stmt 0 view .LVU225
+ 762 033a 8DF81D50 		strb	r5, [sp, #29]
+ 238:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 763              		.loc 1 238 2 is_stmt 1 view .LVU226
+ 764 033e 0222     		movs	r2, #2
+ 765 0340 07A9     		add	r1, sp, #28
+ 766 0342 01A8     		add	r0, sp, #4
+ 767 0344 FFF7FEFF 		bl	mipi_write_regs
+ 768              	.LVL107:
+ 239:Module/power_task.c **** 	mipi_dataarray[0] = 0xb0;
+ 769              		.loc 1 239 2 view .LVU227
+ 770              		.loc 1 239 20 is_stmt 0 view .LVU228
+ 771 0348 B023     		movs	r3, #176
+ 772 034a 8DF81C30 		strb	r3, [sp, #28]
+ 240:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 773              		.loc 1 240 2 is_stmt 1 view .LVU229
+ 774              		.loc 1 240 20 is_stmt 0 view .LVU230
+ 775 034e 8DF81D40 		strb	r4, [sp, #29]
+ 241:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 776              		.loc 1 241 2 is_stmt 1 view .LVU231
+ 777 0352 0222     		movs	r2, #2
+ 778 0354 07A9     		add	r1, sp, #28
+ 779 0356 01A8     		add	r0, sp, #4
+ 780 0358 FFF7FEFF 		bl	mipi_write_regs
+ 781              	.LVL108:
+ 242:Module/power_task.c **** 	mipi_dataarray[0] = 0x55;
+ 782              		.loc 1 242 2 view .LVU232
+ 783              		.loc 1 242 20 is_stmt 0 view .LVU233
+ 784 035c 5523     		movs	r3, #85
+ 785 035e 8DF81C30 		strb	r3, [sp, #28]
+ 243:Module/power_task.c **** 	mipi_dataarray[1] = 0x80;
+ 786              		.loc 1 243 2 is_stmt 1 view .LVU234
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 19
+
+
+ 787              		.loc 1 243 20 is_stmt 0 view .LVU235
+ 788 0362 8023     		movs	r3, #128
+ 789 0364 8DF81D30 		strb	r3, [sp, #29]
+ 244:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 790              		.loc 1 244 2 is_stmt 1 view .LVU236
+ 791 0368 0222     		movs	r2, #2
+ 792 036a 07A9     		add	r1, sp, #28
+ 793 036c 01A8     		add	r0, sp, #4
+ 794 036e FFF7FEFF 		bl	mipi_write_regs
+ 795              	.LVL109:
+ 245:Module/power_task.c **** 	mipi_dataarray[0] = 0x26;
+ 796              		.loc 1 245 2 view .LVU237
+ 797              		.loc 1 245 20 is_stmt 0 view .LVU238
+ 798 0372 2623     		movs	r3, #38
+ 799 0374 8DF81C30 		strb	r3, [sp, #28]
+ 246:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 800              		.loc 1 246 2 is_stmt 1 view .LVU239
+ 801              		.loc 1 246 20 is_stmt 0 view .LVU240
+ 802 0378 8DF81D40 		strb	r4, [sp, #29]
+ 247:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 803              		.loc 1 247 2 is_stmt 1 view .LVU241
+ 804 037c 0222     		movs	r2, #2
+ 805 037e 07A9     		add	r1, sp, #28
+ 806 0380 01A8     		add	r0, sp, #4
+ 807 0382 FFF7FEFF 		bl	mipi_write_regs
+ 808              	.LVL110:
+ 248:Module/power_task.c **** 	mipi_dataarray[0] = 0xc0;
+ 809              		.loc 1 248 2 view .LVU242
+ 810              		.loc 1 248 20 is_stmt 0 view .LVU243
+ 811 0386 C023     		movs	r3, #192
+ 812 0388 8DF81C30 		strb	r3, [sp, #28]
+ 249:Module/power_task.c **** 	mipi_dataarray[1] = 0x10;//0x11:10bit 0x10:8bit 0x03:dsc10bit
+ 813              		.loc 1 249 2 is_stmt 1 view .LVU244
+ 814              		.loc 1 249 20 is_stmt 0 view .LVU245
+ 815 038c 8DF81D80 		strb	r8, [sp, #29]
+ 250:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);			
+ 816              		.loc 1 250 2 is_stmt 1 view .LVU246
+ 817 0390 0222     		movs	r2, #2
+ 818 0392 07A9     		add	r1, sp, #28
+ 819 0394 01A8     		add	r0, sp, #4
+ 820 0396 FFF7FEFF 		bl	mipi_write_regs
+ 821              	.LVL111:
+ 251:Module/power_task.c ****     bsp_DelayMS(10);	
+ 822              		.loc 1 251 5 view .LVU247
+ 823 039a 0A20     		movs	r0, #10
+ 824 039c FFF7FEFF 		bl	bsp_DelayMS
+ 825              	.LVL112:
+ 252:Module/power_task.c **** 	srtmipiport.data_type = 0x39;	
+ 826              		.loc 1 252 2 view .LVU248
+ 827              		.loc 1 252 24 is_stmt 0 view .LVU249
+ 828 03a0 3923     		movs	r3, #57
+ 829 03a2 0393     		str	r3, [sp, #12]
+ 253:Module/power_task.c **** 	
+ 254:Module/power_task.c **** 	mipi_dataarray[0] = 0xc1;
+ 830              		.loc 1 254 2 is_stmt 1 view .LVU250
+ 831              		.loc 1 254 20 is_stmt 0 view .LVU251
+ 832 03a4 C123     		movs	r3, #193
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 20
+
+
+ 833 03a6 8DF81C30 		strb	r3, [sp, #28]
+ 255:Module/power_task.c **** 	mipi_dataarray[1] = 0xAB;
+ 834              		.loc 1 255 2 is_stmt 1 view .LVU252
+ 835              		.loc 1 255 20 is_stmt 0 view .LVU253
+ 836 03aa AB23     		movs	r3, #171
+ 837 03ac 8DF81D30 		strb	r3, [sp, #29]
+ 256:Module/power_task.c **** 	mipi_dataarray[2] = 0x2A;
+ 838              		.loc 1 256 2 is_stmt 1 view .LVU254
+ 839              		.loc 1 256 20 is_stmt 0 view .LVU255
+ 840 03b0 2A23     		movs	r3, #42
+ 841 03b2 8DF81E30 		strb	r3, [sp, #30]
+ 257:Module/power_task.c **** 	mipi_dataarray[3] = 0x00;
+ 842              		.loc 1 257 2 is_stmt 1 view .LVU256
+ 843              		.loc 1 257 20 is_stmt 0 view .LVU257
+ 844 03b6 8DF81F50 		strb	r5, [sp, #31]
+ 258:Module/power_task.c **** 	mipi_dataarray[4] = 0x20;
+ 845              		.loc 1 258 2 is_stmt 1 view .LVU258
+ 846              		.loc 1 258 20 is_stmt 0 view .LVU259
+ 847 03ba 2023     		movs	r3, #32
+ 848 03bc 8DF82030 		strb	r3, [sp, #32]
+ 259:Module/power_task.c **** 	mipi_dataarray[5] = 0x02;
+ 849              		.loc 1 259 2 is_stmt 1 view .LVU260
+ 850              		.loc 1 259 20 is_stmt 0 view .LVU261
+ 851 03c0 0223     		movs	r3, #2
+ 852 03c2 8DF82130 		strb	r3, [sp, #33]
+ 260:Module/power_task.c **** 	mipi_dataarray[6] = 0x00;	
+ 853              		.loc 1 260 2 is_stmt 1 view .LVU262
+ 854              		.loc 1 260 20 is_stmt 0 view .LVU263
+ 855 03c6 8DF82250 		strb	r5, [sp, #34]
+ 261:Module/power_task.c **** 	mipi_dataarray[7] = 0x01;		
+ 856              		.loc 1 261 2 is_stmt 1 view .LVU264
+ 857              		.loc 1 261 20 is_stmt 0 view .LVU265
+ 858 03ca 8DF82340 		strb	r4, [sp, #35]
+ 262:Module/power_task.c **** 	mipi_dataarray[8] = 0xD8;		
+ 859              		.loc 1 262 2 is_stmt 1 view .LVU266
+ 860              		.loc 1 262 20 is_stmt 0 view .LVU267
+ 861 03ce D823     		movs	r3, #216
+ 862 03d0 8DF82430 		strb	r3, [sp, #36]
+ 263:Module/power_task.c **** 	mipi_dataarray[9] = 0x03;		
+ 863              		.loc 1 263 2 is_stmt 1 view .LVU268
+ 864              		.loc 1 263 20 is_stmt 0 view .LVU269
+ 865 03d4 8DF82570 		strb	r7, [sp, #37]
+ 264:Module/power_task.c **** 	mipi_dataarray[10] = 0xB3;	
+ 866              		.loc 1 264 2 is_stmt 1 view .LVU270
+ 867              		.loc 1 264 21 is_stmt 0 view .LVU271
+ 868 03d8 B323     		movs	r3, #179
+ 869 03da 8DF82630 		strb	r3, [sp, #38]
+ 265:Module/power_task.c **** 	mipi_dataarray[11] = 0x00;	
+ 870              		.loc 1 265 2 is_stmt 1 view .LVU272
+ 871              		.loc 1 265 21 is_stmt 0 view .LVU273
+ 872 03de 8DF82750 		strb	r5, [sp, #39]
+ 266:Module/power_task.c **** 	mipi_dataarray[12] = 0x0A;	
+ 873              		.loc 1 266 2 is_stmt 1 view .LVU274
+ 874              		.loc 1 266 21 is_stmt 0 view .LVU275
+ 875 03e2 0A25     		movs	r5, #10
+ 876 03e4 8DF82850 		strb	r5, [sp, #40]
+ 267:Module/power_task.c **** 	mipi_dataarray[13] = 0x03;	
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 21
+
+
+ 877              		.loc 1 267 2 is_stmt 1 view .LVU276
+ 878              		.loc 1 267 21 is_stmt 0 view .LVU277
+ 879 03e8 8DF82970 		strb	r7, [sp, #41]
+ 268:Module/power_task.c **** 	mipi_dataarray[14] = 0x19;	
+ 880              		.loc 1 268 2 is_stmt 1 view .LVU278
+ 881              		.loc 1 268 21 is_stmt 0 view .LVU279
+ 882 03ec 1923     		movs	r3, #25
+ 883 03ee 8DF82A30 		strb	r3, [sp, #42]
+ 269:Module/power_task.c **** 	mipi_dataarray[15] = 0x03;	
+ 884              		.loc 1 269 2 is_stmt 1 view .LVU280
+ 885              		.loc 1 269 21 is_stmt 0 view .LVU281
+ 886 03f2 8DF82B70 		strb	r7, [sp, #43]
+ 270:Module/power_task.c **** 	mipi_dataarray[16] = 0xE4;		
+ 887              		.loc 1 270 2 is_stmt 1 view .LVU282
+ 888              		.loc 1 270 21 is_stmt 0 view .LVU283
+ 889 03f6 E423     		movs	r3, #228
+ 890 03f8 8DF82C30 		strb	r3, [sp, #44]
+ 271:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,17);		
+ 891              		.loc 1 271 2 is_stmt 1 view .LVU284
+ 892 03fc 1122     		movs	r2, #17
+ 893 03fe 07A9     		add	r1, sp, #28
+ 894 0400 01A8     		add	r0, sp, #4
+ 895 0402 FFF7FEFF 		bl	mipi_write_regs
+ 896              	.LVL113:
+ 272:Module/power_task.c **** 		bsp_DelayMS(10);	
+ 897              		.loc 1 272 3 view .LVU285
+ 898 0406 2846     		mov	r0, r5
+ 899 0408 FFF7FEFF 		bl	bsp_DelayMS
+ 900              	.LVL114:
+ 273:Module/power_task.c **** 	mipi_dataarray[0] = 0xc2;
+ 901              		.loc 1 273 2 view .LVU286
+ 902              		.loc 1 273 20 is_stmt 0 view .LVU287
+ 903 040c C223     		movs	r3, #194
+ 904 040e 8DF81C30 		strb	r3, [sp, #28]
+ 274:Module/power_task.c **** 	mipi_dataarray[1] = 0x0C;
+ 905              		.loc 1 274 2 is_stmt 1 view .LVU288
+ 906              		.loc 1 274 20 is_stmt 0 view .LVU289
+ 907 0412 0C23     		movs	r3, #12
+ 908 0414 8DF81D30 		strb	r3, [sp, #29]
+ 275:Module/power_task.c **** 	mipi_dataarray[2] = 0xF0;
+ 909              		.loc 1 275 2 is_stmt 1 view .LVU290
+ 910              		.loc 1 275 20 is_stmt 0 view .LVU291
+ 911 0418 8DF81EA0 		strb	r10, [sp, #30]
+ 276:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,3);		
+ 912              		.loc 1 276 2 is_stmt 1 view .LVU292
+ 913 041c 3A46     		mov	r2, r7
+ 914 041e 07A9     		add	r1, sp, #28
+ 915 0420 01A8     		add	r0, sp, #4
+ 916 0422 FFF7FEFF 		bl	mipi_write_regs
+ 917              	.LVL115:
+ 277:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 918              		.loc 1 277 2 view .LVU293
+ 919 0426 2846     		mov	r0, r5
+ 920 0428 FFF7FEFF 		bl	bsp_DelayMS
+ 921              	.LVL116:
+ 278:Module/power_task.c **** /*
+ 279:Module/power_task.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 22
+
+
+ 280:Module/power_task.c **** 
+ 281:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 282:Module/power_task.c **** 	mipi_dataarray[1] = 0x22;
+ 283:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 284:Module/power_task.c **** 	
+ 285:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 286:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 287:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 288:Module/power_task.c **** 
+ 289:Module/power_task.c **** 	mipi_dataarray[0] = 0x9f;
+ 290:Module/power_task.c **** 	mipi_dataarray[1] = 0x50;
+ 291:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 292:Module/power_task.c **** 
+ 293:Module/power_task.c **** 	
+ 294:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 295:Module/power_task.c **** 	mipi_dataarray[1] = 0x23;
+ 296:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 297:Module/power_task.c **** 
+ 298:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 299:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 300:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 301:Module/power_task.c **** 
+ 302:Module/power_task.c **** 
+ 303:Module/power_task.c **** 	mipi_dataarray[0] = 0xa3;
+ 304:Module/power_task.c **** 	mipi_dataarray[1] = 0x50;
+ 305:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 306:Module/power_task.c **** 
+ 307:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 308:Module/power_task.c **** 	mipi_dataarray[1] = 0xe0;
+ 309:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 310:Module/power_task.c **** 
+ 311:Module/power_task.c **** 
+ 312:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 313:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 314:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 315:Module/power_task.c **** 
+ 316:Module/power_task.c **** 	mipi_dataarray[0] = 0x14;
+ 317:Module/power_task.c **** 	mipi_dataarray[1] = 0x60;
+ 318:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 319:Module/power_task.c **** 
+ 320:Module/power_task.c **** 	mipi_dataarray[0] = 0x16;
+ 321:Module/power_task.c **** 	mipi_dataarray[1] = 0xc0;
+ 322:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 323:Module/power_task.c **** 
+ 324:Module/power_task.c **** 	mipi_dataarray[0] = 0x4f;
+ 325:Module/power_task.c **** 	mipi_dataarray[1] = 0x02;
+ 326:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 327:Module/power_task.c **** 
+ 328:Module/power_task.c **** 
+ 329:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 330:Module/power_task.c **** 	mipi_dataarray[1] = 0xf0;
+ 331:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 332:Module/power_task.c **** 
+ 333:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 334:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 335:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 336:Module/power_task.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 23
+
+
+ 337:Module/power_task.c **** 	mipi_dataarray[0] = 0x3a;
+ 338:Module/power_task.c **** 	mipi_dataarray[1] = 0x08;
+ 339:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 340:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 341:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 342:Module/power_task.c **** 	mipi_dataarray[1] = 0xd0;
+ 343:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 344:Module/power_task.c **** 
+ 345:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 346:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 347:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 348:Module/power_task.c **** 
+ 349:Module/power_task.c **** 
+ 350:Module/power_task.c **** 	mipi_dataarray[0] = 0x1c;
+ 351:Module/power_task.c **** 	mipi_dataarray[1] = 0x88;
+ 352:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 353:Module/power_task.c **** 
+ 354:Module/power_task.c **** 	mipi_dataarray[0] = 0x1d;
+ 355:Module/power_task.c **** 	mipi_dataarray[1] = 0x08;
+ 356:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 357:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 358:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 359:Module/power_task.c **** 	mipi_dataarray[1] = 0x10;
+ 360:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 361:Module/power_task.c **** 	
+ 362:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 363:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 364:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 365:Module/power_task.c **** 	
+ 366:Module/power_task.c **** 	mipi_dataarray[0] = 0xb9;
+ 367:Module/power_task.c **** 	mipi_dataarray[1] = 0x05;
+ 368:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 369:Module/power_task.c **** 	
+ 370:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 371:Module/power_task.c **** 	mipi_dataarray[1] = 0x20;
+ 372:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 373:Module/power_task.c **** 
+ 374:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 375:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 376:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 377:Module/power_task.c **** 	
+ 378:Module/power_task.c **** 	mipi_dataarray[0] = 0x18;
+ 379:Module/power_task.c **** 	mipi_dataarray[1] = 0x40;
+ 380:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 381:Module/power_task.c **** 
+ 382:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 383:Module/power_task.c **** 	mipi_dataarray[1] = 0x10;
+ 384:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 385:Module/power_task.c **** 	
+ 386:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 387:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 388:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 389:Module/power_task.c **** 	
+ 390:Module/power_task.c **** 	mipi_dataarray[0] = 0xb9;
+ 391:Module/power_task.c **** 	mipi_dataarray[1] = 0x02;
+ 392:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 393:Module/power_task.c **** 	
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 24
+
+
+ 394:Module/power_task.c **** 	mipi_dataarray[0] = 0x35;
+ 395:Module/power_task.c **** 	mipi_dataarray[1] = 0x00;
+ 396:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 397:Module/power_task.c **** 
+ 398:Module/power_task.c **** 	mipi_dataarray[0] = 0xbb;
+ 399:Module/power_task.c **** 	mipi_dataarray[1] = 0x13;
+ 400:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 401:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 402:Module/power_task.c **** 	mipi_dataarray[0] = 0x3b;
+ 403:Module/power_task.c **** 	mipi_dataarray[1] = 0x03;
+ 404:Module/power_task.c **** 	mipi_dataarray[2] = 0xac;	
+ 405:Module/power_task.c **** 	mipi_dataarray[3] = 0x1a;	
+ 406:Module/power_task.c **** 	mipi_dataarray[4] = 0x04;	
+ 407:Module/power_task.c **** 	mipi_dataarray[5] = 0x04;		
+ 408:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,6);	
+ 409:Module/power_task.c **** //	bsp_DelayMS(5);	
+ 410:Module/power_task.c **** 
+ 411:Module/power_task.c **** 
+ 412:Module/power_task.c **** //	
+ 413:Module/power_task.c **** 
+ 414:Module/power_task.c **** */
+ 415:Module/power_task.c **** 	
+ 416:Module/power_task.c **** 
+ 417:Module/power_task.c **** 
+ 418:Module/power_task.c ****     srtmipiport.data_type = 0x15;
+ 922              		.loc 1 418 5 view .LVU294
+ 923              		.loc 1 418 27 is_stmt 0 view .LVU295
+ 924 042c CDF80C90 		str	r9, [sp, #12]
+ 419:Module/power_task.c **** 	mipi_dataarray[0] = 0x11;
+ 925              		.loc 1 419 2 is_stmt 1 view .LVU296
+ 926              		.loc 1 419 20 is_stmt 0 view .LVU297
+ 927 0430 1123     		movs	r3, #17
+ 928 0432 8DF81C30 		strb	r3, [sp, #28]
+ 420:Module/power_task.c **** 	mipi_write_regs(&srtmipiport, mipi_dataarray,1);	
+ 929              		.loc 1 420 2 is_stmt 1 view .LVU298
+ 930 0436 2246     		mov	r2, r4
+ 931 0438 07A9     		add	r1, sp, #28
+ 932 043a 01A8     		add	r0, sp, #4
+ 933 043c FFF7FEFF 		bl	mipi_write_regs
+ 934              	.LVL117:
+ 421:Module/power_task.c **** 	bsp_DelayMS(200);
+ 935              		.loc 1 421 2 view .LVU299
+ 936 0440 C820     		movs	r0, #200
+ 937 0442 FFF7FEFF 		bl	bsp_DelayMS
+ 938              	.LVL118:
+ 422:Module/power_task.c **** 	mipi_dataarray[0] = 0x29;
+ 939              		.loc 1 422 2 view .LVU300
+ 940              		.loc 1 422 20 is_stmt 0 view .LVU301
+ 941 0446 2923     		movs	r3, #41
+ 942 0448 8DF81C30 		strb	r3, [sp, #28]
+ 423:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,1);	
+ 943              		.loc 1 423 2 is_stmt 1 view .LVU302
+ 944 044c 2246     		mov	r2, r4
+ 945 044e 07A9     		add	r1, sp, #28
+ 946 0450 01A8     		add	r0, sp, #4
+ 947 0452 FFF7FEFF 		bl	mipi_write_regs
+ 948              	.LVL119:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 25
+
+
+ 424:Module/power_task.c **** 	bsp_DelayMS(100);	
+ 949              		.loc 1 424 2 view .LVU303
+ 950 0456 6420     		movs	r0, #100
+ 951 0458 FFF7FEFF 		bl	bsp_DelayMS
+ 952              	.LVL120:
+ 425:Module/power_task.c **** 		
+ 426:Module/power_task.c **** 
+ 427:Module/power_task.c ****    // bridge_setbistmode(1);
+ 428:Module/power_task.c **** 	
+ 429:Module/power_task.c **** 	srtmipiport.data_type = 0x15;
+ 953              		.loc 1 429 2 view .LVU304
+ 954              		.loc 1 429 24 is_stmt 0 view .LVU305
+ 955 045c CDF80C90 		str	r9, [sp, #12]
+ 430:Module/power_task.c **** 	//video enable
+ 431:Module/power_task.c **** 	bridge_write_reg_16bit(0xB7, 0x034B);
+ 956              		.loc 1 431 2 is_stmt 1 view .LVU306
+ 957 0460 40F24B31 		movw	r1, #843
+ 958 0464 B720     		movs	r0, #183
+ 959 0466 FFF7FEFF 		bl	bridge_write_reg_16bit
+ 960              	.LVL121:
+ 432:Module/power_task.c **** 
+ 433:Module/power_task.c **** 
+ 434:Module/power_task.c **** 
+ 435:Module/power_task.c **** 
+ 436:Module/power_task.c **** O_PWR_BL_EN(1);
+ 961              		.loc 1 436 1 view .LVU307
+ 962 046a 2046     		mov	r0, r4
+ 963 046c FFF7FEFF 		bl	O_PWR_BL_EN
+ 964              	.LVL122:
+ 437:Module/power_task.c **** 
+ 438:Module/power_task.c **** 
+ 439:Module/power_task.c **** 
+ 440:Module/power_task.c **** 
+ 441:Module/power_task.c **** #else
+ 442:Module/power_task.c **** //////////////////////////////
+ 443:Module/power_task.c **** 
+ 444:Module/power_task.c ****     SetGpuExgpio(1,1);
+ 445:Module/power_task.c ****     bsp_DelayUS(10);
+ 446:Module/power_task.c ****     SetGpuExgpio(1,0);		
+ 447:Module/power_task.c ****     bsp_DelayUS(50);		
+ 448:Module/power_task.c ****     SetGpuExgpio(1,1);		
+ 449:Module/power_task.c **** //	O_PWR_EN_OTP(1);
+ 450:Module/power_task.c ****   /*  bsp_DelayMS(200);
+ 451:Module/power_task.c ****     SSD2828_SHUT_L();
+ 452:Module/power_task.c ****     SSD2828_RESET_L();
+ 453:Module/power_task.c ****     PANEL_RESET_L();
+ 454:Module/power_task.c ****     bsp_DelayMS(200);
+ 455:Module/power_task.c ****     SSD2828_RESET_H();
+ 456:Module/power_task.c ****     PANEL_RESET_H();
+ 457:Module/power_task.c **** */
+ 458:Module/power_task.c ****     //bsp_DelayMS(200);
+ 459:Module/power_task.c ****     //Read_ID_OriseIC();
+ 460:Module/power_task.c ****     //Init_SSD2828READ();
+ 461:Module/power_task.c **** 	//SSD2828_WritePackageSize(2);
+ 462:Module/power_task.c **** 
+ 463:Module/power_task.c ****     //bsp_DelayMS(100);
+ 464:Module/power_task.c ****     //ret=SSD2828GenericReadDT14(0X04,4,readbuf,1);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 26
+
+
+ 465:Module/power_task.c ****     //log_info("ret: %s",ret?"SUSCEED":"FAIL");
+ 466:Module/power_task.c ****     //for(int i=0;i<4;i++)
+ 467:Module/power_task.c ****     //log_info("ID:0X%x",readbuf[i]);
+ 468:Module/power_task.c ****     lcm_mipi_set(0);
+ 469:Module/power_task.c ****     Initial_LCM_CODE();
+ 470:Module/power_task.c ****     lcm_mipi_set(1);
+ 471:Module/power_task.c ****     O_PWR_BL_EN(1);
+ 472:Module/power_task.c ****     
+ 473:Module/power_task.c **** /*
+ 474:Module/power_task.c ****     spi_set_spispeed(6);
+ 475:Module/power_task.c ****     spi_set_spimode(0);
+ 476:Module/power_task.c **** 
+ 477:Module/power_task.c ****     SetGpuGpio(1,1);
+ 478:Module/power_task.c ****     SetGpuGpio(2,1);
+ 479:Module/power_task.c ****     SetGpuGpio(3,1);
+ 480:Module/power_task.c ****     SetGpuGpio(4,1);
+ 481:Module/power_task.c **** */
+ 482:Module/power_task.c **** #endif
+ 483:Module/power_task.c **** 
+ 484:Module/power_task.c **** 
+ 485:Module/power_task.c **** //TP_Main();
+ 486:Module/power_task.c **** 
+ 487:Module/power_task.c **** 
+ 488:Module/power_task.c **** }
+ 965              		.loc 1 488 1 is_stmt 0 view .LVU308
+ 966 0470 0DB0     		add	sp, sp, #52
+ 967              	.LCFI3:
+ 968              		.cfi_remember_state
+ 969              		.cfi_def_cfa_offset 36
+ 970              		@ sp needed
+ 971 0472 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 972              	.L6:
+ 973              	.LCFI4:
+ 974              		.cfi_restore_state
+ 150:Module/power_task.c ****     Lcd_ShowMode(0);
+ 975              		.loc 1 150 5 is_stmt 1 view .LVU309
+ 976 0476 FFF7FEFF 		bl	RGB_Enable
+ 977              	.LVL123:
+ 978 047a 71E6     		b	.L4
+ 979              		.cfi_endproc
+ 980              	.LFE120:
+ 982              		.section	.text.jd9365tg_Read_FW_RegMultiSpi,"ax",%progbits
+ 983              		.align	1
+ 984              		.global	jd9365tg_Read_FW_RegMultiSpi
+ 985              		.syntax unified
+ 986              		.thumb
+ 987              		.thumb_func
+ 989              	jd9365tg_Read_FW_RegMultiSpi:
+ 990              	.LVL124:
+ 991              	.LFB122:
+ 489:Module/power_task.c **** 
+ 490:Module/power_task.c **** 
+ 491:Module/power_task.c **** static int jd9365tg_Write_FW_RegSingleSpi(uint32_t addr, uint8_t wdata)
+ 492:Module/power_task.c **** {
+ 493:Module/power_task.c ****     uint8_t addrBuf[8];
+ 494:Module/power_task.c ****     addrBuf[0] = 0xF2;
+ 495:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 27
+
+
+ 496:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 497:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 498:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 499:Module/power_task.c ****     addrBuf[5] = 0x00;
+ 500:Module/power_task.c ****     addrBuf[6] = 0x01;
+ 501:Module/power_task.c ****     addrBuf[7] = wdata;
+ 502:Module/power_task.c **** 		spi_write(addrBuf,8);
+ 503:Module/power_task.c ****     return 1;
+ 504:Module/power_task.c **** }
+ 505:Module/power_task.c **** 
+ 506:Module/power_task.c **** 
+ 507:Module/power_task.c **** 
+ 508:Module/power_task.c **** 
+ 509:Module/power_task.c ****  int jd9365tg_Read_FW_RegMultiSpi(uint32_t addr, uint8_t *rdata, uint16_t rlen)
+ 510:Module/power_task.c **** {
+ 992              		.loc 1 510 1 view -0
+ 993              		.cfi_startproc
+ 994              		@ args = 0, pretend = 0, frame = 8
+ 995              		@ frame_needed = 0, uses_anonymous_args = 0
+ 996              		.loc 1 510 1 is_stmt 0 view .LVU311
+ 997 0000 00B5     		push	{lr}
+ 998              	.LCFI5:
+ 999              		.cfi_def_cfa_offset 4
+ 1000              		.cfi_offset 14, -4
+ 1001 0002 83B0     		sub	sp, sp, #12
+ 1002              	.LCFI6:
+ 1003              		.cfi_def_cfa_offset 16
+ 511:Module/power_task.c ****     uint8_t addrBuf[7];
+ 1004              		.loc 1 511 5 is_stmt 1 view .LVU312
+ 512:Module/power_task.c **** 
+ 513:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 1005              		.loc 1 513 5 view .LVU313
+ 1006              		.loc 1 513 16 is_stmt 0 view .LVU314
+ 1007 0004 F323     		movs	r3, #243
+ 1008 0006 8DF80030 		strb	r3, [sp]
+ 514:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 1009              		.loc 1 514 5 is_stmt 1 view .LVU315
+ 1010              		.loc 1 514 48 is_stmt 0 view .LVU316
+ 1011 000a 030E     		lsrs	r3, r0, #24
+ 1012              		.loc 1 514 18 view .LVU317
+ 1013 000c 8DF80130 		strb	r3, [sp, #1]
+ 515:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 1014              		.loc 1 515 5 is_stmt 1 view .LVU318
+ 1015              		.loc 1 515 48 is_stmt 0 view .LVU319
+ 1016 0010 030C     		lsrs	r3, r0, #16
+ 1017              		.loc 1 515 18 view .LVU320
+ 1018 0012 8DF80230 		strb	r3, [sp, #2]
+ 516:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 1019              		.loc 1 516 5 is_stmt 1 view .LVU321
+ 1020              		.loc 1 516 48 is_stmt 0 view .LVU322
+ 1021 0016 030A     		lsrs	r3, r0, #8
+ 1022              		.loc 1 516 18 view .LVU323
+ 1023 0018 8DF80330 		strb	r3, [sp, #3]
+ 517:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 1024              		.loc 1 517 5 is_stmt 1 view .LVU324
+ 1025              		.loc 1 517 18 is_stmt 0 view .LVU325
+ 1026 001c 8DF80400 		strb	r0, [sp, #4]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 28
+
+
+ 518:Module/power_task.c ****     addrBuf[5] = (uint8_t)((rlen & 0xFF00) >> 8);
+ 1027              		.loc 1 518 5 is_stmt 1 view .LVU326
+ 1028              		.loc 1 518 44 is_stmt 0 view .LVU327
+ 1029 0020 130A     		lsrs	r3, r2, #8
+ 1030              		.loc 1 518 18 view .LVU328
+ 1031 0022 8DF80530 		strb	r3, [sp, #5]
+ 519:Module/power_task.c ****     addrBuf[6] = (uint8_t)((rlen & 0x00FF) >> 0);
+ 1032              		.loc 1 519 5 is_stmt 1 view .LVU329
+ 1033              		.loc 1 519 18 is_stmt 0 view .LVU330
+ 1034 0026 D3B2     		uxtb	r3, r2
+ 1035              		.loc 1 519 16 view .LVU331
+ 1036 0028 8DF80630 		strb	r3, [sp, #6]
+ 520:Module/power_task.c **** 		spi_read(addrBuf, sizeof(addrBuf), rdata, rlen);
+ 1037              		.loc 1 520 3 is_stmt 1 view .LVU332
+ 1038 002c 0A46     		mov	r2, r1
+ 1039              	.LVL125:
+ 1040              		.loc 1 520 3 is_stmt 0 view .LVU333
+ 1041 002e 0721     		movs	r1, #7
+ 1042              	.LVL126:
+ 1043              		.loc 1 520 3 view .LVU334
+ 1044 0030 6846     		mov	r0, sp
+ 1045              	.LVL127:
+ 1046              		.loc 1 520 3 view .LVU335
+ 1047 0032 FFF7FEFF 		bl	spi_read
+ 1048              	.LVL128:
+ 521:Module/power_task.c ****     return 1;
+ 1049              		.loc 1 521 5 is_stmt 1 view .LVU336
+ 522:Module/power_task.c **** }
+ 1050              		.loc 1 522 1 is_stmt 0 view .LVU337
+ 1051 0036 0120     		movs	r0, #1
+ 1052 0038 03B0     		add	sp, sp, #12
+ 1053              	.LCFI7:
+ 1054              		.cfi_def_cfa_offset 4
+ 1055              		@ sp needed
+ 1056 003a 5DF804FB 		ldr	pc, [sp], #4
+ 1057              		.cfi_endproc
+ 1058              	.LFE122:
+ 1060              		.section	.text.jd9365tg_Read_BackDoor_RegMulti,"ax",%progbits
+ 1061              		.align	1
+ 1062              		.global	jd9365tg_Read_BackDoor_RegMulti
+ 1063              		.syntax unified
+ 1064              		.thumb
+ 1065              		.thumb_func
+ 1067              	jd9365tg_Read_BackDoor_RegMulti:
+ 1068              	.LVL129:
+ 1069              	.LFB123:
+ 523:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegMulti(uint32_t addr, uint8_t *rdata, uint16_t rlen)
+ 524:Module/power_task.c **** {
+ 1070              		.loc 1 524 1 is_stmt 1 view -0
+ 1071              		.cfi_startproc
+ 1072              		@ args = 0, pretend = 0, frame = 8
+ 1073              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1074              		.loc 1 524 1 is_stmt 0 view .LVU339
+ 1075 0000 00B5     		push	{lr}
+ 1076              	.LCFI8:
+ 1077              		.cfi_def_cfa_offset 4
+ 1078              		.cfi_offset 14, -4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 29
+
+
+ 1079 0002 83B0     		sub	sp, sp, #12
+ 1080              	.LCFI9:
+ 1081              		.cfi_def_cfa_offset 16
+ 525:Module/power_task.c ****     uint8_t addrBuf[6];
+ 1082              		.loc 1 525 5 is_stmt 1 view .LVU340
+ 526:Module/power_task.c **** 
+ 527:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 1083              		.loc 1 527 5 view .LVU341
+ 1084              		.loc 1 527 16 is_stmt 0 view .LVU342
+ 1085 0004 F323     		movs	r3, #243
+ 1086 0006 8DF80030 		strb	r3, [sp]
+ 528:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 1087              		.loc 1 528 5 is_stmt 1 view .LVU343
+ 1088              		.loc 1 528 48 is_stmt 0 view .LVU344
+ 1089 000a 030E     		lsrs	r3, r0, #24
+ 1090              		.loc 1 528 18 view .LVU345
+ 1091 000c 8DF80130 		strb	r3, [sp, #1]
+ 529:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 1092              		.loc 1 529 5 is_stmt 1 view .LVU346
+ 1093              		.loc 1 529 48 is_stmt 0 view .LVU347
+ 1094 0010 030C     		lsrs	r3, r0, #16
+ 1095              		.loc 1 529 18 view .LVU348
+ 1096 0012 8DF80230 		strb	r3, [sp, #2]
+ 530:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 1097              		.loc 1 530 5 is_stmt 1 view .LVU349
+ 1098              		.loc 1 530 48 is_stmt 0 view .LVU350
+ 1099 0016 030A     		lsrs	r3, r0, #8
+ 1100              		.loc 1 530 18 view .LVU351
+ 1101 0018 8DF80330 		strb	r3, [sp, #3]
+ 531:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 1102              		.loc 1 531 5 is_stmt 1 view .LVU352
+ 1103              		.loc 1 531 18 is_stmt 0 view .LVU353
+ 1104 001c 8DF80400 		strb	r0, [sp, #4]
+ 532:Module/power_task.c ****     addrBuf[5] = 0x03;
+ 1105              		.loc 1 532 5 is_stmt 1 view .LVU354
+ 1106              		.loc 1 532 16 is_stmt 0 view .LVU355
+ 1107 0020 0323     		movs	r3, #3
+ 1108 0022 8DF80530 		strb	r3, [sp, #5]
+ 533:Module/power_task.c **** 		spi_read(addrBuf, sizeof(addrBuf), rdata, rlen);
+ 1109              		.loc 1 533 3 is_stmt 1 view .LVU356
+ 1110 0026 D3B2     		uxtb	r3, r2
+ 1111 0028 0A46     		mov	r2, r1
+ 1112              	.LVL130:
+ 1113              		.loc 1 533 3 is_stmt 0 view .LVU357
+ 1114 002a 0621     		movs	r1, #6
+ 1115              	.LVL131:
+ 1116              		.loc 1 533 3 view .LVU358
+ 1117 002c 6846     		mov	r0, sp
+ 1118              	.LVL132:
+ 1119              		.loc 1 533 3 view .LVU359
+ 1120 002e FFF7FEFF 		bl	spi_read
+ 1121              	.LVL133:
+ 534:Module/power_task.c ****     return 1;
+ 1122              		.loc 1 534 5 is_stmt 1 view .LVU360
+ 535:Module/power_task.c **** }
+ 1123              		.loc 1 535 1 is_stmt 0 view .LVU361
+ 1124 0032 0120     		movs	r0, #1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 30
+
+
+ 1125 0034 03B0     		add	sp, sp, #12
+ 1126              	.LCFI10:
+ 1127              		.cfi_def_cfa_offset 4
+ 1128              		@ sp needed
+ 1129 0036 5DF804FB 		ldr	pc, [sp], #4
+ 1130              		.cfi_endproc
+ 1131              	.LFE123:
+ 1133              		.section	.text.jd9365tg_Read_FW_RegSingleSpi,"ax",%progbits
+ 1134              		.align	1
+ 1135              		.global	jd9365tg_Read_FW_RegSingleSpi
+ 1136              		.syntax unified
+ 1137              		.thumb
+ 1138              		.thumb_func
+ 1140              	jd9365tg_Read_FW_RegSingleSpi:
+ 1141              	.LVL134:
+ 1142              	.LFB124:
+ 536:Module/power_task.c **** 
+ 537:Module/power_task.c ****  int jd9365tg_Read_FW_RegSingleSpi(uint32_t addr, uint8_t *rdata)
+ 538:Module/power_task.c **** {
+ 1143              		.loc 1 538 1 is_stmt 1 view -0
+ 1144              		.cfi_startproc
+ 1145              		@ args = 0, pretend = 0, frame = 16
+ 1146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1147              		.loc 1 538 1 is_stmt 0 view .LVU363
+ 1148 0000 10B5     		push	{r4, lr}
+ 1149              	.LCFI11:
+ 1150              		.cfi_def_cfa_offset 8
+ 1151              		.cfi_offset 4, -8
+ 1152              		.cfi_offset 14, -4
+ 1153 0002 84B0     		sub	sp, sp, #16
+ 1154              	.LCFI12:
+ 1155              		.cfi_def_cfa_offset 24
+ 1156 0004 0C46     		mov	r4, r1
+ 539:Module/power_task.c ****     int ReCode;
+ 1157              		.loc 1 539 5 is_stmt 1 view .LVU364
+ 540:Module/power_task.c ****     uint8_t addrBuf[7];
+ 1158              		.loc 1 540 5 view .LVU365
+ 541:Module/power_task.c ****     uint8_t readBuf[1];
+ 1159              		.loc 1 541 5 view .LVU366
+ 542:Module/power_task.c **** 
+ 543:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 1160              		.loc 1 543 5 view .LVU367
+ 1161              		.loc 1 543 16 is_stmt 0 view .LVU368
+ 1162 0006 F323     		movs	r3, #243
+ 1163 0008 8DF80830 		strb	r3, [sp, #8]
+ 544:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 1164              		.loc 1 544 5 is_stmt 1 view .LVU369
+ 1165              		.loc 1 544 48 is_stmt 0 view .LVU370
+ 1166 000c 030E     		lsrs	r3, r0, #24
+ 1167              		.loc 1 544 18 view .LVU371
+ 1168 000e 8DF80930 		strb	r3, [sp, #9]
+ 545:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 1169              		.loc 1 545 5 is_stmt 1 view .LVU372
+ 1170              		.loc 1 545 48 is_stmt 0 view .LVU373
+ 1171 0012 030C     		lsrs	r3, r0, #16
+ 1172              		.loc 1 545 18 view .LVU374
+ 1173 0014 8DF80A30 		strb	r3, [sp, #10]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 31
+
+
+ 546:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 1174              		.loc 1 546 5 is_stmt 1 view .LVU375
+ 1175              		.loc 1 546 48 is_stmt 0 view .LVU376
+ 1176 0018 030A     		lsrs	r3, r0, #8
+ 1177              		.loc 1 546 18 view .LVU377
+ 1178 001a 8DF80B30 		strb	r3, [sp, #11]
+ 547:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 1179              		.loc 1 547 5 is_stmt 1 view .LVU378
+ 1180              		.loc 1 547 18 is_stmt 0 view .LVU379
+ 1181 001e 8DF80C00 		strb	r0, [sp, #12]
+ 548:Module/power_task.c ****     addrBuf[5] = 0x00;
+ 1182              		.loc 1 548 5 is_stmt 1 view .LVU380
+ 1183              		.loc 1 548 16 is_stmt 0 view .LVU381
+ 1184 0022 0023     		movs	r3, #0
+ 1185 0024 8DF80D30 		strb	r3, [sp, #13]
+ 549:Module/power_task.c ****     addrBuf[6] = 0x01;
+ 1186              		.loc 1 549 5 is_stmt 1 view .LVU382
+ 1187              		.loc 1 549 16 is_stmt 0 view .LVU383
+ 1188 0028 0123     		movs	r3, #1
+ 1189 002a 8DF80E30 		strb	r3, [sp, #14]
+ 550:Module/power_task.c **** 
+ 551:Module/power_task.c ****     spi_read(addrBuf, sizeof(addrBuf), readBuf, sizeof(readBuf));
+ 1190              		.loc 1 551 5 is_stmt 1 view .LVU384
+ 1191 002e 01AA     		add	r2, sp, #4
+ 1192 0030 0721     		movs	r1, #7
+ 1193              	.LVL135:
+ 1194              		.loc 1 551 5 is_stmt 0 view .LVU385
+ 1195 0032 02A8     		add	r0, sp, #8
+ 1196              	.LVL136:
+ 1197              		.loc 1 551 5 view .LVU386
+ 1198 0034 FFF7FEFF 		bl	spi_read
+ 1199              	.LVL137:
+ 552:Module/power_task.c ****     *rdata = readBuf[0];
+ 1200              		.loc 1 552 5 is_stmt 1 view .LVU387
+ 1201              		.loc 1 552 12 is_stmt 0 view .LVU388
+ 1202 0038 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 1203 003c 2370     		strb	r3, [r4]
+ 553:Module/power_task.c **** 
+ 554:Module/power_task.c ****     return ReCode;
+ 1204              		.loc 1 554 5 is_stmt 1 view .LVU389
+ 555:Module/power_task.c **** }
+ 1205              		.loc 1 555 1 is_stmt 0 view .LVU390
+ 1206 003e 0020     		movs	r0, #0
+ 1207 0040 04B0     		add	sp, sp, #16
+ 1208              	.LCFI13:
+ 1209              		.cfi_def_cfa_offset 8
+ 1210              		@ sp needed
+ 1211 0042 10BD     		pop	{r4, pc}
+ 1212              		.loc 1 555 1 view .LVU391
+ 1213              		.cfi_endproc
+ 1214              	.LFE124:
+ 1216              		.section	.text.jd9365tg_Read_BackDoor_RegSingle,"ax",%progbits
+ 1217              		.align	1
+ 1218              		.global	jd9365tg_Read_BackDoor_RegSingle
+ 1219              		.syntax unified
+ 1220              		.thumb
+ 1221              		.thumb_func
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 32
+
+
+ 1223              	jd9365tg_Read_BackDoor_RegSingle:
+ 1224              	.LVL138:
+ 1225              	.LFB126:
+ 556:Module/power_task.c **** 
+ 557:Module/power_task.c **** static int jd9365tg_Write_BackDoor_RegSingle(uint32_t addr, uint8_t wdata)
+ 558:Module/power_task.c **** {
+ 559:Module/power_task.c ****     uint8_t addrBuf[7];
+ 560:Module/power_task.c **** 
+ 561:Module/power_task.c ****     addrBuf[0] = 0xF2;
+ 562:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 563:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 564:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 565:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 566:Module/power_task.c ****     addrBuf[5] = 0x03;
+ 567:Module/power_task.c ****     addrBuf[6] = wdata;
+ 568:Module/power_task.c **** 		spi_write(addrBuf,7);
+ 569:Module/power_task.c ****     return 1;
+ 570:Module/power_task.c **** }
+ 571:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegSingle(uint32_t addr, uint8_t *rdata)
+ 572:Module/power_task.c **** {
+ 1226              		.loc 1 572 1 is_stmt 1 view -0
+ 1227              		.cfi_startproc
+ 1228              		@ args = 0, pretend = 0, frame = 16
+ 1229              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1230              		.loc 1 572 1 is_stmt 0 view .LVU393
+ 1231 0000 10B5     		push	{r4, lr}
+ 1232              	.LCFI14:
+ 1233              		.cfi_def_cfa_offset 8
+ 1234              		.cfi_offset 4, -8
+ 1235              		.cfi_offset 14, -4
+ 1236 0002 84B0     		sub	sp, sp, #16
+ 1237              	.LCFI15:
+ 1238              		.cfi_def_cfa_offset 24
+ 1239 0004 0C46     		mov	r4, r1
+ 573:Module/power_task.c ****     int ReCode;
+ 1240              		.loc 1 573 5 is_stmt 1 view .LVU394
+ 574:Module/power_task.c ****     uint8_t addrBuf[6];
+ 1241              		.loc 1 574 5 view .LVU395
+ 575:Module/power_task.c ****     uint8_t readBuf[1];
+ 1242              		.loc 1 575 5 view .LVU396
+ 576:Module/power_task.c **** 
+ 577:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 1243              		.loc 1 577 5 view .LVU397
+ 1244              		.loc 1 577 16 is_stmt 0 view .LVU398
+ 1245 0006 F323     		movs	r3, #243
+ 1246 0008 8DF80830 		strb	r3, [sp, #8]
+ 578:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 1247              		.loc 1 578 5 is_stmt 1 view .LVU399
+ 1248              		.loc 1 578 48 is_stmt 0 view .LVU400
+ 1249 000c 030E     		lsrs	r3, r0, #24
+ 1250              		.loc 1 578 18 view .LVU401
+ 1251 000e 8DF80930 		strb	r3, [sp, #9]
+ 579:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 1252              		.loc 1 579 5 is_stmt 1 view .LVU402
+ 1253              		.loc 1 579 48 is_stmt 0 view .LVU403
+ 1254 0012 030C     		lsrs	r3, r0, #16
+ 1255              		.loc 1 579 18 view .LVU404
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 33
+
+
+ 1256 0014 8DF80A30 		strb	r3, [sp, #10]
+ 580:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 1257              		.loc 1 580 5 is_stmt 1 view .LVU405
+ 1258              		.loc 1 580 48 is_stmt 0 view .LVU406
+ 1259 0018 030A     		lsrs	r3, r0, #8
+ 1260              		.loc 1 580 18 view .LVU407
+ 1261 001a 8DF80B30 		strb	r3, [sp, #11]
+ 581:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 1262              		.loc 1 581 5 is_stmt 1 view .LVU408
+ 1263              		.loc 1 581 18 is_stmt 0 view .LVU409
+ 1264 001e 8DF80C00 		strb	r0, [sp, #12]
+ 582:Module/power_task.c ****     addrBuf[5] = 0x03;
+ 1265              		.loc 1 582 5 is_stmt 1 view .LVU410
+ 1266              		.loc 1 582 16 is_stmt 0 view .LVU411
+ 1267 0022 0323     		movs	r3, #3
+ 1268 0024 8DF80D30 		strb	r3, [sp, #13]
+ 583:Module/power_task.c **** 
+ 584:Module/power_task.c ****     spi_read(addrBuf, sizeof(addrBuf), readBuf, sizeof(readBuf));
+ 1269              		.loc 1 584 5 is_stmt 1 view .LVU412
+ 1270 0028 0123     		movs	r3, #1
+ 1271 002a 01AA     		add	r2, sp, #4
+ 1272 002c 0621     		movs	r1, #6
+ 1273              	.LVL139:
+ 1274              		.loc 1 584 5 is_stmt 0 view .LVU413
+ 1275 002e 02A8     		add	r0, sp, #8
+ 1276              	.LVL140:
+ 1277              		.loc 1 584 5 view .LVU414
+ 1278 0030 FFF7FEFF 		bl	spi_read
+ 1279              	.LVL141:
+ 585:Module/power_task.c ****     *rdata = readBuf[0];
+ 1280              		.loc 1 585 5 is_stmt 1 view .LVU415
+ 1281              		.loc 1 585 12 is_stmt 0 view .LVU416
+ 1282 0034 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 1283 0038 2370     		strb	r3, [r4]
+ 586:Module/power_task.c **** 
+ 587:Module/power_task.c ****     return ReCode;
+ 1284              		.loc 1 587 5 is_stmt 1 view .LVU417
+ 588:Module/power_task.c **** }
+ 1285              		.loc 1 588 1 is_stmt 0 view .LVU418
+ 1286 003a 0020     		movs	r0, #0
+ 1287 003c 04B0     		add	sp, sp, #16
+ 1288              	.LCFI16:
+ 1289              		.cfi_def_cfa_offset 8
+ 1290              		@ sp needed
+ 1291 003e 10BD     		pop	{r4, pc}
+ 1292              		.loc 1 588 1 view .LVU419
+ 1293              		.cfi_endproc
+ 1294              	.LFE126:
+ 1296              		.global	rdbuf
+ 1297              		.global	tempbuf
+ 1298              		.section	.bss.rdbuf,"aw",%nobits
+ 1299              		.align	2
+ 1302              	rdbuf:
+ 1303 0000 00000000 		.space	100
+ 1303      00000000 
+ 1303      00000000 
+ 1303      00000000 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 34
+
+
+ 1303      00000000 
+ 1304              		.section	.bss.tempbuf,"aw",%nobits
+ 1305              		.align	2
+ 1308              	tempbuf:
+ 1309 0000 00000000 		.space	10
+ 1309      00000000 
+ 1309      0000
+ 1310              		.text
+ 1311              	.Letext0:
+ 1312              		.file 2 "i:\\csharp\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1313              		.file 3 "i:\\csharp\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 1314              		.file 4 "Module/user_config.h"
+ 1315              		.file 5 "Module/ssd_2832.h"
+ 1316              		.file 6 "GPU/GPU_SPI.h"
+ 1317              		.file 7 "GPU/GPU_GPIO.h"
+ 1318              		.file 8 "Module/UserGpioDefine.h"
+ 1319              		.file 9 "Module/GPU_Cfg.h"
+ 1320              		.file 10 "Soft_Drive/timer.h"
+ 1321              		.file 11 "Module/app.h"
+ 1322              		.file 12 "GPU/GPU_RGB.h"
+ 1323              		.file 13 "Module/pport_spi.h"
+ 1324              		.file 14 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 35
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 power_task.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:18     .text.Power_Off:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:24     .text.Power_Off:00000000 Power_Off
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:206    .text.Power_On:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:212    .text.Power_On:00000000 Power_On
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:449    .text.Power_On:00000158 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:454    .text.Power_On:00000160 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:983    .text.jd9365tg_Read_FW_RegMultiSpi:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:989    .text.jd9365tg_Read_FW_RegMultiSpi:00000000 jd9365tg_Read_FW_RegMultiSpi
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1061   .text.jd9365tg_Read_BackDoor_RegMulti:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1067   .text.jd9365tg_Read_BackDoor_RegMulti:00000000 jd9365tg_Read_BackDoor_RegMulti
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1134   .text.jd9365tg_Read_FW_RegSingleSpi:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1140   .text.jd9365tg_Read_FW_RegSingleSpi:00000000 jd9365tg_Read_FW_RegSingleSpi
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1217   .text.jd9365tg_Read_BackDoor_RegSingle:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1223   .text.jd9365tg_Read_BackDoor_RegSingle:00000000 jd9365tg_Read_BackDoor_RegSingle
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1302   .bss.rdbuf:00000000 rdbuf
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1308   .bss.tempbuf:00000000 tempbuf
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1299   .bss.rdbuf:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s:1305   .bss.tempbuf:00000000 $d
+
+UNDEFINED SYMBOLS
+SPI_WriteCmd
+SPI_WriteData
+SSD2828_WritePackageSize
+bsp_DelayMS
+O_PWR_5V_EN
+set_envcc
+set_eniovcc
+set_envsp
+set_envsn
+SetGpuExgpio
+set_vcc
+set_iovcc
+set_resetvcc
+set_vspvol
+set_vsnvol
+Lcd_Reset
+bridge_RSTPIN_reset
+RGB_Disable
+Ssd2828ON
+O_PWR_BL_EN
+O_LCM_5V_EN
+O_PWR_LED
+O_SSD2828_SPI_CS
+O_SSD2828_SPI_CLK
+O_SSD2828_SPI_SDI
+O_SSD2828_RESET
+GPU_Beep
+SetGpuGpio
+BeepOn
+set_tim_vcc
+set_tim_iovcc
+set_tim_reset
+set_tim_vsp
+set_tim_vsn
+set_vcc1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccLqnoF0.s 			page 36
+
+
+set_vcc2
+set_vcc3
+set_vcc4
+set_vcc5
+set_vcc6
+set_envcc1
+set_envcc2
+set_envcc3
+set_envcc4
+set_envcc5
+set_envcc6
+O_LCD_RESET
+GPU_BL
+gMipiTableIndex
+ptr_MIPI_TABLE
+Lcd_ShowMode
+SSD2832_GPIO_Init
+bridge_init
+mipi_write_regs
+bridge_write_reg_16bit
+RGB_Enable
+spi_read

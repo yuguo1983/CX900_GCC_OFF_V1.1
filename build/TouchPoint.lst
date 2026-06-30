@@ -1,0 +1,1409 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"TouchPoint.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.TP_Init,"ax",%progbits
+  18              		.align	1
+  19              		.global	TP_Init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	TP_Init:
+  25              	.LFB121:
+  26              		.file 1 "Module/TouchPoint.c"
+   1:Module/TouchPoint.c **** #include "TouchPoint.h"
+   2:Module/TouchPoint.c **** 
+   3:Module/TouchPoint.c **** #define HINV 8  //行分屏 max 32
+   4:Module/TouchPoint.c **** #define VINV 16 //列分屏 max 32
+   5:Module/TouchPoint.c **** #define PointSize 4
+   6:Module/TouchPoint.c **** #define Delay 40
+   7:Module/TouchPoint.c **** #define Times 12
+   8:Module/TouchPoint.c **** 
+   9:Module/TouchPoint.c **** extern uint32_t XYCheck[8];
+  10:Module/TouchPoint.c **** extern uint8_t KeyPowerPressed;
+  11:Module/TouchPoint.c **** extern uint8_t KeyDownPressed;
+  12:Module/TouchPoint.c **** extern void bsp_Idle(void);
+  13:Module/TouchPoint.c **** 
+  14:Module/TouchPoint.c **** 
+  15:Module/TouchPoint.c **** 
+  16:Module/TouchPoint.c **** uint16_t TP_POS_X, TP_POS_Y;
+  17:Module/TouchPoint.c **** uint16_t TP_POS_X1, TP_POS_Y1;
+  18:Module/TouchPoint.c **** extern uint8_t setInter;
+  19:Module/TouchPoint.c **** uint8_t TP_Main(void)
+  20:Module/TouchPoint.c **** {
+  21:Module/TouchPoint.c ****     uint8_t i, temp;
+  22:Module/TouchPoint.c ****     uint16_t Width = ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH;
+  23:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+  24:Module/TouchPoint.c ****     ShowTpUI(Width, Hight, HINV, VINV);
+  25:Module/TouchPoint.c ****     if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+  26:Module/TouchPoint.c ****     setInter = 0;
+  27:Module/TouchPoint.c ****     for(i = 0; i < 8; i++)XYCheck[i] = 0;
+  28:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+  29:Module/TouchPoint.c ****     TP_POS_Y1 = 0xFFFF;
+  30:Module/TouchPoint.c ****     TP_POS_X = 0xFFFF;
+  31:Module/TouchPoint.c ****     TP_POS_Y = 0xFFFF;
+  32:Module/TouchPoint.c ****     TP_Init();
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 2
+
+
+  33:Module/TouchPoint.c ****     printf("TP Test Begin");
+  34:Module/TouchPoint.c ****     while(1)
+  35:Module/TouchPoint.c ****     {
+  36:Module/TouchPoint.c ****         if(getInt(0))
+  37:Module/TouchPoint.c ****         {
+  38:Module/TouchPoint.c ****             temp = TP_Read(0, 0);
+  39:Module/TouchPoint.c ****             if(temp == 1)
+  40:Module/TouchPoint.c ****             {
+  41:Module/TouchPoint.c ****                 //				TP_POS_X = TP_POS_X%Width;
+  42:Module/TouchPoint.c ****                 //				TP_POS_Y = TP_POS_Y%Hight;
+  43:Module/TouchPoint.c ****                 TP_POS_X1 = (TP_POS_X1 == 0xFFFF) ? TP_POS_X : TP_POS_X1;
+  44:Module/TouchPoint.c ****                 TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+  45:Module/TouchPoint.c ****                 ShowTpFill(Width, Hight, TP_POS_X, TP_POS_Y, HINV, VINV, 0xff00);
+  46:Module/TouchPoint.c ****                 GPU_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+  47:Module/TouchPoint.c ****                 if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+  48:Module/TouchPoint.c ****                 if(ShowTpCheck(HINV, VINV))
+  49:Module/TouchPoint.c ****                 {
+  50:Module/TouchPoint.c ****                     KeyDownPressed = 1;
+  51:Module/TouchPoint.c ****                     break;
+  52:Module/TouchPoint.c ****                 }
+  53:Module/TouchPoint.c ****                 TP_POS_X1 = TP_POS_X;
+  54:Module/TouchPoint.c ****                 TP_POS_Y1 = TP_POS_Y;
+  55:Module/TouchPoint.c ****             }
+  56:Module/TouchPoint.c ****             else if(temp == 0)
+  57:Module/TouchPoint.c ****             {
+  58:Module/TouchPoint.c ****                 TP_POS_X1 = 0xFFFF;
+  59:Module/TouchPoint.c ****                 TP_POS_Y1 = 0xFFFF;
+  60:Module/TouchPoint.c ****             }
+  61:Module/TouchPoint.c **** 						
+  62:Module/TouchPoint.c ****         }
+  63:Module/TouchPoint.c ****         if(KeyPowerPressed==1) break;
+  64:Module/TouchPoint.c **** 				bsp_Idle();
+  65:Module/TouchPoint.c ****     }
+  66:Module/TouchPoint.c ****     return 1;
+  67:Module/TouchPoint.c **** }
+  68:Module/TouchPoint.c **** 
+  69:Module/TouchPoint.c **** void TP_Drow(void)
+  70:Module/TouchPoint.c **** {
+  71:Module/TouchPoint.c ****     uint16_t Width = ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH;
+  72:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+  73:Module/TouchPoint.c **** 
+  74:Module/TouchPoint.c ****     if(getInt(1))
+  75:Module/TouchPoint.c ****     {
+  76:Module/TouchPoint.c ****         if(TP_Read(0, 0) == 1)
+  77:Module/TouchPoint.c ****         {
+  78:Module/TouchPoint.c ****             TP_POS_X = TP_POS_X % Width;
+  79:Module/TouchPoint.c ****             TP_POS_Y = TP_POS_Y % Hight;
+  80:Module/TouchPoint.c ****             TP_POS_X1 = (TP_POS_X1 == 0xFFFF) ? TP_POS_X : TP_POS_X1;
+  81:Module/TouchPoint.c ****             TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+  82:Module/TouchPoint.c ****             UG_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+  83:Module/TouchPoint.c ****             if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+  84:Module/TouchPoint.c ****             TP_POS_X1 = TP_POS_X;
+  85:Module/TouchPoint.c ****             TP_POS_Y1 = TP_POS_Y;
+  86:Module/TouchPoint.c ****         }
+  87:Module/TouchPoint.c ****         else if(TP_Read(0, 0) == 0)
+  88:Module/TouchPoint.c ****         {
+  89:Module/TouchPoint.c ****             TP_POS_X1 = 0xFFFF;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 3
+
+
+  90:Module/TouchPoint.c ****             TP_POS_Y1 = 0xFFFF;
+  91:Module/TouchPoint.c ****         }
+  92:Module/TouchPoint.c ****     }
+  93:Module/TouchPoint.c **** }
+  94:Module/TouchPoint.c **** 
+  95:Module/TouchPoint.c **** void TP_Init(void)
+  96:Module/TouchPoint.c **** {
+  27              		.loc 1 96 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 08B5     		push	{r3, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  97:Module/TouchPoint.c ****     uint8_t dataBuff[64];
+  36              		.loc 1 97 5 view .LVU1
+  98:Module/TouchPoint.c **** 
+  99:Module/TouchPoint.c ****     setInt(0);
+  37              		.loc 1 99 5 view .LVU2
+  38 0002 0020     		movs	r0, #0
+  39 0004 FFF7FEFF 		bl	setInt
+  40              	.LVL0:
+ 100:Module/TouchPoint.c ****     O_TP_VCC(1,3300);
+  41              		.loc 1 100 5 view .LVU3
+  42 0008 40F6E441 		movw	r1, #3300
+  43 000c 0120     		movs	r0, #1
+  44 000e FFF7FEFF 		bl	O_TP_VCC
+  45              	.LVL1:
+ 101:Module/TouchPoint.c ****     bsp_DelayMS(100);
+  46              		.loc 1 101 5 view .LVU4
+  47 0012 6420     		movs	r0, #100
+  48 0014 FFF7FEFF 		bl	bsp_DelayMS
+  49              	.LVL2:
+ 102:Module/TouchPoint.c ****     O_TP_VCC(0,0);
+  50              		.loc 1 102 5 view .LVU5
+  51 0018 0021     		movs	r1, #0
+  52 001a 0846     		mov	r0, r1
+  53 001c FFF7FEFF 		bl	O_TP_VCC
+  54              	.LVL3:
+ 103:Module/TouchPoint.c ****     bsp_DelayMS(100);
+  55              		.loc 1 103 5 view .LVU6
+  56 0020 6420     		movs	r0, #100
+  57 0022 FFF7FEFF 		bl	bsp_DelayMS
+  58              	.LVL4:
+ 104:Module/TouchPoint.c ****     O_TP_VCC(1,3300);
+  59              		.loc 1 104 5 view .LVU7
+  60 0026 40F6E441 		movw	r1, #3300
+  61 002a 0120     		movs	r0, #1
+  62 002c FFF7FEFF 		bl	O_TP_VCC
+  63              	.LVL5:
+ 105:Module/TouchPoint.c ****     setInt(1);
+  64              		.loc 1 105 5 view .LVU8
+  65 0030 0120     		movs	r0, #1
+  66 0032 FFF7FEFF 		bl	setInt
+  67              	.LVL6:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 4
+
+
+ 106:Module/TouchPoint.c ****     bsp_DelayMS(100);
+  68              		.loc 1 106 5 view .LVU9
+  69 0036 6420     		movs	r0, #100
+  70 0038 FFF7FEFF 		bl	bsp_DelayMS
+  71              	.LVL7:
+ 107:Module/TouchPoint.c **** //    while(1)
+ 108:Module/TouchPoint.c **** //    {
+ 109:Module/TouchPoint.c **** //        if(I2C_Find(Delay) < 248)break;
+ 110:Module/TouchPoint.c **** //    }
+ 111:Module/TouchPoint.c **** //   if(I2C_Find(Delay) < 248)
+ 112:Module/TouchPoint.c **** //			printf("\r\n I2C TP have a address");
+ 113:Module/TouchPoint.c **** //	 else 
+ 114:Module/TouchPoint.c **** //			printf("\r\n I2C TP have not a address");
+ 115:Module/TouchPoint.c **** //    ///init tp
+ 116:Module/TouchPoint.c **** //    dataBuff[0] = 0x0F;
+ 117:Module/TouchPoint.c **** //    dataBuff[1] = 0x00;
+ 118:Module/TouchPoint.c **** //    dataBuff[2] = 0x80;
+ 119:Module/TouchPoint.c **** //    dataBuff[3] = 0x00;
+ 120:Module/TouchPoint.c **** //    I2C_Write(0xA6, dataBuff, 4, Delay);
+ 121:Module/TouchPoint.c **** //    I2C_Read(0xA6, dataBuff, 10, Delay);
+ 122:Module/TouchPoint.c **** 
+ 123:Module/TouchPoint.c **** }
+  72              		.loc 1 123 1 is_stmt 0 view .LVU10
+  73 003c 08BD     		pop	{r3, pc}
+  74              		.cfi_endproc
+  75              	.LFE121:
+  77              		.section	.text.TP_Read,"ax",%progbits
+  78              		.align	1
+  79              		.global	TP_Read
+  80              		.syntax unified
+  81              		.thumb
+  82              		.thumb_func
+  84              	TP_Read:
+  85              	.LVL8:
+  86              	.LFB122:
+ 124:Module/TouchPoint.c **** #define addr  0x70
+ 125:Module/TouchPoint.c **** uint8_t TP_Read(uint8_t ts_x, uint8_t ts_y)
+ 126:Module/TouchPoint.c **** {
+  87              		.loc 1 126 1 is_stmt 1 view -0
+  88              		.cfi_startproc
+  89              		@ args = 0, pretend = 0, frame = 64
+  90              		@ frame_needed = 0, uses_anonymous_args = 0
+  91              		.loc 1 126 1 is_stmt 0 view .LVU12
+  92 0000 70B5     		push	{r4, r5, r6, lr}
+  93              	.LCFI1:
+  94              		.cfi_def_cfa_offset 16
+  95              		.cfi_offset 4, -16
+  96              		.cfi_offset 5, -12
+  97              		.cfi_offset 6, -8
+  98              		.cfi_offset 14, -4
+  99 0002 90B0     		sub	sp, sp, #64
+ 100              	.LCFI2:
+ 101              		.cfi_def_cfa_offset 80
+ 102 0004 0646     		mov	r6, r0
+ 103 0006 0D46     		mov	r5, r1
+ 127:Module/TouchPoint.c ****     	uint8_t data[64];
+ 104              		.loc 1 127 6 is_stmt 1 view .LVU13
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 5
+
+
+ 128:Module/TouchPoint.c **** 	uint16_t new_x0,new_y0;
+ 105              		.loc 1 128 2 view .LVU14
+ 129:Module/TouchPoint.c **** 	/////read tp data
+ 130:Module/TouchPoint.c **** data[0] = 0x01;
+ 106              		.loc 1 130 1 view .LVU15
+ 107              		.loc 1 130 9 is_stmt 0 view .LVU16
+ 108 0008 0124     		movs	r4, #1
+ 109 000a 8DF80040 		strb	r4, [sp]
+ 131:Module/TouchPoint.c ****   I2C_Write(0x70,data,1,Delay);
+ 110              		.loc 1 131 3 is_stmt 1 view .LVU17
+ 111 000e 2823     		movs	r3, #40
+ 112 0010 2246     		mov	r2, r4
+ 113 0012 6946     		mov	r1, sp
+ 114              	.LVL9:
+ 115              		.loc 1 131 3 is_stmt 0 view .LVU18
+ 116 0014 7020     		movs	r0, #112
+ 117              	.LVL10:
+ 118              		.loc 1 131 3 view .LVU19
+ 119 0016 FFF7FEFF 		bl	I2C_Write
+ 120              	.LVL11:
+ 132:Module/TouchPoint.c ****   data[0] = 0x02;
+ 121              		.loc 1 132 3 is_stmt 1 view .LVU20
+ 122              		.loc 1 132 11 is_stmt 0 view .LVU21
+ 123 001a 0223     		movs	r3, #2
+ 124 001c 8DF80030 		strb	r3, [sp]
+ 133:Module/TouchPoint.c ****   I2C_Write(0x70,data,1,Delay);
+ 125              		.loc 1 133 3 is_stmt 1 view .LVU22
+ 126 0020 2823     		movs	r3, #40
+ 127 0022 2246     		mov	r2, r4
+ 128 0024 6946     		mov	r1, sp
+ 129 0026 7020     		movs	r0, #112
+ 130 0028 FFF7FEFF 		bl	I2C_Write
+ 131              	.LVL12:
+ 134:Module/TouchPoint.c **** 	I2C_Read(0x70,data,1,Delay);
+ 132              		.loc 1 134 2 view .LVU23
+ 133 002c 2823     		movs	r3, #40
+ 134 002e 2246     		mov	r2, r4
+ 135 0030 6946     		mov	r1, sp
+ 136 0032 7020     		movs	r0, #112
+ 137 0034 FFF7FEFF 		bl	I2C_Read
+ 138              	.LVL13:
+ 135:Module/TouchPoint.c **** 	data[0] = 0x03;
+ 139              		.loc 1 135 2 view .LVU24
+ 140              		.loc 1 135 10 is_stmt 0 view .LVU25
+ 141 0038 0323     		movs	r3, #3
+ 142 003a 8DF80030 		strb	r3, [sp]
+ 136:Module/TouchPoint.c **** 	I2C_Write(0x70,data,1,Delay);
+ 143              		.loc 1 136 2 is_stmt 1 view .LVU26
+ 144 003e 2823     		movs	r3, #40
+ 145 0040 2246     		mov	r2, r4
+ 146 0042 6946     		mov	r1, sp
+ 147 0044 7020     		movs	r0, #112
+ 148 0046 FFF7FEFF 		bl	I2C_Write
+ 149              	.LVL14:
+ 137:Module/TouchPoint.c **** 	I2C_Read(0x70,data,16,Delay);
+ 150              		.loc 1 137 2 view .LVU27
+ 151 004a 2823     		movs	r3, #40
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 6
+
+
+ 152 004c 1022     		movs	r2, #16
+ 153 004e 6946     		mov	r1, sp
+ 154 0050 7020     		movs	r0, #112
+ 155 0052 FFF7FEFF 		bl	I2C_Read
+ 156              	.LVL15:
+ 138:Module/TouchPoint.c **** 		bsp_DelayMS(5);
+ 157              		.loc 1 138 3 view .LVU28
+ 158 0056 0520     		movs	r0, #5
+ 159 0058 FFF7FEFF 		bl	bsp_DelayMS
+ 160              	.LVL16:
+ 139:Module/TouchPoint.c **** 	//printf(" data[0] = %x %x %x %x %x %x %x %x %x %x %x %x %x %x \n",data[0],data[1],data[2],data[3]
+ 140:Module/TouchPoint.c **** 	if(data[1]&0x80 )
+ 161              		.loc 1 140 2 view .LVU29
+ 162              		.loc 1 140 9 is_stmt 0 view .LVU30
+ 163 005c 9DF80130 		ldrb	r3, [sp, #1]	@ zero_extendqisi2
+ 164              		.loc 1 140 4 view .LVU31
+ 165 0060 9DF90120 		ldrsb	r2, [sp, #1]
+ 166 0064 002A     		cmp	r2, #0
+ 167 0066 58DA     		bge	.L4
+ 141:Module/TouchPoint.c ****   {
+ 142:Module/TouchPoint.c **** //		printf(" data[0] = %x %x %x %x %x %x %x %x %x %x \n",data[0],data[1],data[2],data[3],data[4],da
+ 143:Module/TouchPoint.c **** 		/*
+ 144:Module/TouchPoint.c **** 				new_x0 = data[1];
+ 145:Module/TouchPoint.c **** 				new_x0 = new_x0*16;
+ 146:Module/TouchPoint.c **** 				new_x0 = new_x0+((data[3]&0xf0)>>4);   
+ 147:Module/TouchPoint.c **** 			 
+ 148:Module/TouchPoint.c **** 							
+ 149:Module/TouchPoint.c **** 				new_y0 = data[2];
+ 150:Module/TouchPoint.c **** 				new_y0 = new_y0*16;
+ 151:Module/TouchPoint.c **** 				new_y0 = new_y0+(data[3]&0x0f);
+ 152:Module/TouchPoint.c **** 		*/
+ 153:Module/TouchPoint.c **** 
+ 154:Module/TouchPoint.c **** //				    new_x0 = data[2];
+ 155:Module/TouchPoint.c **** //            new_x0 = new_x0+(data[1]&0xf0)*16;   //????X?标
+ 156:Module/TouchPoint.c **** //						//new_x0 = new_x0+((data[3]&0xf0)/16*256);
+ 157:Module/TouchPoint.c **** ////						new_x0 = 1080 - new_x0;//???
+ 158:Module/TouchPoint.c **** //           
+ 159:Module/TouchPoint.c **** //            new_y0 = data[3];
+ 160:Module/TouchPoint.c **** //            new_y0 = new_y0+(data[1]&0xf)*256;   //????X?标    
+ 161:Module/TouchPoint.c **** 
+ 162:Module/TouchPoint.c **** 				new_x0 = data[1]&0x0f;
+ 168              		.loc 1 162 5 is_stmt 1 view .LVU32
+ 169              		.loc 1 162 12 is_stmt 0 view .LVU33
+ 170 0068 03F00F03 		and	r3, r3, #15
+ 171              	.LVL17:
+ 163:Module/TouchPoint.c **** 			new_x0 = new_x0*256;
+ 172              		.loc 1 163 4 is_stmt 1 view .LVU34
+ 164:Module/TouchPoint.c **** 			new_x0 = new_x0+data[2];
+ 173              		.loc 1 164 4 view .LVU35
+ 174              		.loc 1 164 24 is_stmt 0 view .LVU36
+ 175 006c 9DF80220 		ldrb	r2, [sp, #2]	@ zero_extendqisi2
+ 176              		.loc 1 164 11 view .LVU37
+ 177 0070 02EB0322 		add	r2, r2, r3, lsl #8
+ 178              	.LVL18:
+ 165:Module/TouchPoint.c **** 						
+ 166:Module/TouchPoint.c **** 			new_y0 = data[3];
+ 179              		.loc 1 166 4 is_stmt 1 view .LVU38
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 7
+
+
+ 180              		.loc 1 166 11 is_stmt 0 view .LVU39
+ 181 0074 9DF80310 		ldrb	r1, [sp, #3]	@ zero_extendqisi2
+ 182              	.LVL19:
+ 167:Module/TouchPoint.c **** 			new_y0 = new_y0*256;
+ 183              		.loc 1 167 4 is_stmt 1 view .LVU40
+ 168:Module/TouchPoint.c **** 			new_y0 = new_y0+data[4];
+ 184              		.loc 1 168 4 view .LVU41
+ 185              		.loc 1 168 24 is_stmt 0 view .LVU42
+ 186 0078 9DF80430 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 187              		.loc 1 168 11 view .LVU43
+ 188 007c 03EB0123 		add	r3, r3, r1, lsl #8
+ 189 0080 9BB2     		uxth	r3, r3
+ 190              	.LVL20:
+ 169:Module/TouchPoint.c **** 		//	new_y0 = (new_y0-15)*ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH/1415;
+ 170:Module/TouchPoint.c **** //			printf("X = %d, Y = %d\n",new_x0,new_y0);
+ 171:Module/TouchPoint.c ****       if(new_x0 >= ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH  || new_y0 >= ptr_MIPI_TABLE[gMipiTa
+ 191              		.loc 1 171 7 is_stmt 1 view .LVU44
+ 192              		.loc 1 171 34 is_stmt 0 view .LVU45
+ 193 0082 2C49     		ldr	r1, .L18
+ 194 0084 0878     		ldrb	r0, [r1]	@ zero_extendqisi2
+ 195 0086 2C49     		ldr	r1, .L18+4
+ 196              		.loc 1 171 51 view .LVU46
+ 197 0088 51F82010 		ldr	r1, [r1, r0, lsl #2]
+ 198              		.loc 1 171 9 view .LVU47
+ 199 008c B1F86210 		ldrh	r1, [r1, #98]
+ 200 0090 9142     		cmp	r1, r2
+ 201 0092 4BD9     		bls	.L12
+ 202              		.loc 1 171 92 discriminator 2 view .LVU48
+ 203 0094 2749     		ldr	r1, .L18
+ 204 0096 0878     		ldrb	r0, [r1]	@ zero_extendqisi2
+ 205 0098 2749     		ldr	r1, .L18+4
+ 206              		.loc 1 171 109 discriminator 2 view .LVU49
+ 207 009a 51F82010 		ldr	r1, [r1, r0, lsl #2]
+ 208              		.loc 1 171 65 discriminator 2 view .LVU50
+ 209 009e B1F86410 		ldrh	r1, [r1, #100]
+ 210 00a2 9942     		cmp	r1, r3
+ 211 00a4 44D9     		bls	.L13
+ 172:Module/TouchPoint.c **** //      if(data[2] == 0x0) return 2;
+ 173:Module/TouchPoint.c **** 			
+ 174:Module/TouchPoint.c **** 			if(new_x0 == TP_POS_X && new_y0 == TP_POS_Y){
+ 212              		.loc 1 174 4 is_stmt 1 view .LVU51
+ 213              		.loc 1 174 14 is_stmt 0 view .LVU52
+ 214 00a6 2549     		ldr	r1, .L18+8
+ 215              		.loc 1 174 6 view .LVU53
+ 216 00a8 0988     		ldrh	r1, [r1]
+ 217 00aa 9142     		cmp	r1, r2
+ 218 00ac 03D1     		bne	.L6
+ 219              		.loc 1 174 36 discriminator 1 view .LVU54
+ 220 00ae 2449     		ldr	r1, .L18+12
+ 221              		.loc 1 174 26 discriminator 1 view .LVU55
+ 222 00b0 0988     		ldrh	r1, [r1]
+ 223 00b2 9942     		cmp	r1, r3
+ 224 00b4 07D0     		beq	.L15
+ 225              	.L6:
+ 175:Module/TouchPoint.c **** 				TP_POS_X = 0xFFFF;
+ 176:Module/TouchPoint.c **** 				TP_POS_Y = 0xFFFF;
+ 177:Module/TouchPoint.c **** 				return 0;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 8
+
+
+ 178:Module/TouchPoint.c **** 			}else {
+ 179:Module/TouchPoint.c **** 				  if(0==ts_x)
+ 226              		.loc 1 179 7 is_stmt 1 view .LVU56
+ 227              		.loc 1 179 9 is_stmt 0 view .LVU57
+ 228 00b6 76B9     		cbnz	r6, .L7
+ 180:Module/TouchPoint.c **** 					{
+ 181:Module/TouchPoint.c **** 						TP_POS_X = new_x0;
+ 229              		.loc 1 181 7 is_stmt 1 view .LVU58
+ 230              		.loc 1 181 16 is_stmt 0 view .LVU59
+ 231 00b8 2049     		ldr	r1, .L18+8
+ 232 00ba 0A80     		strh	r2, [r1]	@ movhi
+ 233              	.LVL21:
+ 234              	.L8:
+ 182:Module/TouchPoint.c **** 					}
+ 183:Module/TouchPoint.c **** 					else if(1==ts_x)
+ 184:Module/TouchPoint.c **** 					{
+ 185:Module/TouchPoint.c **** 						TP_POS_X = ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH - new_x0;
+ 186:Module/TouchPoint.c **** 					}
+ 187:Module/TouchPoint.c **** 					else
+ 188:Module/TouchPoint.c **** 					{
+ 189:Module/TouchPoint.c **** 						TP_POS_X = new_x0;
+ 190:Module/TouchPoint.c **** 					}
+ 191:Module/TouchPoint.c **** 				
+ 192:Module/TouchPoint.c **** 					if(0==ts_y)
+ 235              		.loc 1 192 6 is_stmt 1 view .LVU60
+ 236              		.loc 1 192 8 is_stmt 0 view .LVU61
+ 237 00bc DDB9     		cbnz	r5, .L10
+ 193:Module/TouchPoint.c **** 					{
+ 194:Module/TouchPoint.c **** 						TP_POS_Y = new_y0;
+ 238              		.loc 1 194 7 is_stmt 1 view .LVU62
+ 239              		.loc 1 194 16 is_stmt 0 view .LVU63
+ 240 00be 204A     		ldr	r2, .L18+12
+ 241 00c0 1380     		strh	r3, [r2]	@ movhi
+ 195:Module/TouchPoint.c **** 					}
+ 196:Module/TouchPoint.c **** 					else if(1==ts_y)
+ 197:Module/TouchPoint.c **** 					{
+ 198:Module/TouchPoint.c **** 						TP_POS_Y = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH - new_y0;
+ 199:Module/TouchPoint.c **** 					}
+ 200:Module/TouchPoint.c **** 					else
+ 201:Module/TouchPoint.c **** 					{
+ 202:Module/TouchPoint.c **** 						TP_POS_Y = new_y0;
+ 203:Module/TouchPoint.c **** 					}
+ 204:Module/TouchPoint.c **** 
+ 205:Module/TouchPoint.c **** 					//printf("X = %d, Y = %d\n",TP_POS_X,TP_POS_Y);
+ 206:Module/TouchPoint.c **** 					return 1;
+ 242              		.loc 1 206 13 view .LVU64
+ 243 00c2 0120     		movs	r0, #1
+ 244 00c4 30E0     		b	.L5
+ 245              	.LVL22:
+ 246              	.L15:
+ 175:Module/TouchPoint.c **** 				TP_POS_Y = 0xFFFF;
+ 247              		.loc 1 175 5 is_stmt 1 view .LVU65
+ 175:Module/TouchPoint.c **** 				TP_POS_Y = 0xFFFF;
+ 248              		.loc 1 175 14 is_stmt 0 view .LVU66
+ 249 00c6 4FF6FF73 		movw	r3, #65535
+ 250              	.LVL23:
+ 175:Module/TouchPoint.c **** 				TP_POS_Y = 0xFFFF;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 9
+
+
+ 251              		.loc 1 175 14 view .LVU67
+ 252 00ca 1C4A     		ldr	r2, .L18+8
+ 253              	.LVL24:
+ 175:Module/TouchPoint.c **** 				TP_POS_Y = 0xFFFF;
+ 254              		.loc 1 175 14 view .LVU68
+ 255 00cc 1380     		strh	r3, [r2]	@ movhi
+ 176:Module/TouchPoint.c **** 				return 0;
+ 256              		.loc 1 176 5 is_stmt 1 view .LVU69
+ 176:Module/TouchPoint.c **** 				return 0;
+ 257              		.loc 1 176 14 is_stmt 0 view .LVU70
+ 258 00ce 1C4A     		ldr	r2, .L18+12
+ 259 00d0 1380     		strh	r3, [r2]	@ movhi
+ 177:Module/TouchPoint.c **** 			}else {
+ 260              		.loc 1 177 5 is_stmt 1 view .LVU71
+ 177:Module/TouchPoint.c **** 			}else {
+ 261              		.loc 1 177 12 is_stmt 0 view .LVU72
+ 262 00d2 0020     		movs	r0, #0
+ 263 00d4 28E0     		b	.L5
+ 264              	.LVL25:
+ 265              	.L7:
+ 183:Module/TouchPoint.c **** 					{
+ 266              		.loc 1 183 11 is_stmt 1 view .LVU73
+ 183:Module/TouchPoint.c **** 					{
+ 267              		.loc 1 183 13 is_stmt 0 view .LVU74
+ 268 00d6 012E     		cmp	r6, #1
+ 269 00d8 02D0     		beq	.L16
+ 189:Module/TouchPoint.c **** 					}
+ 270              		.loc 1 189 7 is_stmt 1 view .LVU75
+ 189:Module/TouchPoint.c **** 					}
+ 271              		.loc 1 189 16 is_stmt 0 view .LVU76
+ 272 00da 1849     		ldr	r1, .L18+8
+ 273 00dc 0A80     		strh	r2, [r1]	@ movhi
+ 274 00de EDE7     		b	.L8
+ 275              	.L16:
+ 185:Module/TouchPoint.c **** 					}
+ 276              		.loc 1 185 7 is_stmt 1 view .LVU77
+ 185:Module/TouchPoint.c **** 					}
+ 277              		.loc 1 185 32 is_stmt 0 view .LVU78
+ 278 00e0 1449     		ldr	r1, .L18
+ 279 00e2 0878     		ldrb	r0, [r1]	@ zero_extendqisi2
+ 280 00e4 1449     		ldr	r1, .L18+4
+ 185:Module/TouchPoint.c **** 					}
+ 281              		.loc 1 185 49 view .LVU79
+ 282 00e6 51F82010 		ldr	r1, [r1, r0, lsl #2]
+ 185:Module/TouchPoint.c **** 					}
+ 283              		.loc 1 185 62 view .LVU80
+ 284 00ea B1F86210 		ldrh	r1, [r1, #98]
+ 285 00ee 8A1A     		subs	r2, r1, r2
+ 286              	.LVL26:
+ 185:Module/TouchPoint.c **** 					}
+ 287              		.loc 1 185 16 view .LVU81
+ 288 00f0 1249     		ldr	r1, .L18+8
+ 289 00f2 0A80     		strh	r2, [r1]	@ movhi
+ 290 00f4 E2E7     		b	.L8
+ 291              	.L10:
+ 196:Module/TouchPoint.c **** 					{
+ 292              		.loc 1 196 11 is_stmt 1 view .LVU82
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 10
+
+
+ 196:Module/TouchPoint.c **** 					{
+ 293              		.loc 1 196 13 is_stmt 0 view .LVU83
+ 294 00f6 012D     		cmp	r5, #1
+ 295 00f8 03D0     		beq	.L17
+ 202:Module/TouchPoint.c **** 					}
+ 296              		.loc 1 202 7 is_stmt 1 view .LVU84
+ 202:Module/TouchPoint.c **** 					}
+ 297              		.loc 1 202 16 is_stmt 0 view .LVU85
+ 298 00fa 114A     		ldr	r2, .L18+12
+ 299 00fc 1380     		strh	r3, [r2]	@ movhi
+ 300              		.loc 1 206 13 view .LVU86
+ 301 00fe 0120     		movs	r0, #1
+ 302 0100 12E0     		b	.L5
+ 303              	.L17:
+ 198:Module/TouchPoint.c **** 					}
+ 304              		.loc 1 198 7 is_stmt 1 view .LVU87
+ 198:Module/TouchPoint.c **** 					}
+ 305              		.loc 1 198 32 is_stmt 0 view .LVU88
+ 306 0102 0C4A     		ldr	r2, .L18
+ 307 0104 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 308 0106 0C4A     		ldr	r2, .L18+4
+ 198:Module/TouchPoint.c **** 					}
+ 309              		.loc 1 198 49 view .LVU89
+ 310 0108 52F82120 		ldr	r2, [r2, r1, lsl #2]
+ 198:Module/TouchPoint.c **** 					}
+ 311              		.loc 1 198 62 view .LVU90
+ 312 010c B2F86420 		ldrh	r2, [r2, #100]
+ 313 0110 D31A     		subs	r3, r2, r3
+ 314              	.LVL27:
+ 198:Module/TouchPoint.c **** 					}
+ 315              		.loc 1 198 16 view .LVU91
+ 316 0112 0B4A     		ldr	r2, .L18+12
+ 317 0114 1380     		strh	r3, [r2]	@ movhi
+ 318              		.loc 1 206 13 view .LVU92
+ 319 0116 2846     		mov	r0, r5
+ 320 0118 06E0     		b	.L5
+ 321              	.LVL28:
+ 322              	.L4:
+ 207:Module/TouchPoint.c **** 				}
+ 208:Module/TouchPoint.c ****       }
+ 209:Module/TouchPoint.c ****       else
+ 210:Module/TouchPoint.c ****       {
+ 211:Module/TouchPoint.c ****           TP_POS_X = 0xFFFF;
+ 323              		.loc 1 211 11 is_stmt 1 view .LVU93
+ 324              		.loc 1 211 20 is_stmt 0 view .LVU94
+ 325 011a 4FF6FF73 		movw	r3, #65535
+ 326 011e 074A     		ldr	r2, .L18+8
+ 327 0120 1380     		strh	r3, [r2]	@ movhi
+ 212:Module/TouchPoint.c ****           TP_POS_Y = 0xFFFF;
+ 328              		.loc 1 212 11 is_stmt 1 view .LVU95
+ 329              		.loc 1 212 20 is_stmt 0 view .LVU96
+ 330 0122 074A     		ldr	r2, .L18+12
+ 331 0124 1380     		strh	r3, [r2]	@ movhi
+ 213:Module/TouchPoint.c ****             
+ 214:Module/TouchPoint.c ****           return 0;
+ 332              		.loc 1 214 11 is_stmt 1 view .LVU97
+ 333              		.loc 1 214 18 is_stmt 0 view .LVU98
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 11
+
+
+ 334 0126 0020     		movs	r0, #0
+ 335              	.L5:
+ 215:Module/TouchPoint.c ****       }
+ 216:Module/TouchPoint.c **** }
+ 336              		.loc 1 216 1 view .LVU99
+ 337 0128 10B0     		add	sp, sp, #64
+ 338              	.LCFI3:
+ 339              		.cfi_remember_state
+ 340              		.cfi_def_cfa_offset 16
+ 341              		@ sp needed
+ 342 012a 70BD     		pop	{r4, r5, r6, pc}
+ 343              	.LVL29:
+ 344              	.L12:
+ 345              	.LCFI4:
+ 346              		.cfi_restore_state
+ 171:Module/TouchPoint.c **** //      if(data[2] == 0x0) return 2;
+ 347              		.loc 1 171 129 view .LVU100
+ 348 012c 0220     		movs	r0, #2
+ 349 012e FBE7     		b	.L5
+ 350              	.L13:
+ 351 0130 0220     		movs	r0, #2
+ 352 0132 F9E7     		b	.L5
+ 353              	.L19:
+ 354              		.align	2
+ 355              	.L18:
+ 356 0134 00000000 		.word	gMipiTableIndex
+ 357 0138 00000000 		.word	ptr_MIPI_TABLE
+ 358 013c 00000000 		.word	.LANCHOR0
+ 359 0140 00000000 		.word	.LANCHOR1
+ 360              		.cfi_endproc
+ 361              	.LFE122:
+ 363              		.section	.rodata.TP_Main.str1.4,"aMS",%progbits,1
+ 364              		.align	2
+ 365              	.LC0:
+ 366 0000 54502054 		.ascii	"TP Test Begin\000"
+ 366      65737420 
+ 366      42656769 
+ 366      6E00
+ 367              		.section	.text.TP_Main,"ax",%progbits
+ 368              		.align	1
+ 369              		.global	TP_Main
+ 370              		.syntax unified
+ 371              		.thumb
+ 372              		.thumb_func
+ 374              	TP_Main:
+ 375              	.LFB119:
+  20:Module/TouchPoint.c ****     uint8_t i, temp;
+ 376              		.loc 1 20 1 is_stmt 1 view -0
+ 377              		.cfi_startproc
+ 378              		@ args = 0, pretend = 0, frame = 0
+ 379              		@ frame_needed = 0, uses_anonymous_args = 0
+ 380 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 381              	.LCFI5:
+ 382              		.cfi_def_cfa_offset 28
+ 383              		.cfi_offset 4, -28
+ 384              		.cfi_offset 5, -24
+ 385              		.cfi_offset 6, -20
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 12
+
+
+ 386              		.cfi_offset 7, -16
+ 387              		.cfi_offset 8, -12
+ 388              		.cfi_offset 9, -8
+ 389              		.cfi_offset 14, -4
+ 390 0004 85B0     		sub	sp, sp, #20
+ 391              	.LCFI6:
+ 392              		.cfi_def_cfa_offset 48
+  21:Module/TouchPoint.c ****     uint16_t Width = ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH;
+ 393              		.loc 1 21 5 view .LVU102
+  22:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 394              		.loc 1 22 5 view .LVU103
+  22:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 395              		.loc 1 22 36 is_stmt 0 view .LVU104
+ 396 0006 4E4D     		ldr	r5, .L35
+ 397 0008 2A78     		ldrb	r2, [r5]	@ zero_extendqisi2
+ 398              	.LVL30:
+  23:Module/TouchPoint.c ****     ShowTpUI(Width, Hight, HINV, VINV);
+ 399              		.loc 1 23 5 is_stmt 1 view .LVU105
+  23:Module/TouchPoint.c ****     ShowTpUI(Width, Hight, HINV, VINV);
+ 400              		.loc 1 23 36 is_stmt 0 view .LVU106
+ 401 000a 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 402              	.LVL31:
+  24:Module/TouchPoint.c ****     if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+ 403              		.loc 1 24 5 is_stmt 1 view .LVU107
+  22:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 404              		.loc 1 22 36 is_stmt 0 view .LVU108
+ 405 000c 4D4C     		ldr	r4, .L35+4
+  22:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 406              		.loc 1 22 14 view .LVU109
+ 407 000e 54F82220 		ldr	r2, [r4, r2, lsl #2]
+ 408              	.LVL32:
+  24:Module/TouchPoint.c ****     if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+ 409              		.loc 1 24 5 view .LVU110
+ 410 0012 B2F86270 		ldrh	r7, [r2, #98]
+  23:Module/TouchPoint.c ****     ShowTpUI(Width, Hight, HINV, VINV);
+ 411              		.loc 1 23 14 view .LVU111
+ 412 0016 54F82330 		ldr	r3, [r4, r3, lsl #2]
+ 413              	.LVL33:
+  24:Module/TouchPoint.c ****     if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+ 414              		.loc 1 24 5 view .LVU112
+ 415 001a B3F86480 		ldrh	r8, [r3, #100]
+ 416 001e 1023     		movs	r3, #16
+ 417 0020 0822     		movs	r2, #8
+ 418 0022 4146     		mov	r1, r8
+ 419 0024 3846     		mov	r0, r7
+ 420 0026 FFF7FEFF 		bl	ShowTpUI
+ 421              	.LVL34:
+  25:Module/TouchPoint.c ****     setInter = 0;
+ 422              		.loc 1 25 5 is_stmt 1 view .LVU113
+  25:Module/TouchPoint.c ****     setInter = 0;
+ 423              		.loc 1 25 22 is_stmt 0 view .LVU114
+ 424 002a 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+  25:Module/TouchPoint.c ****     setInter = 0;
+ 425              		.loc 1 25 39 view .LVU115
+ 426 002c 54F82330 		ldr	r3, [r4, r3, lsl #2]
+  25:Module/TouchPoint.c ****     setInter = 0;
+ 427              		.loc 1 25 7 view .LVU116
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 13
+
+
+ 428 0030 93F86130 		ldrb	r3, [r3, #97]	@ zero_extendqisi2
+ 429 0034 032B     		cmp	r3, #3
+ 430 0036 1ED0     		beq	.L31
+ 431              	.L21:
+  26:Module/TouchPoint.c ****     for(i = 0; i < 8; i++)XYCheck[i] = 0;
+ 432              		.loc 1 26 5 is_stmt 1 view .LVU117
+  26:Module/TouchPoint.c ****     for(i = 0; i < 8; i++)XYCheck[i] = 0;
+ 433              		.loc 1 26 14 is_stmt 0 view .LVU118
+ 434 0038 0023     		movs	r3, #0
+ 435 003a 434A     		ldr	r2, .L35+8
+ 436 003c 1370     		strb	r3, [r2]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 437              		.loc 1 27 5 is_stmt 1 view .LVU119
+ 438              	.LVL35:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 439              		.loc 1 27 16 view .LVU120
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 440              		.loc 1 27 27 view .LVU121
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 441              		.loc 1 27 38 is_stmt 0 view .LVU122
+ 442 003e 434A     		ldr	r2, .L35+12
+ 443 0040 1360     		str	r3, [r2]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 444              		.loc 1 27 23 is_stmt 1 view .LVU123
+ 445              	.LVL36:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 446              		.loc 1 27 16 view .LVU124
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 447              		.loc 1 27 27 view .LVU125
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 448              		.loc 1 27 38 is_stmt 0 view .LVU126
+ 449 0042 5360     		str	r3, [r2, #4]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 450              		.loc 1 27 23 is_stmt 1 view .LVU127
+ 451              	.LVL37:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 452              		.loc 1 27 16 view .LVU128
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 453              		.loc 1 27 27 view .LVU129
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 454              		.loc 1 27 38 is_stmt 0 view .LVU130
+ 455 0044 9360     		str	r3, [r2, #8]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 456              		.loc 1 27 23 is_stmt 1 view .LVU131
+ 457              	.LVL38:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 458              		.loc 1 27 16 view .LVU132
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 459              		.loc 1 27 27 view .LVU133
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 460              		.loc 1 27 38 is_stmt 0 view .LVU134
+ 461 0046 D360     		str	r3, [r2, #12]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 462              		.loc 1 27 23 is_stmt 1 view .LVU135
+ 463              	.LVL39:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 464              		.loc 1 27 16 view .LVU136
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 14
+
+
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 465              		.loc 1 27 27 view .LVU137
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 466              		.loc 1 27 38 is_stmt 0 view .LVU138
+ 467 0048 1361     		str	r3, [r2, #16]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 468              		.loc 1 27 23 is_stmt 1 view .LVU139
+ 469              	.LVL40:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 470              		.loc 1 27 16 view .LVU140
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 471              		.loc 1 27 27 view .LVU141
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 472              		.loc 1 27 38 is_stmt 0 view .LVU142
+ 473 004a 5361     		str	r3, [r2, #20]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 474              		.loc 1 27 23 is_stmt 1 view .LVU143
+ 475              	.LVL41:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 476              		.loc 1 27 16 view .LVU144
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 477              		.loc 1 27 27 view .LVU145
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 478              		.loc 1 27 38 is_stmt 0 view .LVU146
+ 479 004c 9361     		str	r3, [r2, #24]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 480              		.loc 1 27 23 is_stmt 1 view .LVU147
+ 481              	.LVL42:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 482              		.loc 1 27 16 view .LVU148
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 483              		.loc 1 27 27 view .LVU149
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 484              		.loc 1 27 38 is_stmt 0 view .LVU150
+ 485 004e D361     		str	r3, [r2, #28]
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 486              		.loc 1 27 23 is_stmt 1 view .LVU151
+ 487              	.LVL43:
+  27:Module/TouchPoint.c ****     TP_POS_X1 = 0xFFFF;
+ 488              		.loc 1 27 16 view .LVU152
+  28:Module/TouchPoint.c ****     TP_POS_Y1 = 0xFFFF;
+ 489              		.loc 1 28 5 view .LVU153
+  28:Module/TouchPoint.c ****     TP_POS_Y1 = 0xFFFF;
+ 490              		.loc 1 28 15 is_stmt 0 view .LVU154
+ 491 0050 4FF6FF73 		movw	r3, #65535
+ 492 0054 3E4A     		ldr	r2, .L35+16
+ 493 0056 1380     		strh	r3, [r2]	@ movhi
+  29:Module/TouchPoint.c ****     TP_POS_X = 0xFFFF;
+ 494              		.loc 1 29 5 is_stmt 1 view .LVU155
+  29:Module/TouchPoint.c ****     TP_POS_X = 0xFFFF;
+ 495              		.loc 1 29 15 is_stmt 0 view .LVU156
+ 496 0058 3E4A     		ldr	r2, .L35+20
+ 497 005a 1380     		strh	r3, [r2]	@ movhi
+  30:Module/TouchPoint.c ****     TP_POS_Y = 0xFFFF;
+ 498              		.loc 1 30 5 is_stmt 1 view .LVU157
+  30:Module/TouchPoint.c ****     TP_POS_Y = 0xFFFF;
+ 499              		.loc 1 30 14 is_stmt 0 view .LVU158
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 15
+
+
+ 500 005c 3E4A     		ldr	r2, .L35+24
+ 501 005e 1380     		strh	r3, [r2]	@ movhi
+  31:Module/TouchPoint.c ****     TP_Init();
+ 502              		.loc 1 31 5 is_stmt 1 view .LVU159
+  31:Module/TouchPoint.c ****     TP_Init();
+ 503              		.loc 1 31 14 is_stmt 0 view .LVU160
+ 504 0060 3E4A     		ldr	r2, .L35+28
+ 505 0062 1380     		strh	r3, [r2]	@ movhi
+  32:Module/TouchPoint.c ****     printf("TP Test Begin");
+ 506              		.loc 1 32 5 is_stmt 1 view .LVU161
+ 507 0064 FFF7FEFF 		bl	TP_Init
+ 508              	.LVL44:
+  33:Module/TouchPoint.c ****     while(1)
+ 509              		.loc 1 33 5 view .LVU162
+ 510 0068 3D48     		ldr	r0, .L35+32
+ 511 006a FFF7FEFF 		bl	printf
+ 512              	.LVL45:
+  58:Module/TouchPoint.c ****                 TP_POS_Y1 = 0xFFFF;
+ 513              		.loc 1 58 27 is_stmt 0 view .LVU163
+ 514 006e 384D     		ldr	r5, .L35+16
+  59:Module/TouchPoint.c ****             }
+ 515              		.loc 1 59 27 view .LVU164
+ 516 0070 384C     		ldr	r4, .L35+20
+  45:Module/TouchPoint.c ****                 GPU_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 517              		.loc 1 45 17 view .LVU165
+ 518 0072 3A4E     		ldr	r6, .L35+28
+ 519 0074 46E0     		b	.L29
+ 520              	.LVL46:
+ 521              	.L31:
+  25:Module/TouchPoint.c ****     setInter = 0;
+ 522              		.loc 1 25 59 is_stmt 1 discriminator 1 view .LVU166
+ 523 0076 0720     		movs	r0, #7
+ 524 0078 FFF7FEFF 		bl	MCU_CMD_Refresh
+ 525              	.LVL47:
+ 526 007c DCE7     		b	.L21
+ 527              	.LVL48:
+ 528              	.L34:
+  43:Module/TouchPoint.c ****                 TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+ 529              		.loc 1 43 17 view .LVU167
+  43:Module/TouchPoint.c ****                 TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+ 530              		.loc 1 43 40 is_stmt 0 view .LVU168
+ 531 007e 2B88     		ldrh	r3, [r5]
+  43:Module/TouchPoint.c ****                 TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+ 532              		.loc 1 43 27 view .LVU169
+ 533 0080 4FF6FF72 		movw	r2, #65535
+ 534 0084 9342     		cmp	r3, r2
+ 535 0086 04BF     		itt	eq
+ 536 0088 334B     		ldreq	r3, .L35+24
+ 537 008a 1B88     		ldrheq	r3, [r3]
+ 538 008c 2B80     		strh	r3, [r5]	@ movhi
+  44:Module/TouchPoint.c ****                 ShowTpFill(Width, Hight, TP_POS_X, TP_POS_Y, HINV, VINV, 0xff00);
+ 539              		.loc 1 44 17 is_stmt 1 view .LVU170
+  44:Module/TouchPoint.c ****                 ShowTpFill(Width, Hight, TP_POS_X, TP_POS_Y, HINV, VINV, 0xff00);
+ 540              		.loc 1 44 40 is_stmt 0 view .LVU171
+ 541 008e 2388     		ldrh	r3, [r4]
+  44:Module/TouchPoint.c ****                 ShowTpFill(Width, Hight, TP_POS_X, TP_POS_Y, HINV, VINV, 0xff00);
+ 542              		.loc 1 44 27 view .LVU172
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 16
+
+
+ 543 0090 4FF6FF72 		movw	r2, #65535
+ 544 0094 9342     		cmp	r3, r2
+ 545 0096 08BF     		it	eq
+ 546 0098 3388     		ldrheq	r3, [r6]
+ 547 009a 2380     		strh	r3, [r4]	@ movhi
+  45:Module/TouchPoint.c ****                 GPU_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 548              		.loc 1 45 17 is_stmt 1 view .LVU173
+ 549 009c DFF8B890 		ldr	r9, .L35+24
+ 550 00a0 4FF47F43 		mov	r3, #65280
+ 551 00a4 0293     		str	r3, [sp, #8]
+ 552 00a6 1023     		movs	r3, #16
+ 553 00a8 0193     		str	r3, [sp, #4]
+ 554 00aa 0823     		movs	r3, #8
+ 555 00ac 0093     		str	r3, [sp]
+ 556 00ae 3388     		ldrh	r3, [r6]
+ 557 00b0 B9F80020 		ldrh	r2, [r9]
+ 558 00b4 4146     		mov	r1, r8
+ 559 00b6 3846     		mov	r0, r7
+ 560              	.LVL49:
+  45:Module/TouchPoint.c ****                 GPU_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 561              		.loc 1 45 17 is_stmt 0 view .LVU174
+ 562 00b8 FFF7FEFF 		bl	ShowTpFill
+ 563              	.LVL50:
+  46:Module/TouchPoint.c ****                 if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+ 564              		.loc 1 46 17 is_stmt 1 view .LVU175
+ 565 00bc FF23     		movs	r3, #255
+ 566 00be 0193     		str	r3, [sp, #4]
+ 567 00c0 0423     		movs	r3, #4
+ 568 00c2 0093     		str	r3, [sp]
+ 569 00c4 3388     		ldrh	r3, [r6]
+ 570 00c6 B9F80020 		ldrh	r2, [r9]
+ 571 00ca 2188     		ldrh	r1, [r4]
+ 572 00cc 2888     		ldrh	r0, [r5]
+ 573 00ce FFF7FEFF 		bl	GPU_DrawLine
+ 574              	.LVL51:
+  47:Module/TouchPoint.c ****                 if(ShowTpCheck(HINV, VINV))
+ 575              		.loc 1 47 17 view .LVU176
+  47:Module/TouchPoint.c ****                 if(ShowTpCheck(HINV, VINV))
+ 576              		.loc 1 47 34 is_stmt 0 view .LVU177
+ 577 00d2 1B4B     		ldr	r3, .L35
+ 578 00d4 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 579 00d6 1B4B     		ldr	r3, .L35+4
+  47:Module/TouchPoint.c ****                 if(ShowTpCheck(HINV, VINV))
+ 580              		.loc 1 47 51 view .LVU178
+ 581 00d8 53F82230 		ldr	r3, [r3, r2, lsl #2]
+  47:Module/TouchPoint.c ****                 if(ShowTpCheck(HINV, VINV))
+ 582              		.loc 1 47 19 view .LVU179
+ 583 00dc 93F86130 		ldrb	r3, [r3, #97]	@ zero_extendqisi2
+ 584 00e0 032B     		cmp	r3, #3
+ 585 00e2 21D0     		beq	.L32
+ 586              	.L26:
+  48:Module/TouchPoint.c ****                 {
+ 587              		.loc 1 48 17 is_stmt 1 view .LVU180
+  48:Module/TouchPoint.c ****                 {
+ 588              		.loc 1 48 20 is_stmt 0 view .LVU181
+ 589 00e4 1021     		movs	r1, #16
+ 590 00e6 0820     		movs	r0, #8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 17
+
+
+ 591 00e8 FFF7FEFF 		bl	ShowTpCheck
+ 592              	.LVL52:
+  48:Module/TouchPoint.c ****                 {
+ 593              		.loc 1 48 19 view .LVU182
+ 594 00ec 00BB     		cbnz	r0, .L33
+  53:Module/TouchPoint.c ****                 TP_POS_Y1 = TP_POS_Y;
+ 595              		.loc 1 53 17 is_stmt 1 view .LVU183
+  53:Module/TouchPoint.c ****                 TP_POS_Y1 = TP_POS_Y;
+ 596              		.loc 1 53 27 is_stmt 0 view .LVU184
+ 597 00ee 1A4B     		ldr	r3, .L35+24
+ 598 00f0 1B88     		ldrh	r3, [r3]
+ 599 00f2 2B80     		strh	r3, [r5]	@ movhi
+  54:Module/TouchPoint.c ****             }
+ 600              		.loc 1 54 17 is_stmt 1 view .LVU185
+  54:Module/TouchPoint.c ****             }
+ 601              		.loc 1 54 27 is_stmt 0 view .LVU186
+ 602 00f4 3388     		ldrh	r3, [r6]
+ 603 00f6 2380     		strh	r3, [r4]	@ movhi
+ 604              	.L22:
+  63:Module/TouchPoint.c **** 				bsp_Idle();
+ 605              		.loc 1 63 9 is_stmt 1 view .LVU187
+  63:Module/TouchPoint.c **** 				bsp_Idle();
+ 606              		.loc 1 63 27 is_stmt 0 view .LVU188
+ 607 00f8 1A4B     		ldr	r3, .L35+36
+  63:Module/TouchPoint.c **** 				bsp_Idle();
+ 608              		.loc 1 63 11 view .LVU189
+ 609 00fa 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 610 00fc 012B     		cmp	r3, #1
+ 611 00fe 1AD0     		beq	.L28
+  64:Module/TouchPoint.c ****     }
+ 612              		.loc 1 64 5 is_stmt 1 view .LVU190
+ 613 0100 FFF7FEFF 		bl	bsp_Idle
+ 614              	.LVL53:
+  34:Module/TouchPoint.c ****     {
+ 615              		.loc 1 34 10 view .LVU191
+ 616              	.L29:
+  34:Module/TouchPoint.c ****     {
+ 617              		.loc 1 34 5 view .LVU192
+  36:Module/TouchPoint.c ****         {
+ 618              		.loc 1 36 9 view .LVU193
+  36:Module/TouchPoint.c ****         {
+ 619              		.loc 1 36 12 is_stmt 0 view .LVU194
+ 620 0104 0020     		movs	r0, #0
+ 621 0106 FFF7FEFF 		bl	getInt
+ 622              	.LVL54:
+  36:Module/TouchPoint.c ****         {
+ 623              		.loc 1 36 11 view .LVU195
+ 624 010a 0028     		cmp	r0, #0
+ 625 010c F4D0     		beq	.L22
+  38:Module/TouchPoint.c ****             if(temp == 1)
+ 626              		.loc 1 38 13 is_stmt 1 view .LVU196
+  38:Module/TouchPoint.c ****             if(temp == 1)
+ 627              		.loc 1 38 20 is_stmt 0 view .LVU197
+ 628 010e 0021     		movs	r1, #0
+ 629 0110 0846     		mov	r0, r1
+ 630 0112 FFF7FEFF 		bl	TP_Read
+ 631              	.LVL55:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 18
+
+
+  39:Module/TouchPoint.c ****             {
+ 632              		.loc 1 39 13 is_stmt 1 view .LVU198
+  39:Module/TouchPoint.c ****             {
+ 633              		.loc 1 39 15 is_stmt 0 view .LVU199
+ 634 0116 0128     		cmp	r0, #1
+ 635 0118 B1D0     		beq	.L34
+  56:Module/TouchPoint.c ****             {
+ 636              		.loc 1 56 18 is_stmt 1 view .LVU200
+  56:Module/TouchPoint.c ****             {
+ 637              		.loc 1 56 20 is_stmt 0 view .LVU201
+ 638 011a 0028     		cmp	r0, #0
+ 639 011c ECD1     		bne	.L22
+  58:Module/TouchPoint.c ****                 TP_POS_Y1 = 0xFFFF;
+ 640              		.loc 1 58 17 is_stmt 1 view .LVU202
+  58:Module/TouchPoint.c ****                 TP_POS_Y1 = 0xFFFF;
+ 641              		.loc 1 58 27 is_stmt 0 view .LVU203
+ 642 011e 4FF6FF73 		movw	r3, #65535
+ 643 0122 2B80     		strh	r3, [r5]	@ movhi
+  59:Module/TouchPoint.c ****             }
+ 644              		.loc 1 59 17 is_stmt 1 view .LVU204
+  59:Module/TouchPoint.c ****             }
+ 645              		.loc 1 59 27 is_stmt 0 view .LVU205
+ 646 0124 2380     		strh	r3, [r4]	@ movhi
+ 647 0126 E7E7     		b	.L22
+ 648              	.LVL56:
+ 649              	.L32:
+  47:Module/TouchPoint.c ****                 if(ShowTpCheck(HINV, VINV))
+ 650              		.loc 1 47 71 is_stmt 1 discriminator 1 view .LVU206
+ 651 0128 0720     		movs	r0, #7
+ 652 012a FFF7FEFF 		bl	MCU_CMD_Refresh
+ 653              	.LVL57:
+ 654 012e D9E7     		b	.L26
+ 655              	.L33:
+  50:Module/TouchPoint.c ****                     break;
+ 656              		.loc 1 50 21 view .LVU207
+  50:Module/TouchPoint.c ****                     break;
+ 657              		.loc 1 50 36 is_stmt 0 view .LVU208
+ 658 0130 0D4B     		ldr	r3, .L35+40
+ 659 0132 0122     		movs	r2, #1
+ 660 0134 1A70     		strb	r2, [r3]
+  51:Module/TouchPoint.c ****                 }
+ 661              		.loc 1 51 21 is_stmt 1 view .LVU209
+ 662              	.L28:
+  66:Module/TouchPoint.c **** }
+ 663              		.loc 1 66 5 view .LVU210
+  67:Module/TouchPoint.c **** 
+ 664              		.loc 1 67 1 is_stmt 0 view .LVU211
+ 665 0136 0120     		movs	r0, #1
+ 666 0138 05B0     		add	sp, sp, #20
+ 667              	.LCFI7:
+ 668              		.cfi_def_cfa_offset 28
+ 669              		@ sp needed
+ 670 013a BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 671              	.L36:
+ 672 013e 00BF     		.align	2
+ 673              	.L35:
+ 674 0140 00000000 		.word	gMipiTableIndex
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 19
+
+
+ 675 0144 00000000 		.word	ptr_MIPI_TABLE
+ 676 0148 00000000 		.word	setInter
+ 677 014c 00000000 		.word	XYCheck
+ 678 0150 00000000 		.word	.LANCHOR2
+ 679 0154 00000000 		.word	.LANCHOR3
+ 680 0158 00000000 		.word	.LANCHOR0
+ 681 015c 00000000 		.word	.LANCHOR1
+ 682 0160 00000000 		.word	.LC0
+ 683 0164 00000000 		.word	KeyPowerPressed
+ 684 0168 00000000 		.word	KeyDownPressed
+ 685              		.cfi_endproc
+ 686              	.LFE119:
+ 688              		.section	.text.TP_Drow,"ax",%progbits
+ 689              		.align	1
+ 690              		.global	TP_Drow
+ 691              		.syntax unified
+ 692              		.thumb
+ 693              		.thumb_func
+ 695              	TP_Drow:
+ 696              	.LFB120:
+  70:Module/TouchPoint.c ****     uint16_t Width = ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH;
+ 697              		.loc 1 70 1 is_stmt 1 view -0
+ 698              		.cfi_startproc
+ 699              		@ args = 0, pretend = 0, frame = 0
+ 700              		@ frame_needed = 0, uses_anonymous_args = 0
+ 701 0000 30B5     		push	{r4, r5, lr}
+ 702              	.LCFI8:
+ 703              		.cfi_def_cfa_offset 12
+ 704              		.cfi_offset 4, -12
+ 705              		.cfi_offset 5, -8
+ 706              		.cfi_offset 14, -4
+ 707 0002 83B0     		sub	sp, sp, #12
+ 708              	.LCFI9:
+ 709              		.cfi_def_cfa_offset 24
+  71:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 710              		.loc 1 71 5 view .LVU213
+  71:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 711              		.loc 1 71 36 is_stmt 0 view .LVU214
+ 712 0004 314A     		ldr	r2, .L48
+ 713 0006 1178     		ldrb	r1, [r2]	@ zero_extendqisi2
+ 714 0008 314B     		ldr	r3, .L48+4
+  71:Module/TouchPoint.c ****     uint16_t Hight = ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH;
+ 715              		.loc 1 71 14 view .LVU215
+ 716 000a 53F82110 		ldr	r1, [r3, r1, lsl #2]
+ 717 000e B1F86250 		ldrh	r5, [r1, #98]
+ 718              	.LVL58:
+  72:Module/TouchPoint.c **** 
+ 719              		.loc 1 72 5 is_stmt 1 view .LVU216
+  72:Module/TouchPoint.c **** 
+ 720              		.loc 1 72 36 is_stmt 0 view .LVU217
+ 721 0012 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+  72:Module/TouchPoint.c **** 
+ 722              		.loc 1 72 14 view .LVU218
+ 723 0014 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 724 0018 B3F86440 		ldrh	r4, [r3, #100]
+ 725              	.LVL59:
+  74:Module/TouchPoint.c ****     {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 20
+
+
+ 726              		.loc 1 74 5 is_stmt 1 view .LVU219
+  74:Module/TouchPoint.c ****     {
+ 727              		.loc 1 74 8 is_stmt 0 view .LVU220
+ 728 001c 0120     		movs	r0, #1
+ 729 001e FFF7FEFF 		bl	getInt
+ 730              	.LVL60:
+  74:Module/TouchPoint.c ****     {
+ 731              		.loc 1 74 7 view .LVU221
+ 732 0022 08B9     		cbnz	r0, .L46
+ 733              	.LVL61:
+ 734              	.L37:
+  93:Module/TouchPoint.c **** 
+ 735              		.loc 1 93 1 view .LVU222
+ 736 0024 03B0     		add	sp, sp, #12
+ 737              	.LCFI10:
+ 738              		.cfi_remember_state
+ 739              		.cfi_def_cfa_offset 12
+ 740              		@ sp needed
+ 741 0026 30BD     		pop	{r4, r5, pc}
+ 742              	.LVL62:
+ 743              	.L46:
+ 744              	.LCFI11:
+ 745              		.cfi_restore_state
+  76:Module/TouchPoint.c ****         {
+ 746              		.loc 1 76 9 is_stmt 1 view .LVU223
+  76:Module/TouchPoint.c ****         {
+ 747              		.loc 1 76 12 is_stmt 0 view .LVU224
+ 748 0028 0021     		movs	r1, #0
+ 749 002a 0846     		mov	r0, r1
+ 750 002c FFF7FEFF 		bl	TP_Read
+ 751              	.LVL63:
+  76:Module/TouchPoint.c ****         {
+ 752              		.loc 1 76 11 view .LVU225
+ 753 0030 0128     		cmp	r0, #1
+ 754 0032 3DD1     		bne	.L39
+  78:Module/TouchPoint.c ****             TP_POS_Y = TP_POS_Y % Hight;
+ 755              		.loc 1 78 13 is_stmt 1 view .LVU226
+  78:Module/TouchPoint.c ****             TP_POS_Y = TP_POS_Y % Hight;
+ 756              		.loc 1 78 22 is_stmt 0 view .LVU227
+ 757 0034 274B     		ldr	r3, .L48+8
+ 758 0036 1A88     		ldrh	r2, [r3]
+ 759 0038 B2FBF5F1 		udiv	r1, r2, r5
+ 760 003c 05FB1122 		mls	r2, r5, r1, r2
+ 761 0040 92B2     		uxth	r2, r2
+ 762 0042 1A80     		strh	r2, [r3]	@ movhi
+  79:Module/TouchPoint.c ****             TP_POS_X1 = (TP_POS_X1 == 0xFFFF) ? TP_POS_X : TP_POS_X1;
+ 763              		.loc 1 79 13 is_stmt 1 view .LVU228
+  79:Module/TouchPoint.c ****             TP_POS_X1 = (TP_POS_X1 == 0xFFFF) ? TP_POS_X : TP_POS_X1;
+ 764              		.loc 1 79 22 is_stmt 0 view .LVU229
+ 765 0044 2449     		ldr	r1, .L48+12
+ 766 0046 0B88     		ldrh	r3, [r1]
+ 767 0048 B3FBF4F0 		udiv	r0, r3, r4
+ 768 004c 04FB1033 		mls	r3, r4, r0, r3
+ 769 0050 9BB2     		uxth	r3, r3
+ 770 0052 0B80     		strh	r3, [r1]	@ movhi
+  80:Module/TouchPoint.c ****             TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+ 771              		.loc 1 80 13 is_stmt 1 view .LVU230
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 21
+
+
+  80:Module/TouchPoint.c ****             TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+ 772              		.loc 1 80 36 is_stmt 0 view .LVU231
+ 773 0054 2149     		ldr	r1, .L48+16
+ 774 0056 0888     		ldrh	r0, [r1]
+  80:Module/TouchPoint.c ****             TP_POS_Y1 = (TP_POS_Y1 == 0xFFFF) ? TP_POS_Y : TP_POS_Y1;
+ 775              		.loc 1 80 23 view .LVU232
+ 776 0058 4FF6FF71 		movw	r1, #65535
+ 777 005c 8842     		cmp	r0, r1
+ 778 005e 08BF     		it	eq
+ 779 0060 1046     		moveq	r0, r2
+ 780 0062 1E49     		ldr	r1, .L48+16
+ 781 0064 0880     		strh	r0, [r1]	@ movhi
+  81:Module/TouchPoint.c ****             UG_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 782              		.loc 1 81 13 is_stmt 1 view .LVU233
+  81:Module/TouchPoint.c ****             UG_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 783              		.loc 1 81 36 is_stmt 0 view .LVU234
+ 784 0066 1E49     		ldr	r1, .L48+20
+ 785 0068 0988     		ldrh	r1, [r1]
+  81:Module/TouchPoint.c ****             UG_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 786              		.loc 1 81 23 view .LVU235
+ 787 006a 4FF6FF74 		movw	r4, #65535
+ 788              	.LVL64:
+  81:Module/TouchPoint.c ****             UG_DrawLine(TP_POS_X1, TP_POS_Y1, TP_POS_X, TP_POS_Y, PointSize, 0x000000ff);
+ 789              		.loc 1 81 23 view .LVU236
+ 790 006e A142     		cmp	r1, r4
+ 791 0070 08BF     		it	eq
+ 792 0072 1946     		moveq	r1, r3
+ 793 0074 1A4C     		ldr	r4, .L48+20
+ 794 0076 2180     		strh	r1, [r4]	@ movhi
+  82:Module/TouchPoint.c ****             if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode == 3)MCU_CMD_Refresh(7);
+ 795              		.loc 1 82 13 is_stmt 1 view .LVU237
+ 796 0078 FF24     		movs	r4, #255
+ 797 007a 0194     		str	r4, [sp, #4]
+ 798 007c 0424     		movs	r4, #4
+ 799 007e 0094     		str	r4, [sp]
+ 800 0080 FFF7FEFF 		bl	UG_DrawLine
+ 801              	.LVL65:
+  83:Module/TouchPoint.c ****             TP_POS_X1 = TP_POS_X;
+ 802              		.loc 1 83 13 view .LVU238
+  83:Module/TouchPoint.c ****             TP_POS_X1 = TP_POS_X;
+ 803              		.loc 1 83 30 is_stmt 0 view .LVU239
+ 804 0084 114B     		ldr	r3, .L48
+ 805 0086 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 806 0088 114B     		ldr	r3, .L48+4
+  83:Module/TouchPoint.c ****             TP_POS_X1 = TP_POS_X;
+ 807              		.loc 1 83 47 view .LVU240
+ 808 008a 53F82230 		ldr	r3, [r3, r2, lsl #2]
+  83:Module/TouchPoint.c ****             TP_POS_X1 = TP_POS_X;
+ 809              		.loc 1 83 15 view .LVU241
+ 810 008e 93F86130 		ldrb	r3, [r3, #97]	@ zero_extendqisi2
+ 811 0092 032B     		cmp	r3, #3
+ 812 0094 08D0     		beq	.L47
+ 813              	.L42:
+  84:Module/TouchPoint.c ****             TP_POS_Y1 = TP_POS_Y;
+ 814              		.loc 1 84 13 is_stmt 1 view .LVU242
+  84:Module/TouchPoint.c ****             TP_POS_Y1 = TP_POS_Y;
+ 815              		.loc 1 84 23 is_stmt 0 view .LVU243
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 22
+
+
+ 816 0096 0F4B     		ldr	r3, .L48+8
+ 817 0098 1A88     		ldrh	r2, [r3]
+ 818 009a 104B     		ldr	r3, .L48+16
+ 819 009c 1A80     		strh	r2, [r3]	@ movhi
+  85:Module/TouchPoint.c ****         }
+ 820              		.loc 1 85 13 is_stmt 1 view .LVU244
+  85:Module/TouchPoint.c ****         }
+ 821              		.loc 1 85 23 is_stmt 0 view .LVU245
+ 822 009e 0E4B     		ldr	r3, .L48+12
+ 823 00a0 1A88     		ldrh	r2, [r3]
+ 824 00a2 0F4B     		ldr	r3, .L48+20
+ 825 00a4 1A80     		strh	r2, [r3]	@ movhi
+ 826 00a6 BDE7     		b	.L37
+ 827              	.L47:
+  83:Module/TouchPoint.c ****             TP_POS_X1 = TP_POS_X;
+ 828              		.loc 1 83 67 is_stmt 1 discriminator 1 view .LVU246
+ 829 00a8 0720     		movs	r0, #7
+ 830 00aa FFF7FEFF 		bl	MCU_CMD_Refresh
+ 831              	.LVL66:
+ 832 00ae F2E7     		b	.L42
+ 833              	.LVL67:
+ 834              	.L39:
+  87:Module/TouchPoint.c ****         {
+ 835              		.loc 1 87 14 view .LVU247
+  87:Module/TouchPoint.c ****         {
+ 836              		.loc 1 87 17 is_stmt 0 view .LVU248
+ 837 00b0 0021     		movs	r1, #0
+ 838 00b2 0846     		mov	r0, r1
+ 839 00b4 FFF7FEFF 		bl	TP_Read
+ 840              	.LVL68:
+  87:Module/TouchPoint.c ****         {
+ 841              		.loc 1 87 16 view .LVU249
+ 842 00b8 0028     		cmp	r0, #0
+ 843 00ba B3D1     		bne	.L37
+  89:Module/TouchPoint.c ****             TP_POS_Y1 = 0xFFFF;
+ 844              		.loc 1 89 13 is_stmt 1 view .LVU250
+  89:Module/TouchPoint.c ****             TP_POS_Y1 = 0xFFFF;
+ 845              		.loc 1 89 23 is_stmt 0 view .LVU251
+ 846 00bc 4FF6FF73 		movw	r3, #65535
+ 847 00c0 064A     		ldr	r2, .L48+16
+ 848 00c2 1380     		strh	r3, [r2]	@ movhi
+  90:Module/TouchPoint.c ****         }
+ 849              		.loc 1 90 13 is_stmt 1 view .LVU252
+  90:Module/TouchPoint.c ****         }
+ 850              		.loc 1 90 23 is_stmt 0 view .LVU253
+ 851 00c4 064A     		ldr	r2, .L48+20
+ 852 00c6 1380     		strh	r3, [r2]	@ movhi
+  93:Module/TouchPoint.c **** 
+ 853              		.loc 1 93 1 view .LVU254
+ 854 00c8 ACE7     		b	.L37
+ 855              	.L49:
+ 856 00ca 00BF     		.align	2
+ 857              	.L48:
+ 858 00cc 00000000 		.word	gMipiTableIndex
+ 859 00d0 00000000 		.word	ptr_MIPI_TABLE
+ 860 00d4 00000000 		.word	.LANCHOR0
+ 861 00d8 00000000 		.word	.LANCHOR1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 23
+
+
+ 862 00dc 00000000 		.word	.LANCHOR2
+ 863 00e0 00000000 		.word	.LANCHOR3
+ 864              		.cfi_endproc
+ 865              	.LFE120:
+ 867              		.global	TP_POS_Y1
+ 868              		.global	TP_POS_X1
+ 869              		.global	TP_POS_Y
+ 870              		.global	TP_POS_X
+ 871              		.section	.bss.TP_POS_X,"aw",%nobits
+ 872              		.align	1
+ 873              		.set	.LANCHOR0,. + 0
+ 876              	TP_POS_X:
+ 877 0000 0000     		.space	2
+ 878              		.section	.bss.TP_POS_X1,"aw",%nobits
+ 879              		.align	1
+ 880              		.set	.LANCHOR2,. + 0
+ 883              	TP_POS_X1:
+ 884 0000 0000     		.space	2
+ 885              		.section	.bss.TP_POS_Y,"aw",%nobits
+ 886              		.align	1
+ 887              		.set	.LANCHOR1,. + 0
+ 890              	TP_POS_Y:
+ 891 0000 0000     		.space	2
+ 892              		.section	.bss.TP_POS_Y1,"aw",%nobits
+ 893              		.align	1
+ 894              		.set	.LANCHOR3,. + 0
+ 897              	TP_POS_Y1:
+ 898 0000 0000     		.space	2
+ 899              		.text
+ 900              	.Letext0:
+ 901              		.file 2 "i:\\csharp\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 902              		.file 3 "i:\\csharp\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 903              		.file 4 "Module/user_config.h"
+ 904              		.file 5 "GPU/GPU_I2C.h"
+ 905              		.file 6 "Soft_Drive/timer.h"
+ 906              		.file 7 "Module/GPU_Cfg.h"
+ 907              		.file 8 "GPU/GPU_PIC.h"
+ 908              		.file 9 "i:\\csharp\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none
+ 909              		.file 10 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s 			page 24
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 TouchPoint.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:18     .text.TP_Init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:24     .text.TP_Init:00000000 TP_Init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:78     .text.TP_Read:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:84     .text.TP_Read:00000000 TP_Read
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:356    .text.TP_Read:00000134 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:364    .rodata.TP_Main.str1.4:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:368    .text.TP_Main:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:374    .text.TP_Main:00000000 TP_Main
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:674    .text.TP_Main:00000140 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:689    .text.TP_Drow:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:695    .text.TP_Drow:00000000 TP_Drow
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:858    .text.TP_Drow:000000cc $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:897    .bss.TP_POS_Y1:00000000 TP_POS_Y1
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:883    .bss.TP_POS_X1:00000000 TP_POS_X1
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:890    .bss.TP_POS_Y:00000000 TP_POS_Y
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:876    .bss.TP_POS_X:00000000 TP_POS_X
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:872    .bss.TP_POS_X:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:879    .bss.TP_POS_X1:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:886    .bss.TP_POS_Y:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccMtyyb2.s:893    .bss.TP_POS_Y1:00000000 $d
+
+UNDEFINED SYMBOLS
+setInt
+O_TP_VCC
+bsp_DelayMS
+I2C_Write
+I2C_Read
+gMipiTableIndex
+ptr_MIPI_TABLE
+ShowTpUI
+printf
+MCU_CMD_Refresh
+ShowTpFill
+GPU_DrawLine
+ShowTpCheck
+bsp_Idle
+getInt
+setInter
+XYCheck
+KeyPowerPressed
+KeyDownPressed
+UG_DrawLine

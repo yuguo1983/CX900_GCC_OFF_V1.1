@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <pix>
+    <HBW>40</HBW>
+    <HFW>114</HFW>
+    <HACT>1200</HACT>
+    <HSW>10</HSW>
+    <VBW>18</VBW>
+    <VFW>220</VFW>
+    <VACT>1920</VACT>
+    <VSW>4</VSW>
+    <LCDNAME>HX8279D_BOE101_1200X1920_4L</LCDNAME>
+    <ICNAME>NT</ICNAME>
+    <CODEZIP>20240829</CODEZIP>
+    <PCLK>140</PCLK>
+    <MIPILAN>4</MIPILAN>
+    <AENABLE>False</AENABLE>
+    <BENABLE>False</BENABLE>
+    <ALLMODE>12</ALLMODE>
+    <DESET>1:高电平</DESET>
+    <VSSET>1:高电平</VSSET>
+    <HSSET>1:高电平</HSSET>
+    <MIPISWAP>False</MIPISWAP>
+    <ODLR>False</ODLR>
+    <MIPIMODE>2:Burst mode</MIPIMODE>
+    <DUALPORT>False</DUALPORT>
+    <DELAY>500</DELAY>
+    <TimeLock>1</TimeLock>
+    <AlarmFlag>False</AlarmFlag>
+  </pix>
+</DocumentElement>

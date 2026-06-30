@@ -1,0 +1,62 @@
+void Color(uint32_t color)
+{
+	Lcd_ShowPureColor(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH,ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH,color);
+	printk("stringphoto0x%06x \r\n",color);
+}
+void ColorBarCol(uint16_t div)
+{
+	ColorBarCol1(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH,ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH,div);
+	printk("stringphotoColorBarCol \r\n");
+}
+void ColorBarRow(uint16_t div)
+{
+	ColorBarRow1(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH,ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH,div);
+	printk("stringphotoColorBarRow \r\n");
+}
+
+void BlackWight(uint32_t color1, uint32_t color2)
+{
+	BlackWight1(1, 1, ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH-1, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH-1, ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH,ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH,color1, color2);
+	printk("stringphotoBlackWight \r\n");
+}
+
+void Checkerboard(uint16_t div)
+{
+	Checkerboard1(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH,ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH,div);
+	printk("stringphotoCheckerboard \r\n");
+}
+
+void CrossTalk(uint32_t color1, uint32_t color2)
+{
+	BlackWight1(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH/3, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH/3, ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH - ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH/3, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH - ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH/3, ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH,color1, color2);
+	printk("stringphotoCrossTalk \r\n");
+}
+
+void Picture(uint8_t value)
+{
+	DisplayBMP(value);
+	printk("stringphotoBMP%d \r\n",value);
+}
+
+void GradientCol(uint32_t color,uint16_t div)
+{
+	ColorGradientRow(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH, color,div);
+	printk("stringphotoGradientCol \r\n");
+}
+
+void GradientRow(uint32_t color,uint16_t div)
+{
+	ColorGradientCol(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH, color,div);
+	printk("stringphotoGradientRow \r\n");
+}
+
+void Flicker(uint32_t color1, uint32_t color2)
+{
+    printk("stringphotoflink \r\n");
+	FLINK(ptr_MIPI_TABLE[gMipiTableIndex]->HACT_WIDTH, ptr_MIPI_TABLE[gMipiTableIndex]->VACT_WIDTH, color1, color2) ;
+	
+}
+void TpTest(void)
+{
+ TP_Main();
+}
