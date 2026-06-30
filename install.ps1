@@ -158,9 +158,9 @@ pause
 
 try {
     if ($isRemote) {
-        # 远程模式：从 GitHub 下载整个仓库的 Release 包
+        # 远程模式：从 GitHub 下载仓库源码归档
         Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        $zipUrl = 'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/releases/latest/download/CX900.zip'
+        $zipUrl = 'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/archive/refs/heads/main.zip'
         $tempZip = "$env:TEMP\CX900.zip"
         $tempDir = "$env:TEMP\CX900_Install"
 
@@ -173,11 +173,15 @@ try {
         } catch {
             Write-Error '下载安装包失败！请检查网络连接。'
             Write-Host "  下载地址: $zipUrl" -ForegroundColor Yellow
+            Write-Host '  提示: 确保仓库是 Public 且已推送到 main 分支' -ForegroundColor Yellow
             exit 1
         }
 
         Expand-Archive -Path $tempZip -DestinationPath $tempDir -Force
-        Install-CX900 -SourceDir $tempDir
+
+        # GitHub 归档会多一层目录: CX900_GCC_OFF_V1.1-main/
+        $srcDir = Get-ChildItem -Path $tempDir -Directory | Select-Object -First 1 -ExpandProperty FullName
+        Install-CX900 -SourceDir $srcDir
 
         # 清理
         Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
