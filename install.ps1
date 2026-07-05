@@ -160,7 +160,11 @@ try {
     if ($isRemote) {
         # 远程模式：从 AtomGit 下载源码 ZIP 归档
         Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        $zipUrl = 'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1/archive/master.zip'
+        # AtomGit 优先（国内速度快），GitHub 备用
+        $zipUrls = @(
+            'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1/raw/main/bin/x86/Debug/CX900_Setup.zip',
+            'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/releases/download/v1.1.0/CX900.zip'
+        )
         $tempZip = "$env:TEMP\CX900.zip"
         $tempDir = "$env:TEMP\CX900_Install"
 
@@ -168,18 +172,25 @@ try {
         if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
         $null = New-Item -Path $tempDir -ItemType Directory -Force
 
-        try {
-            Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip -UseBasicParsing
-        } catch {
+        $downloaded = $false
+        foreach ($url in $zipUrls) {
+            try {
+                Write-Host "  下载: $url" -ForegroundColor Gray
+                Invoke-WebRequest -Uri $url -OutFile $tempZip -UseBasicParsing
+                $downloaded = $true
+                break
+            } catch {
+                Write-Warning "下载失败，切换备用地址..."
+            }
+        }
+
+        if (-not $downloaded) {
             Write-Error '下载安装包失败！请检查网络连接。'
             exit 1
         }
 
         Expand-Archive -Path $tempZip -DestinationPath $tempDir -Force
-
-        # 归档会多一层目录，自动定位
-        $srcDir = Get-ChildItem -Path $tempDir -Directory | Select-Object -First 1 -ExpandProperty FullName
-        Install-CX900 -SourceDir $srcDir
+        Install-CX900 -SourceDir $tempDir
 
         # 清理
         Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
