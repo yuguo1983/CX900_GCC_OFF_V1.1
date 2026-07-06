@@ -116,11 +116,11 @@ function Install-CX900 {
     $uninstall = @"
 @echo off
 chcp 65001 >nul
-echo 正在卸载 CX900...
+echo Uninstalling CX900, please wait...
 rd /s /q "$InstallDir" 2>nul
 del /q "$DesktopDir\CX900.lnk" 2>nul
 rd /s /q "$StartMenu" 2>nul
-echo 卸载完成！
+echo Uninstall complete!
 pause
 "@
     [System.IO.File]::WriteAllText("$InstallDir\uninstall.bat", $uninstall, [System.Text.UTF8Encoding]::new($false))
