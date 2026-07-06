@@ -108,6 +108,14 @@ function Install-CX900 {
     if (Test-Path "$SourceDir\Makefile") {
         Copy-Item -Path "$SourceDir\Makefile" -Destination $InstallDir -Force
     }
+    # 杂项文件
+    $miscFiles = @('appdemo', 'api.txt', 'codehelp.txt', 'compile.bat', 'install.ps1')
+    foreach ($f in $miscFiles) {
+        $fp = Join-Path $SourceDir $f
+        if (Test-Path $fp) {
+            Copy-Item -Path $fp -Destination $InstallDir -Force
+        }
+    }
 
     # 6. 创建快捷方式
     Write-Progress -Activity '正在安装 CX900' -Status '[5/5] 创建快捷方式' -PercentComplete 95
