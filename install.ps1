@@ -158,13 +158,9 @@ pause
 
 try {
     if ($isRemote) {
-        # 远程模式：从 AtomGit 下载源码 ZIP 归档
+        # 远程模式：从 GitHub Release 下载安装包
         Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        # AtomGit 优先（国内速度快），GitHub 备用
-        $zipUrls = @(
-            'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1/raw/main/bin/x86/Debug/CX900_Setup.zip',
-            'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/releases/download/v1.1.0/CX900.zip'
-        )
+        $zipUrl = 'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/releases/download/v1.1.0/CX900.zip'
         $tempZip = "$env:TEMP\CX900.zip"
         $tempDir = "$env:TEMP\CX900_Install"
 
@@ -172,19 +168,10 @@ try {
         if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
         $null = New-Item -Path $tempDir -ItemType Directory -Force
 
-        $downloaded = $false
-        foreach ($url in $zipUrls) {
-            try {
-                Write-Host "  下载: $url" -ForegroundColor Gray
-                Invoke-WebRequest -Uri $url -OutFile $tempZip -UseBasicParsing
-                $downloaded = $true
-                break
-            } catch {
-                Write-Warning "下载失败，切换备用地址..."
-            }
-        }
-
-        if (-not $downloaded) {
+        Write-Host "  下载: $zipUrl" -ForegroundColor Gray
+        try {
+            Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip -UseBasicParsing
+        } catch {
             Write-Error '下载安装包失败！请检查网络连接。'
             exit 1
         }
