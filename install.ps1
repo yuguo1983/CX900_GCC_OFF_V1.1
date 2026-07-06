@@ -167,7 +167,11 @@ try {
         if (Test-Path $cloneDir) { Remove-Item $cloneDir -Recurse -Force }
 
         try {
-            & git clone --depth 1 $repoUrl $cloneDir 2>&1
+            $oldPref = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            $null = & git clone --depth 1 $repoUrl $cloneDir 2>&1
+            $ErrorActionPreference = $oldPref
+            if ($LASTEXITCODE -ne 0) { throw "git exit code: $LASTEXITCODE" }
         } catch {
             Write-Error '克隆仓库失败！请检查网络连接。'
             exit 1
