@@ -83,38 +83,14 @@ function Install-CX900 {
     Write-Progress -Activity '正在安装 CX900' -Status '[1/5] 创建目录' -PercentComplete 20
     $null = New-Item -Path $InstallDir -ItemType Directory -Force
 
-    # 2. 复制主程序
-    Write-Progress -Activity '正在安装 CX900' -Status '[2/5] 复制主程序' -PercentComplete 40
-    Copy-Item -Path "$SourceDir\CX900.exe"       -Destination $InstallDir -Force
-    Copy-Item -Path "$SourceDir\CX900.exe.config" -Destination $InstallDir -Force
-    Copy-Item -Path "$SourceDir\CX900.pdb"       -Destination $InstallDir -Force
-
-    # 3. 复制 DLL
-    Write-Progress -Activity '正在安装 CX900' -Status '[3/5] 复制运行时库' -PercentComplete 60
-    Get-ChildItem -Path "$SourceDir\*.dll" | Copy-Item -Destination $InstallDir -Force
-
-    # 4. 复制配置文件
-    Get-ChildItem -Path "$SourceDir\*.xml", "$SourceDir\*.txt" | Copy-Item -Destination $InstallDir -Force
-
-    # 5. 复制固件相关目录
-    Write-Progress -Activity '正在安装 CX900' -Status '[4/5] 复制固件与模块' -PercentComplete 80
-    $dirs = @('Firmware', 'Module', 'USER', 'CMD', 'Soft_Drive', 'USB', 'YMODEM', 'MALLOC', 'GPU', 'MB', 'FatFs', 'TEXT',
-        'w64devkit', 'gcc-arm-none-eabi-10.3-2021.10')
-    foreach ($d in $dirs) {
-        $src = "$SourceDir\$d"
-        if (Test-Path $src) {
-            Copy-Item -Path $src -Destination $InstallDir -Recurse -Force
-        }
-    }
-    if (Test-Path "$SourceDir\Makefile") {
-        Copy-Item -Path "$SourceDir\Makefile" -Destination $InstallDir -Force
-    }
-    # 杂项文件
-    $miscFiles = @('appdemo', 'api.txt', 'codehelp.txt', 'compile.bat', 'install.ps1')
-    foreach ($f in $miscFiles) {
-        $fp = Join-Path $SourceDir $f
-        if (Test-Path $fp) {
-            Copy-Item -Path $fp -Destination $InstallDir -Force
+    # 2-5. 复制所有文件和目录（排除 .git）
+    Write-Progress -Activity '正在安装 CX900' -Status '[2/5] 复制所有文件...' -PercentComplete 40
+    Get-ChildItem -Path $SourceDir -Exclude '.git' | ForEach-Object {
+        $dest = Join-Path $InstallDir $_.Name
+        if ($_.PSIsContainer) {
+            Copy-Item -Path $_.FullName -Destination $dest -Recurse -Force
+        } else {
+            Copy-Item -Path $_.FullName -Destination $dest -Force
         }
     }
 
