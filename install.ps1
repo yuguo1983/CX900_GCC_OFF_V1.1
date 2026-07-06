@@ -158,9 +158,9 @@ pause
 
 try {
     if ($isRemote) {
-        # 远程模式：从 GitHub Release 下载安装包
+        # 远程模式：从 GitHub 仓库直接下载安装包
         Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        $zipUrl = 'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/releases/download/v1.1.0/CX900.zip'
+        $zipUrl = 'https://raw.githubusercontent.com/yuguo1983/CX900_GCC_OFF_V1.1/main/bin/x86/Debug/CX900_Setup.zip'
         $tempZip = "$env:TEMP\CX900.zip"
         $tempDir = "$env:TEMP\CX900_Install"
 
