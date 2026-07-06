@@ -123,7 +123,7 @@ rd /s /q "$StartMenu" 2>nul
 echo 卸载完成！
 pause
 "@
-    [System.IO.File]::WriteAllText("$InstallDir\uninstall.bat", $uninstall, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText("$InstallDir\uninstall.bat", $uninstall, [System.Text.UTF8Encoding]::new($false))
 
     Write-Progress -Activity '正在安装 CX900' -Status '完成' -PercentComplete 100
 
