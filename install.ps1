@@ -158,30 +158,25 @@ pause
 
 try {
     if ($isRemote) {
-        # 远程模式：从 GitHub 仓库直接下载安装包
-        Write-Host '>>> 正在下载安装包...' -ForegroundColor Yellow
-        $zipUrl = 'https://raw.githubusercontent.com/yuguo1983/CX900_GCC_OFF_V1.1/main/bin/x86/Debug/CX900_Setup.zip'
-        $tempZip = "$env:TEMP\CX900.zip"
-        $tempDir = "$env:TEMP\CX900_Install"
+        # 远程模式：从 AtomGit 克隆仓库（国内速度快，稳定可靠）
+        Write-Host '>>> 正在克隆仓库...' -ForegroundColor Yellow
+        $cloneDir = "$env:TEMP\CX900_Install"
+        $repoUrl = 'https://atomgit.com/denny168/CX900_GCC_OFF_V1.1.git'
 
         # 清理临时目录
-        if (Test-Path $tempDir) { Remove-Item $tempDir -Recurse -Force }
-        $null = New-Item -Path $tempDir -ItemType Directory -Force
+        if (Test-Path $cloneDir) { Remove-Item $cloneDir -Recurse -Force }
 
-        Write-Host "  下载: $zipUrl" -ForegroundColor Gray
         try {
-            Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip -UseBasicParsing
+            & git clone --depth 1 $repoUrl $cloneDir 2>&1
         } catch {
-            Write-Error '下载安装包失败！请检查网络连接。'
+            Write-Error '克隆仓库失败！请检查网络连接。'
             exit 1
         }
 
-        Expand-Archive -Path $tempZip -DestinationPath $tempDir -Force
-        Install-CX900 -SourceDir $tempDir
+        Install-CX900 -SourceDir $cloneDir
 
         # 清理
-        Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
-        Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item $cloneDir -Recurse -Force -ErrorAction SilentlyContinue
     } else {
         # 本地模式
         Install-CX900 -SourceDir $ScriptDir
