@@ -98,7 +98,8 @@ function Install-CX900 {
 
     # 5. 复制固件相关目录
     Write-Progress -Activity '正在安装 CX900' -Status '[4/5] 复制固件与模块' -PercentComplete 80
-    $dirs = @('Firmware', 'Module', 'USER', 'CMD', 'Soft_Drive', 'USB', 'YMODEM', 'MALLOC', 'GPU', 'MB', 'FatFs', 'TEXT')
+    $dirs = @('Firmware', 'Module', 'USER', 'CMD', 'Soft_Drive', 'USB', 'YMODEM', 'MALLOC', 'GPU', 'MB', 'FatFs', 'TEXT',
+        'w64devkit', 'gcc-arm-none-eabi-10.3-2021.10')
     foreach ($d in $dirs) {
         $src = "$SourceDir\$d"
         if (Test-Path $src) {
