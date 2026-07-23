@@ -1,0 +1,1495 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"malloc.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	mem1base
+  18              		.section	.bss.mem1base,"aw",%nobits
+  19              		.align	2
+  22              	mem1base:
+  23 0000 00000000 		.space	2048
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  24              		.global	mem1mapbase
+  25              		.section	.bss.mem1mapbase,"aw",%nobits
+  26              		.align	2
+  29              	mem1mapbase:
+  30 0000 00000000 		.space	128
+  30      00000000 
+  30      00000000 
+  30      00000000 
+  30      00000000 
+  31              		.global	memtblsize
+  32              		.section	.rodata.memtblsize,"a"
+  33              		.align	2
+  36              	memtblsize:
+  37 0000 40000000 		.word	64
+  38 0004 00640000 		.word	25600
+  39 0008 80070000 		.word	1920
+  40              		.global	memblksize
+  41              		.section	.rodata.memblksize,"a"
+  42              		.align	2
+  45              	memblksize:
+  46 0000 20000000 		.word	32
+  47 0004 20000000 		.word	32
+  48 0008 20000000 		.word	32
+  49              		.global	memsize
+  50              		.section	.rodata.memsize,"a"
+  51              		.align	2
+  54              	memsize:
+  55 0000 00080000 		.word	2048
+  56 0004 00800C00 		.word	819200
+  57 0008 00F00000 		.word	61440
+  58              		.global	mallco_dev
+  59              		.section	.data.mallco_dev,"aw"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 2
+
+
+  60              		.align	2
+  63              	mallco_dev:
+  64 0000 00000000 		.word	mem_init
+  65 0004 00000000 		.word	mem_perused
+  66 0008 00000000 		.word	mem1base
+  67 000c 00000000 		.word	mem1mapbase
+  68 0010 00000000 		.word	0
+  69 0014 00000000 		.word	0
+  70 0018 00000000 		.word	0
+  71 001c 00000000 		.space	4
+  72 0020 00000000 		.space	4
+  73              		.global	fs
+  74              		.section	.bss.fs,"aw",%nobits
+  75              		.align	2
+  78              	fs:
+  79 0000 00000000 		.space	8
+  79      00000000 
+  80              		.global	file
+  81              		.section	.bss.file,"aw",%nobits
+  82              		.align	2
+  85              	file:
+  86 0000 00000000 		.space	4
+  87              		.global	ftemp
+  88              		.section	.bss.ftemp,"aw",%nobits
+  89              		.align	2
+  92              	ftemp:
+  93 0000 00000000 		.space	4
+  94              		.global	br
+  95              		.section	.bss.br,"aw",%nobits
+  96              		.align	2
+  99              	br:
+ 100 0000 00000000 		.space	4
+ 101              		.global	bw
+ 102              		.section	.bss.bw,"aw",%nobits
+ 103              		.align	2
+ 106              	bw:
+ 107 0000 00000000 		.space	4
+ 108              		.global	fileinfo
+ 109              		.section	.bss.fileinfo,"aw",%nobits
+ 110              		.align	3
+ 113              	fileinfo:
+ 114 0000 00000000 		.space	40
+ 114      00000000 
+ 114      00000000 
+ 114      00000000 
+ 114      00000000 
+ 115              		.global	dir
+ 116              		.section	.bss.dir,"aw",%nobits
+ 117              		.align	3
+ 120              	dir:
+ 121 0000 00000000 		.space	4144
+ 121      00000000 
+ 121      00000000 
+ 121      00000000 
+ 121      00000000 
+ 122              		.global	fatbuf
+ 123              		.section	.bss.fatbuf,"aw",%nobits
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 3
+
+
+ 124              		.align	2
+ 127              	fatbuf:
+ 128 0000 00000000 		.space	4
+ 129              		.section	.text.FATFS_Init,"ax",%progbits
+ 130              		.align	1
+ 131              		.global	FATFS_Init
+ 132              		.syntax unified
+ 133              		.thumb
+ 134              		.thumb_func
+ 136              	FATFS_Init:
+ 137              	.LFB116:
+ 138              		.file 1 "MALLOC/malloc.c"
+   1:MALLOC/malloc.c **** #include "malloc.h"
+   2:MALLOC/malloc.c **** #include "ff.h"
+   3:MALLOC/malloc.c **** //////////////////////////////////////////////////////////////////////////////////	 
+   4:MALLOC/malloc.c **** //±¾³ÌÐòÖ»¹©Ñ§Ï°Ê¹ÓÃ£¬Î´¾­×÷ÕßÐí¿É£¬²»µÃÓÃÓÚÆäËüÈÎºÎÓÃÍ¾
+   5:MALLOC/malloc.c **** //ALIENTEK STM32F407¿ª·¢°å
+   6:MALLOC/malloc.c **** //ÄÚ´æ¹ÜÀí Çý¶¯´úÂë	   
+   7:MALLOC/malloc.c **** //ÕýµãÔ­×Ó@ALIENTEK
+   8:MALLOC/malloc.c **** //¼¼ÊõÂÛÌ³:www.openedv.com
+   9:MALLOC/malloc.c **** //´´½¨ÈÕÆÚ:2014/5/15
+  10:MALLOC/malloc.c **** //°æ±¾£ºV1.0
+  11:MALLOC/malloc.c **** //°æÈ¨ËùÓÐ£¬µÁ°æ±Ø¾¿¡£
+  12:MALLOC/malloc.c **** //Copyright(C) ¹ãÖÝÊÐÐÇÒíµç×Ó¿Æ¼¼ÓÐÏÞ¹«Ë¾ 2014-2024
+  13:MALLOC/malloc.c **** //All rights reserved									  
+  14:MALLOC/malloc.c **** ////////////////////////////////////////////////////////////////////////////////// 	 
+  15:MALLOC/malloc.c **** 
+  16:MALLOC/malloc.c **** 
+  17:MALLOC/malloc.c **** //ÄÚ´æ³Ø(4×Ö½Ú¶ÔÆë)
+  18:MALLOC/malloc.c **** __attribute__ ((aligned (4))) uint8_t mem1base[MEM1_MAX_SIZE] ;
+  19:MALLOC/malloc.c **** //__attribute__ ((aligned (4))) uint8_t mem2base[MEM2_MAX_SIZE] __attribute__((at(0x68000000))); //
+  20:MALLOC/malloc.c **** //__attribute__ ((aligned (4))) uint8_t mem3base[MEM3_MAX_SIZE] __attribute__((at(0x10000000))); //
+  21:MALLOC/malloc.c **** //ÄÚ´æ¹ÜÀí±í
+  22:MALLOC/malloc.c **** uint16_t mem1mapbase[MEM1_ALLOC_TABLE_SIZE];													//ÄÚ²¿SRAMÄÚ´æ³ØMAP
+  23:MALLOC/malloc.c **** //uint16_t mem2mapbase[MEM2_ALLOC_TABLE_SIZE] __attribute__((at(0X68000000+MEM2_MAX_SIZE)));	//Íâ²¿
+  24:MALLOC/malloc.c **** //uint16_t mem3mapbase[MEM3_ALLOC_TABLE_SIZE] __attribute__((at(0X10000000+MEM3_MAX_SIZE)));	//ÄÚ²¿
+  25:MALLOC/malloc.c **** //ÄÚ´æ¹ÜÀí²ÎÊý	   
+  26:MALLOC/malloc.c **** const uint32_t memtblsize[SRAMBANK]={MEM1_ALLOC_TABLE_SIZE,MEM2_ALLOC_TABLE_SIZE,MEM3_ALLOC_TABLE_S
+  27:MALLOC/malloc.c **** const uint32_t memblksize[SRAMBANK]={MEM1_BLOCK_SIZE,MEM2_BLOCK_SIZE,MEM3_BLOCK_SIZE};					//ÄÚ´æ·Ö
+  28:MALLOC/malloc.c **** const uint32_t memsize[SRAMBANK]={MEM1_MAX_SIZE,MEM2_MAX_SIZE,MEM3_MAX_SIZE};							//ÄÚ´æ×Ü´óÐ¡
+  29:MALLOC/malloc.c **** 
+  30:MALLOC/malloc.c **** //ÄÚ´æ¹ÜÀí¿ØÖÆÆ÷
+  31:MALLOC/malloc.c **** struct _m_mallco_dev mallco_dev=
+  32:MALLOC/malloc.c **** {
+  33:MALLOC/malloc.c **** 	mem_init,							//ÄÚ´æ³õÊ¼»¯
+  34:MALLOC/malloc.c **** 	mem_perused,						//ÄÚ´æÊ¹ÓÃÂÊ
+  35:MALLOC/malloc.c **** 	mem1base,			//ÄÚ´æ³Ø
+  36:MALLOC/malloc.c **** 	mem1mapbase,//ÄÚ´æ¹ÜÀí×´Ì¬±í
+  37:MALLOC/malloc.c **** 	0,0,0,  		 					//ÄÚ´æ¹ÜÀíÎ´¾ÍÐ÷
+  38:MALLOC/malloc.c **** };
+  39:MALLOC/malloc.c **** 
+  40:MALLOC/malloc.c **** 
+  41:MALLOC/malloc.c **** 
+  42:MALLOC/malloc.c **** FATFS *fs[_VOLUMES];//Âß¼­´ÅÅÌ¹¤×÷Çø
+  43:MALLOC/malloc.c **** FIL *file;	  		//ÎÄ¼þ1
+  44:MALLOC/malloc.c **** FIL *ftemp;	  		//ÎÄ¼þ2.
+  45:MALLOC/malloc.c **** UINT br,bw;			//¶ÁÐ´±äÁ¿
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 4
+
+
+  46:MALLOC/malloc.c **** FILINFO fileinfo;	//ÎÄ¼þÐÅÏ¢
+  47:MALLOC/malloc.c **** DIR dir;  			//Ä¿Â¼
+  48:MALLOC/malloc.c **** uint8_t *fatbuf;			//SD¿¨Êý¾Ý»º´æÇø
+  49:MALLOC/malloc.c **** uint8_t FATFS_Init(void)
+  50:MALLOC/malloc.c **** {
+ 139              		.loc 1 50 1
+ 140              		.cfi_startproc
+ 141              		@ args = 0, pretend = 0, frame = 8
+ 142              		@ frame_needed = 1, uses_anonymous_args = 0
+ 143 0000 90B5     		push	{r4, r7, lr}
+ 144              	.LCFI0:
+ 145              		.cfi_def_cfa_offset 12
+ 146              		.cfi_offset 4, -12
+ 147              		.cfi_offset 7, -8
+ 148              		.cfi_offset 14, -4
+ 149 0002 83B0     		sub	sp, sp, #12
+ 150              	.LCFI1:
+ 151              		.cfi_def_cfa_offset 24
+ 152 0004 00AF     		add	r7, sp, #0
+ 153              	.LCFI2:
+ 154              		.cfi_def_cfa_register 7
+  51:MALLOC/malloc.c **** 	uint8_t i;
+  52:MALLOC/malloc.c **** 	for(i=0;i<_VOLUMES;i++)
+ 155              		.loc 1 52 7
+ 156 0006 0023     		movs	r3, #0
+ 157 0008 FB71     		strb	r3, [r7, #7]
+ 158              		.loc 1 52 2
+ 159 000a 12E0     		b	.L2
+ 160              	.L5:
+  53:MALLOC/malloc.c **** 	{
+  54:MALLOC/malloc.c **** 		fs[i]=(FATFS*)mymalloc(SRAMIN,sizeof(FATFS));	//Îª´ÅÅÌi¹¤×÷ÇøÉêÇëÄÚ´æ	
+ 161              		.loc 1 54 5
+ 162 000c FC79     		ldrb	r4, [r7, #7]	@ zero_extendqisi2
+ 163              		.loc 1 54 17
+ 164 000e 41F25801 		movw	r1, #4184
+ 165 0012 0020     		movs	r0, #0
+ 166 0014 FFF7FEFF 		bl	mymalloc
+ 167 0018 0346     		mov	r3, r0
+ 168              		.loc 1 54 8
+ 169 001a 1F4A     		ldr	r2, .L9
+ 170 001c 42F82430 		str	r3, [r2, r4, lsl #2]
+  55:MALLOC/malloc.c **** 		if(!fs[i])break;
+ 171              		.loc 1 55 9
+ 172 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 173 0022 1D4A     		ldr	r2, .L9
+ 174 0024 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 175              		.loc 1 55 5
+ 176 0028 002B     		cmp	r3, #0
+ 177 002a 06D0     		beq	.L8
+  52:MALLOC/malloc.c **** 	{
+ 178              		.loc 1 52 22 discriminator 2
+ 179 002c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 180 002e 0133     		adds	r3, r3, #1
+ 181 0030 FB71     		strb	r3, [r7, #7]
+ 182              	.L2:
+  52:MALLOC/malloc.c **** 	{
+ 183              		.loc 1 52 2 discriminator 1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 5
+
+
+ 184 0032 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 185 0034 012B     		cmp	r3, #1
+ 186 0036 E9D9     		bls	.L5
+ 187 0038 00E0     		b	.L4
+ 188              	.L8:
+ 189              		.loc 1 55 3
+ 190 003a 00BF     		nop
+ 191              	.L4:
+  56:MALLOC/malloc.c **** 	}
+  57:MALLOC/malloc.c **** 	file=(FIL*)mymalloc(SRAMIN,sizeof(FIL));		//ÎªfileÉêÇëÄÚ´æ
+ 192              		.loc 1 57 13
+ 193 003c 4FF48251 		mov	r1, #4160
+ 194 0040 0020     		movs	r0, #0
+ 195 0042 FFF7FEFF 		bl	mymalloc
+ 196 0046 0346     		mov	r3, r0
+ 197              		.loc 1 57 6
+ 198 0048 144A     		ldr	r2, .L9+4
+ 199 004a 1360     		str	r3, [r2]
+  58:MALLOC/malloc.c **** 	ftemp=(FIL*)mymalloc(SRAMIN,sizeof(FIL));		//ÎªftempÉêÇëÄÚ´æ
+ 200              		.loc 1 58 14
+ 201 004c 4FF48251 		mov	r1, #4160
+ 202 0050 0020     		movs	r0, #0
+ 203 0052 FFF7FEFF 		bl	mymalloc
+ 204 0056 0346     		mov	r3, r0
+ 205              		.loc 1 58 7
+ 206 0058 114A     		ldr	r2, .L9+8
+ 207 005a 1360     		str	r3, [r2]
+  59:MALLOC/malloc.c **** 	fatbuf=(uint8_t*)mymalloc(SRAMIN,512);				//ÎªfatbufÉêÇëÄÚ´æ
+ 208              		.loc 1 59 19
+ 209 005c 4FF40071 		mov	r1, #512
+ 210 0060 0020     		movs	r0, #0
+ 211 0062 FFF7FEFF 		bl	mymalloc
+ 212 0066 0346     		mov	r3, r0
+ 213              		.loc 1 59 8
+ 214 0068 0E4A     		ldr	r2, .L9+12
+ 215 006a 1360     		str	r3, [r2]
+  60:MALLOC/malloc.c **** 	if(i==_VOLUMES&&file&&ftemp&&fatbuf)return 0;  //ÉêÇëÓÐÒ»¸öÊ§°Ü,¼´Ê§°Ü.
+ 216              		.loc 1 60 4
+ 217 006c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 218 006e 022B     		cmp	r3, #2
+ 219 0070 0DD1     		bne	.L6
+ 220              		.loc 1 60 16 discriminator 1
+ 221 0072 0A4B     		ldr	r3, .L9+4
+ 222 0074 1B68     		ldr	r3, [r3]
+ 223 0076 002B     		cmp	r3, #0
+ 224 0078 09D0     		beq	.L6
+ 225              		.loc 1 60 22 discriminator 2
+ 226 007a 094B     		ldr	r3, .L9+8
+ 227 007c 1B68     		ldr	r3, [r3]
+ 228 007e 002B     		cmp	r3, #0
+ 229 0080 05D0     		beq	.L6
+ 230              		.loc 1 60 29 discriminator 3
+ 231 0082 084B     		ldr	r3, .L9+12
+ 232 0084 1B68     		ldr	r3, [r3]
+ 233 0086 002B     		cmp	r3, #0
+ 234 0088 01D0     		beq	.L6
+ 235              		.loc 1 60 45 discriminator 4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 6
+
+
+ 236 008a 0023     		movs	r3, #0
+ 237 008c 00E0     		b	.L7
+ 238              	.L6:
+  61:MALLOC/malloc.c **** 	else return 1;	
+ 239              		.loc 1 61 14
+ 240 008e 0123     		movs	r3, #1
+ 241              	.L7:
+  62:MALLOC/malloc.c **** }
+ 242              		.loc 1 62 1
+ 243 0090 1846     		mov	r0, r3
+ 244 0092 0C37     		adds	r7, r7, #12
+ 245              	.LCFI3:
+ 246              		.cfi_def_cfa_offset 12
+ 247 0094 BD46     		mov	sp, r7
+ 248              	.LCFI4:
+ 249              		.cfi_def_cfa_register 13
+ 250              		@ sp needed
+ 251 0096 90BD     		pop	{r4, r7, pc}
+ 252              	.L10:
+ 253              		.align	2
+ 254              	.L9:
+ 255 0098 00000000 		.word	fs
+ 256 009c 00000000 		.word	file
+ 257 00a0 00000000 		.word	ftemp
+ 258 00a4 00000000 		.word	fatbuf
+ 259              		.cfi_endproc
+ 260              	.LFE116:
+ 262              		.section	.text.mymemcpy,"ax",%progbits
+ 263              		.align	1
+ 264              		.global	mymemcpy
+ 265              		.syntax unified
+ 266              		.thumb
+ 267              		.thumb_func
+ 269              	mymemcpy:
+ 270              	.LFB117:
+  63:MALLOC/malloc.c **** 
+  64:MALLOC/malloc.c **** 
+  65:MALLOC/malloc.c **** 
+  66:MALLOC/malloc.c **** 
+  67:MALLOC/malloc.c **** 
+  68:MALLOC/malloc.c **** 
+  69:MALLOC/malloc.c **** 
+  70:MALLOC/malloc.c **** 
+  71:MALLOC/malloc.c **** 
+  72:MALLOC/malloc.c **** 
+  73:MALLOC/malloc.c **** 
+  74:MALLOC/malloc.c **** 
+  75:MALLOC/malloc.c **** 
+  76:MALLOC/malloc.c **** 
+  77:MALLOC/malloc.c **** 
+  78:MALLOC/malloc.c **** 
+  79:MALLOC/malloc.c **** 
+  80:MALLOC/malloc.c **** 
+  81:MALLOC/malloc.c **** //¸´ÖÆÄÚ´æ
+  82:MALLOC/malloc.c **** //*des:Ä¿µÄµØÖ·
+  83:MALLOC/malloc.c **** //*src:Ô´µØÖ·
+  84:MALLOC/malloc.c **** //n:ÐèÒª¸´ÖÆµÄÄÚ´æ³¤¶È(×Ö½ÚÎªµ¥Î»)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 7
+
+
+  85:MALLOC/malloc.c **** void mymemcpy(void *des,void *src,uint32_t n)
+  86:MALLOC/malloc.c **** {
+ 271              		.loc 1 86 1
+ 272              		.cfi_startproc
+ 273              		@ args = 0, pretend = 0, frame = 24
+ 274              		@ frame_needed = 1, uses_anonymous_args = 0
+ 275              		@ link register save eliminated.
+ 276 0000 80B4     		push	{r7}
+ 277              	.LCFI5:
+ 278              		.cfi_def_cfa_offset 4
+ 279              		.cfi_offset 7, -4
+ 280 0002 87B0     		sub	sp, sp, #28
+ 281              	.LCFI6:
+ 282              		.cfi_def_cfa_offset 32
+ 283 0004 00AF     		add	r7, sp, #0
+ 284              	.LCFI7:
+ 285              		.cfi_def_cfa_register 7
+ 286 0006 F860     		str	r0, [r7, #12]
+ 287 0008 B960     		str	r1, [r7, #8]
+ 288 000a 7A60     		str	r2, [r7, #4]
+  87:MALLOC/malloc.c **** 	uint8_t *xdes = des;
+ 289              		.loc 1 87 11
+ 290 000c FB68     		ldr	r3, [r7, #12]
+ 291 000e 7B61     		str	r3, [r7, #20]
+  88:MALLOC/malloc.c **** 	uint8_t *xsrc = src;
+ 292              		.loc 1 88 11
+ 293 0010 BB68     		ldr	r3, [r7, #8]
+ 294 0012 3B61     		str	r3, [r7, #16]
+  89:MALLOC/malloc.c **** 	while(n--) *xdes++ = *xsrc++;
+ 295              		.loc 1 89 7
+ 296 0014 07E0     		b	.L12
+ 297              	.L13:
+ 298              		.loc 1 89 28 discriminator 2
+ 299 0016 3A69     		ldr	r2, [r7, #16]
+ 300 0018 531C     		adds	r3, r2, #1
+ 301 001a 3B61     		str	r3, [r7, #16]
+ 302              		.loc 1 89 18 discriminator 2
+ 303 001c 7B69     		ldr	r3, [r7, #20]
+ 304 001e 591C     		adds	r1, r3, #1
+ 305 0020 7961     		str	r1, [r7, #20]
+ 306              		.loc 1 89 23 discriminator 2
+ 307 0022 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 308              		.loc 1 89 21 discriminator 2
+ 309 0024 1A70     		strb	r2, [r3]
+ 310              	.L12:
+ 311              		.loc 1 89 9 discriminator 1
+ 312 0026 7B68     		ldr	r3, [r7, #4]
+ 313 0028 5A1E     		subs	r2, r3, #1
+ 314 002a 7A60     		str	r2, [r7, #4]
+ 315              		.loc 1 89 7 discriminator 1
+ 316 002c 002B     		cmp	r3, #0
+ 317 002e F2D1     		bne	.L13
+  90:MALLOC/malloc.c **** }
+ 318              		.loc 1 90 1
+ 319 0030 00BF     		nop
+ 320 0032 00BF     		nop
+ 321 0034 1C37     		adds	r7, r7, #28
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 8
+
+
+ 322              	.LCFI8:
+ 323              		.cfi_def_cfa_offset 4
+ 324 0036 BD46     		mov	sp, r7
+ 325              	.LCFI9:
+ 326              		.cfi_def_cfa_register 13
+ 327              		@ sp needed
+ 328 0038 80BC     		pop	{r7}
+ 329              	.LCFI10:
+ 330              		.cfi_restore 7
+ 331              		.cfi_def_cfa_offset 0
+ 332 003a 7047     		bx	lr
+ 333              		.cfi_endproc
+ 334              	.LFE117:
+ 336              		.section	.text.mymemset,"ax",%progbits
+ 337              		.align	1
+ 338              		.global	mymemset
+ 339              		.syntax unified
+ 340              		.thumb
+ 341              		.thumb_func
+ 343              	mymemset:
+ 344              	.LFB118:
+  91:MALLOC/malloc.c **** 
+  92:MALLOC/malloc.c **** //ÉèÖÃÄÚ´æ
+  93:MALLOC/malloc.c **** //*s:ÄÚ´æÊ×µØÖ·
+  94:MALLOC/malloc.c **** //c :ÒªÉèÖÃµÄÖµ
+  95:MALLOC/malloc.c **** //count:ÐèÒªÉèÖÃµÄÄÚ´æ´óÐ¡(×Ö½ÚÎªµ¥Î»)
+  96:MALLOC/malloc.c **** void mymemset(void*s,uint8_t c,uint32_t count)
+  97:MALLOC/malloc.c **** {
+ 345              		.loc 1 97 1
+ 346              		.cfi_startproc
+ 347              		@ args = 0, pretend = 0, frame = 24
+ 348              		@ frame_needed = 1, uses_anonymous_args = 0
+ 349              		@ link register save eliminated.
+ 350 0000 80B4     		push	{r7}
+ 351              	.LCFI11:
+ 352              		.cfi_def_cfa_offset 4
+ 353              		.cfi_offset 7, -4
+ 354 0002 87B0     		sub	sp, sp, #28
+ 355              	.LCFI12:
+ 356              		.cfi_def_cfa_offset 32
+ 357 0004 00AF     		add	r7, sp, #0
+ 358              	.LCFI13:
+ 359              		.cfi_def_cfa_register 7
+ 360 0006 F860     		str	r0, [r7, #12]
+ 361 0008 0B46     		mov	r3, r1
+ 362 000a 7A60     		str	r2, [r7, #4]
+ 363 000c FB72     		strb	r3, [r7, #11]
+  98:MALLOC/malloc.c **** 	uint8_t *xs = s;
+ 364              		.loc 1 98 11
+ 365 000e FB68     		ldr	r3, [r7, #12]
+ 366 0010 7B61     		str	r3, [r7, #20]
+  99:MALLOC/malloc.c **** 	while(count--) *xs++=c;
+ 367              		.loc 1 99 7
+ 368 0012 04E0     		b	.L15
+ 369              	.L16:
+ 370              		.loc 1 99 20 discriminator 2
+ 371 0014 7B69     		ldr	r3, [r7, #20]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 9
+
+
+ 372 0016 5A1C     		adds	r2, r3, #1
+ 373 0018 7A61     		str	r2, [r7, #20]
+ 374              		.loc 1 99 22 discriminator 2
+ 375 001a FA7A     		ldrb	r2, [r7, #11]
+ 376 001c 1A70     		strb	r2, [r3]
+ 377              	.L15:
+ 378              		.loc 1 99 13 discriminator 1
+ 379 001e 7B68     		ldr	r3, [r7, #4]
+ 380 0020 5A1E     		subs	r2, r3, #1
+ 381 0022 7A60     		str	r2, [r7, #4]
+ 382              		.loc 1 99 7 discriminator 1
+ 383 0024 002B     		cmp	r3, #0
+ 384 0026 F5D1     		bne	.L16
+ 100:MALLOC/malloc.c **** }
+ 385              		.loc 1 100 1
+ 386 0028 00BF     		nop
+ 387 002a 00BF     		nop
+ 388 002c 1C37     		adds	r7, r7, #28
+ 389              	.LCFI14:
+ 390              		.cfi_def_cfa_offset 4
+ 391 002e BD46     		mov	sp, r7
+ 392              	.LCFI15:
+ 393              		.cfi_def_cfa_register 13
+ 394              		@ sp needed
+ 395 0030 80BC     		pop	{r7}
+ 396              	.LCFI16:
+ 397              		.cfi_restore 7
+ 398              		.cfi_def_cfa_offset 0
+ 399 0032 7047     		bx	lr
+ 400              		.cfi_endproc
+ 401              	.LFE118:
+ 403              		.section	.text.mem_init,"ax",%progbits
+ 404              		.align	1
+ 405              		.global	mem_init
+ 406              		.syntax unified
+ 407              		.thumb
+ 408              		.thumb_func
+ 410              	mem_init:
+ 411              	.LFB119:
+ 101:MALLOC/malloc.c **** 
+ 102:MALLOC/malloc.c **** //ÄÚ´æ¹ÜÀí³õÊ¼»¯  
+ 103:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ 104:MALLOC/malloc.c **** void mem_init(uint8_t memx)
+ 105:MALLOC/malloc.c **** {
+ 412              		.loc 1 105 1
+ 413              		.cfi_startproc
+ 414              		@ args = 0, pretend = 0, frame = 8
+ 415              		@ frame_needed = 1, uses_anonymous_args = 0
+ 416 0000 80B5     		push	{r7, lr}
+ 417              	.LCFI17:
+ 418              		.cfi_def_cfa_offset 8
+ 419              		.cfi_offset 7, -8
+ 420              		.cfi_offset 14, -4
+ 421 0002 82B0     		sub	sp, sp, #8
+ 422              	.LCFI18:
+ 423              		.cfi_def_cfa_offset 16
+ 424 0004 00AF     		add	r7, sp, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 10
+
+
+ 425              	.LCFI19:
+ 426              		.cfi_def_cfa_register 7
+ 427 0006 0346     		mov	r3, r0
+ 428 0008 FB71     		strb	r3, [r7, #7]
+ 106:MALLOC/malloc.c **** 	mymemset(mallco_dev.memmap[memx],0,memtblsize[memx]*2); //ÄÚ´æ×´Ì¬±íÇåÁã
+ 429              		.loc 1 106 2
+ 430 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 431              		.loc 1 106 28
+ 432 000c 124A     		ldr	r2, .L18
+ 433 000e 0433     		adds	r3, r3, #4
+ 434 0010 9B00     		lsls	r3, r3, #2
+ 435 0012 1344     		add	r3, r3, r2
+ 436 0014 5868     		ldr	r0, [r3, #4]
+ 437              		.loc 1 106 47
+ 438 0016 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 439 0018 104A     		ldr	r2, .L18+4
+ 440 001a 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 441              		.loc 1 106 2
+ 442 001e 5B00     		lsls	r3, r3, #1
+ 443 0020 1A46     		mov	r2, r3
+ 444 0022 0021     		movs	r1, #0
+ 445 0024 FFF7FEFF 		bl	mymemset
+ 107:MALLOC/malloc.c **** 	mymemset(mallco_dev.membase[memx], 0,memsize[memx]);	//ÄÚ´æ³ØËùÓÐÊý¾ÝÇåÁã  
+ 446              		.loc 1 107 2
+ 447 0028 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 448              		.loc 1 107 29
+ 449 002a 0B4A     		ldr	r2, .L18
+ 450 002c 0233     		adds	r3, r3, #2
+ 451 002e 52F82300 		ldr	r0, [r2, r3, lsl #2]
+ 452              		.loc 1 107 2
+ 453 0032 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 454 0034 0A4A     		ldr	r2, .L18+8
+ 455 0036 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 456 003a 1A46     		mov	r2, r3
+ 457 003c 0021     		movs	r1, #0
+ 458 003e FFF7FEFF 		bl	mymemset
+ 108:MALLOC/malloc.c **** 	mallco_dev.memrdy[memx]=1;								//ÄÚ´æ¹ÜÀí³õÊ¼»¯OK  
+ 459              		.loc 1 108 19
+ 460 0042 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 461              		.loc 1 108 25
+ 462 0044 044A     		ldr	r2, .L18
+ 463 0046 1344     		add	r3, r3, r2
+ 464 0048 0122     		movs	r2, #1
+ 465 004a 83F82020 		strb	r2, [r3, #32]
+ 109:MALLOC/malloc.c **** }
+ 466              		.loc 1 109 1
+ 467 004e 00BF     		nop
+ 468 0050 0837     		adds	r7, r7, #8
+ 469              	.LCFI20:
+ 470              		.cfi_def_cfa_offset 8
+ 471 0052 BD46     		mov	sp, r7
+ 472              	.LCFI21:
+ 473              		.cfi_def_cfa_register 13
+ 474              		@ sp needed
+ 475 0054 80BD     		pop	{r7, pc}
+ 476              	.L19:
+ 477 0056 00BF     		.align	2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 11
+
+
+ 478              	.L18:
+ 479 0058 00000000 		.word	mallco_dev
+ 480 005c 00000000 		.word	memtblsize
+ 481 0060 00000000 		.word	memsize
+ 482              		.cfi_endproc
+ 483              	.LFE119:
+ 485              		.section	.text.mem_perused,"ax",%progbits
+ 486              		.align	1
+ 487              		.global	mem_perused
+ 488              		.syntax unified
+ 489              		.thumb
+ 490              		.thumb_func
+ 492              	mem_perused:
+ 493              	.LFB120:
+ 110:MALLOC/malloc.c **** 
+ 111:MALLOC/malloc.c **** //»ñÈ¡ÄÚ´æÊ¹ÓÃÂÊ
+ 112:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ 113:MALLOC/malloc.c **** //·µ»ØÖµ:Ê¹ÓÃÂÊ(0~100)
+ 114:MALLOC/malloc.c **** uint8_t mem_perused(uint8_t memx)  
+ 115:MALLOC/malloc.c **** {  
+ 494              		.loc 1 115 1
+ 495              		.cfi_startproc
+ 496              		@ args = 0, pretend = 0, frame = 16
+ 497              		@ frame_needed = 1, uses_anonymous_args = 0
+ 498              		@ link register save eliminated.
+ 499 0000 80B4     		push	{r7}
+ 500              	.LCFI22:
+ 501              		.cfi_def_cfa_offset 4
+ 502              		.cfi_offset 7, -4
+ 503 0002 85B0     		sub	sp, sp, #20
+ 504              	.LCFI23:
+ 505              		.cfi_def_cfa_offset 24
+ 506 0004 00AF     		add	r7, sp, #0
+ 507              	.LCFI24:
+ 508              		.cfi_def_cfa_register 7
+ 509 0006 0346     		mov	r3, r0
+ 510 0008 FB71     		strb	r3, [r7, #7]
+ 116:MALLOC/malloc.c ****     uint32_t used=0;  
+ 511              		.loc 1 116 14
+ 512 000a 0023     		movs	r3, #0
+ 513 000c FB60     		str	r3, [r7, #12]
+ 117:MALLOC/malloc.c ****     uint32_t i;  
+ 118:MALLOC/malloc.c ****     for(i=0;i<memtblsize[memx];i++)  
+ 514              		.loc 1 118 10
+ 515 000e 0023     		movs	r3, #0
+ 516 0010 BB60     		str	r3, [r7, #8]
+ 517              		.loc 1 118 5
+ 518 0012 11E0     		b	.L21
+ 519              	.L23:
+ 119:MALLOC/malloc.c ****     {  
+ 120:MALLOC/malloc.c ****         if(mallco_dev.memmap[memx][i])used++; 
+ 520              		.loc 1 120 29
+ 521 0014 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 522 0016 144A     		ldr	r2, .L25
+ 523 0018 0433     		adds	r3, r3, #4
+ 524 001a 9B00     		lsls	r3, r3, #2
+ 525 001c 1344     		add	r3, r3, r2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 12
+
+
+ 526 001e 5A68     		ldr	r2, [r3, #4]
+ 527              		.loc 1 120 35
+ 528 0020 BB68     		ldr	r3, [r7, #8]
+ 529 0022 5B00     		lsls	r3, r3, #1
+ 530 0024 1344     		add	r3, r3, r2
+ 531 0026 1B88     		ldrh	r3, [r3]
+ 532              		.loc 1 120 11
+ 533 0028 002B     		cmp	r3, #0
+ 534 002a 02D0     		beq	.L22
+ 535              		.loc 1 120 43 discriminator 1
+ 536 002c FB68     		ldr	r3, [r7, #12]
+ 537 002e 0133     		adds	r3, r3, #1
+ 538 0030 FB60     		str	r3, [r7, #12]
+ 539              	.L22:
+ 118:MALLOC/malloc.c ****     {  
+ 540              		.loc 1 118 33 discriminator 2
+ 541 0032 BB68     		ldr	r3, [r7, #8]
+ 542 0034 0133     		adds	r3, r3, #1
+ 543 0036 BB60     		str	r3, [r7, #8]
+ 544              	.L21:
+ 118:MALLOC/malloc.c ****     {  
+ 545              		.loc 1 118 25 discriminator 1
+ 546 0038 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 547 003a 0C4A     		ldr	r2, .L25+4
+ 548 003c 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 118:MALLOC/malloc.c ****     {  
+ 549              		.loc 1 118 5 discriminator 1
+ 550 0040 BA68     		ldr	r2, [r7, #8]
+ 551 0042 9A42     		cmp	r2, r3
+ 552 0044 E6D3     		bcc	.L23
+ 121:MALLOC/malloc.c ****     } 
+ 122:MALLOC/malloc.c ****     return (used*100)/(memtblsize[memx]);  
+ 553              		.loc 1 122 17
+ 554 0046 FB68     		ldr	r3, [r7, #12]
+ 555 0048 6422     		movs	r2, #100
+ 556 004a 03FB02F2 		mul	r2, r3, r2
+ 557              		.loc 1 122 34
+ 558 004e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 559 0050 0649     		ldr	r1, .L25+4
+ 560 0052 51F82330 		ldr	r3, [r1, r3, lsl #2]
+ 561              		.loc 1 122 22
+ 562 0056 B2FBF3F3 		udiv	r3, r2, r3
+ 563 005a DBB2     		uxtb	r3, r3
+ 123:MALLOC/malloc.c **** } 
+ 564              		.loc 1 123 1
+ 565 005c 1846     		mov	r0, r3
+ 566 005e 1437     		adds	r7, r7, #20
+ 567              	.LCFI25:
+ 568              		.cfi_def_cfa_offset 4
+ 569 0060 BD46     		mov	sp, r7
+ 570              	.LCFI26:
+ 571              		.cfi_def_cfa_register 13
+ 572              		@ sp needed
+ 573 0062 80BC     		pop	{r7}
+ 574              	.LCFI27:
+ 575              		.cfi_restore 7
+ 576              		.cfi_def_cfa_offset 0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 13
+
+
+ 577 0064 7047     		bx	lr
+ 578              	.L26:
+ 579 0066 00BF     		.align	2
+ 580              	.L25:
+ 581 0068 00000000 		.word	mallco_dev
+ 582 006c 00000000 		.word	memtblsize
+ 583              		.cfi_endproc
+ 584              	.LFE120:
+ 586              		.section	.text.mem_malloc,"ax",%progbits
+ 587              		.align	1
+ 588              		.global	mem_malloc
+ 589              		.syntax unified
+ 590              		.thumb
+ 591              		.thumb_func
+ 593              	mem_malloc:
+ 594              	.LFB121:
+ 124:MALLOC/malloc.c **** 
+ 125:MALLOC/malloc.c **** //ÄÚ´æ·ÖÅä(ÄÚ²¿µ÷ÓÃ)
+ 126:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ 127:MALLOC/malloc.c **** //size:Òª·ÖÅäµÄÄÚ´æ´óÐ¡(×Ö½Ú)
+ 128:MALLOC/malloc.c **** //·µ»ØÖµ:0XFFFFFFFF,´ú±í´íÎó;ÆäËû,ÄÚ´æÆ«ÒÆµØÖ· 
+ 129:MALLOC/malloc.c **** uint32_t mem_malloc(uint8_t memx,uint32_t size)  
+ 130:MALLOC/malloc.c **** {  
+ 595              		.loc 1 130 1
+ 596              		.cfi_startproc
+ 597              		@ args = 0, pretend = 0, frame = 24
+ 598              		@ frame_needed = 1, uses_anonymous_args = 0
+ 599 0000 80B5     		push	{r7, lr}
+ 600              	.LCFI28:
+ 601              		.cfi_def_cfa_offset 8
+ 602              		.cfi_offset 7, -8
+ 603              		.cfi_offset 14, -4
+ 604 0002 86B0     		sub	sp, sp, #24
+ 605              	.LCFI29:
+ 606              		.cfi_def_cfa_offset 32
+ 607 0004 00AF     		add	r7, sp, #0
+ 608              	.LCFI30:
+ 609              		.cfi_def_cfa_register 7
+ 610 0006 0346     		mov	r3, r0
+ 611 0008 3960     		str	r1, [r7]
+ 612 000a FB71     		strb	r3, [r7, #7]
+ 131:MALLOC/malloc.c ****     signed long offset=0;  
+ 613              		.loc 1 131 17
+ 614 000c 0023     		movs	r3, #0
+ 615 000e 7B61     		str	r3, [r7, #20]
+ 132:MALLOC/malloc.c ****     uint16_t nmemb;	//ÐèÒªµÄÄÚ´æ¿éÊý  
+ 133:MALLOC/malloc.c **** 		uint16_t cmemb=0;//Á¬Ðø¿ÕÄÚ´æ¿éÊý
+ 616              		.loc 1 133 12
+ 617 0010 0023     		movs	r3, #0
+ 618 0012 3B82     		strh	r3, [r7, #16]	@ movhi
+ 134:MALLOC/malloc.c ****     uint32_t i;  
+ 135:MALLOC/malloc.c ****     if(!mallco_dev.memrdy[memx])mallco_dev.init(memx);//Î´³õÊ¼»¯,ÏÈÖ´ÐÐ³õÊ¼»¯ 
+ 619              		.loc 1 135 26
+ 620 0014 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 621 0016 384A     		ldr	r2, .L39
+ 622 0018 1344     		add	r3, r3, r2
+ 623 001a 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 14
+
+
+ 624              		.loc 1 135 7
+ 625 001e 002B     		cmp	r3, #0
+ 626 0020 04D1     		bne	.L28
+ 627              		.loc 1 135 43 discriminator 1
+ 628 0022 354B     		ldr	r3, .L39
+ 629 0024 1B68     		ldr	r3, [r3]
+ 630              		.loc 1 135 33 discriminator 1
+ 631 0026 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 632 0028 1046     		mov	r0, r2
+ 633 002a 9847     		blx	r3
+ 634              	.LVL0:
+ 635              	.L28:
+ 136:MALLOC/malloc.c ****     if(size==0)return 0XFFFFFFFF;//²»ÐèÒª·ÖÅä
+ 636              		.loc 1 136 7
+ 637 002c 3B68     		ldr	r3, [r7]
+ 638 002e 002B     		cmp	r3, #0
+ 639 0030 02D1     		bne	.L29
+ 640              		.loc 1 136 23 discriminator 1
+ 641 0032 4FF0FF33 		mov	r3, #-1
+ 642 0036 5AE0     		b	.L30
+ 643              	.L29:
+ 137:MALLOC/malloc.c ****     nmemb=size/memblksize[memx];  	//»ñÈ¡ÐèÒª·ÖÅäµÄÁ¬ÐøÄÚ´æ¿éÊý
+ 644              		.loc 1 137 26
+ 645 0038 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 646 003a 304A     		ldr	r2, .L39+4
+ 647 003c 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 648              		.loc 1 137 15
+ 649 0040 3A68     		ldr	r2, [r7]
+ 650 0042 B2FBF3F3 		udiv	r3, r2, r3
+ 651              		.loc 1 137 10
+ 652 0046 7B82     		strh	r3, [r7, #18]	@ movhi
+ 138:MALLOC/malloc.c ****     if(size%memblksize[memx])nmemb++;  
+ 653              		.loc 1 138 23
+ 654 0048 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 655 004a 2C4A     		ldr	r2, .L39+4
+ 656 004c 52F82320 		ldr	r2, [r2, r3, lsl #2]
+ 657              		.loc 1 138 12
+ 658 0050 3B68     		ldr	r3, [r7]
+ 659 0052 B3FBF2F1 		udiv	r1, r3, r2
+ 660 0056 01FB02F2 		mul	r2, r1, r2
+ 661 005a 9B1A     		subs	r3, r3, r2
+ 662              		.loc 1 138 7
+ 663 005c 002B     		cmp	r3, #0
+ 664 005e 02D0     		beq	.L31
+ 665              		.loc 1 138 35 discriminator 1
+ 666 0060 7B8A     		ldrh	r3, [r7, #18]
+ 667 0062 0133     		adds	r3, r3, #1
+ 668 0064 7B82     		strh	r3, [r7, #18]	@ movhi
+ 669              	.L31:
+ 139:MALLOC/malloc.c ****     for(offset=memtblsize[memx]-1;offset>=0;offset--)//ËÑË÷Õû¸öÄÚ´æ¿ØÖÆÇø  
+ 670              		.loc 1 139 26
+ 671 0066 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 672 0068 254A     		ldr	r2, .L39+8
+ 673 006a 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 674              		.loc 1 139 32
+ 675 006e 013B     		subs	r3, r3, #1
+ 676              		.loc 1 139 15
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 15
+
+
+ 677 0070 7B61     		str	r3, [r7, #20]
+ 678              		.loc 1 139 5
+ 679 0072 37E0     		b	.L32
+ 680              	.L38:
+ 140:MALLOC/malloc.c ****     {     
+ 141:MALLOC/malloc.c **** 		if(!mallco_dev.memmap[memx][offset])cmemb++;//Á¬Ðø¿ÕÄÚ´æ¿éÊýÔö¼Ó
+ 681              		.loc 1 141 24
+ 682 0074 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 683 0076 204A     		ldr	r2, .L39
+ 684 0078 0433     		adds	r3, r3, #4
+ 685 007a 9B00     		lsls	r3, r3, #2
+ 686 007c 1344     		add	r3, r3, r2
+ 687 007e 5A68     		ldr	r2, [r3, #4]
+ 688              		.loc 1 141 30
+ 689 0080 7B69     		ldr	r3, [r7, #20]
+ 690 0082 5B00     		lsls	r3, r3, #1
+ 691 0084 1344     		add	r3, r3, r2
+ 692 0086 1B88     		ldrh	r3, [r3]
+ 693              		.loc 1 141 5
+ 694 0088 002B     		cmp	r3, #0
+ 695 008a 03D1     		bne	.L33
+ 696              		.loc 1 141 44 discriminator 1
+ 697 008c 3B8A     		ldrh	r3, [r7, #16]
+ 698 008e 0133     		adds	r3, r3, #1
+ 699 0090 3B82     		strh	r3, [r7, #16]	@ movhi
+ 700 0092 01E0     		b	.L34
+ 701              	.L33:
+ 142:MALLOC/malloc.c **** 		else cmemb=0;								//Á¬ÐøÄÚ´æ¿éÇåÁã
+ 702              		.loc 1 142 13
+ 703 0094 0023     		movs	r3, #0
+ 704 0096 3B82     		strh	r3, [r7, #16]	@ movhi
+ 705              	.L34:
+ 143:MALLOC/malloc.c **** 		if(cmemb==nmemb)							//ÕÒµ½ÁËÁ¬Ðønmemb¸ö¿ÕÄÚ´æ¿é
+ 706              		.loc 1 143 5
+ 707 0098 3A8A     		ldrh	r2, [r7, #16]
+ 708 009a 7B8A     		ldrh	r3, [r7, #18]
+ 709 009c 9A42     		cmp	r2, r3
+ 710 009e 1ED1     		bne	.L35
+ 144:MALLOC/malloc.c **** 		{
+ 145:MALLOC/malloc.c ****             for(i=0;i<nmemb;i++)  					//±ê×¢ÄÚ´æ¿é·Ç¿Õ 
+ 711              		.loc 1 145 18
+ 712 00a0 0023     		movs	r3, #0
+ 713 00a2 FB60     		str	r3, [r7, #12]
+ 714              		.loc 1 145 13
+ 715 00a4 0FE0     		b	.L36
+ 716              	.L37:
+ 146:MALLOC/malloc.c ****             {  
+ 147:MALLOC/malloc.c ****                 mallco_dev.memmap[memx][offset+i]=nmemb;  
+ 717              		.loc 1 147 34 discriminator 3
+ 718 00a6 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 719 00a8 134A     		ldr	r2, .L39
+ 720 00aa 0433     		adds	r3, r3, #4
+ 721 00ac 9B00     		lsls	r3, r3, #2
+ 722 00ae 1344     		add	r3, r3, r2
+ 723 00b0 5A68     		ldr	r2, [r3, #4]
+ 724              		.loc 1 147 47 discriminator 3
+ 725 00b2 7969     		ldr	r1, [r7, #20]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 16
+
+
+ 726 00b4 FB68     		ldr	r3, [r7, #12]
+ 727 00b6 0B44     		add	r3, r3, r1
+ 728              		.loc 1 147 40 discriminator 3
+ 729 00b8 5B00     		lsls	r3, r3, #1
+ 730 00ba 1344     		add	r3, r3, r2
+ 731              		.loc 1 147 50 discriminator 3
+ 732 00bc 7A8A     		ldrh	r2, [r7, #18]	@ movhi
+ 733 00be 1A80     		strh	r2, [r3]	@ movhi
+ 145:MALLOC/malloc.c ****             {  
+ 734              		.loc 1 145 30 discriminator 3
+ 735 00c0 FB68     		ldr	r3, [r7, #12]
+ 736 00c2 0133     		adds	r3, r3, #1
+ 737 00c4 FB60     		str	r3, [r7, #12]
+ 738              	.L36:
+ 145:MALLOC/malloc.c ****             {  
+ 739              		.loc 1 145 22 discriminator 1
+ 740 00c6 7B8A     		ldrh	r3, [r7, #18]
+ 145:MALLOC/malloc.c ****             {  
+ 741              		.loc 1 145 13 discriminator 1
+ 742 00c8 FA68     		ldr	r2, [r7, #12]
+ 743 00ca 9A42     		cmp	r2, r3
+ 744 00cc EBD3     		bcc	.L37
+ 148:MALLOC/malloc.c ****             }  
+ 149:MALLOC/malloc.c ****             return (offset*memblksize[memx]);//·µ»ØÆ«ÒÆµØÖ·  
+ 745              		.loc 1 149 38
+ 746 00ce FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 747 00d0 0A4A     		ldr	r2, .L39+4
+ 748 00d2 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 749              		.loc 1 149 27
+ 750 00d6 7A69     		ldr	r2, [r7, #20]
+ 751 00d8 02FB03F3 		mul	r3, r2, r3
+ 752 00dc 07E0     		b	.L30
+ 753              	.L35:
+ 139:MALLOC/malloc.c ****     {     
+ 754              		.loc 1 139 51 discriminator 2
+ 755 00de 7B69     		ldr	r3, [r7, #20]
+ 756 00e0 013B     		subs	r3, r3, #1
+ 757 00e2 7B61     		str	r3, [r7, #20]
+ 758              	.L32:
+ 139:MALLOC/malloc.c ****     {     
+ 759              		.loc 1 139 5 discriminator 1
+ 760 00e4 7B69     		ldr	r3, [r7, #20]
+ 761 00e6 002B     		cmp	r3, #0
+ 762 00e8 C4DA     		bge	.L38
+ 150:MALLOC/malloc.c **** 		}
+ 151:MALLOC/malloc.c ****     }  
+ 152:MALLOC/malloc.c ****     return 0XFFFFFFFF;//Î´ÕÒµ½·ûºÏ·ÖÅäÌõ¼þµÄÄÚ´æ¿é  
+ 763              		.loc 1 152 12
+ 764 00ea 4FF0FF33 		mov	r3, #-1
+ 765              	.L30:
+ 153:MALLOC/malloc.c **** }  
+ 766              		.loc 1 153 1
+ 767 00ee 1846     		mov	r0, r3
+ 768 00f0 1837     		adds	r7, r7, #24
+ 769              	.LCFI31:
+ 770              		.cfi_def_cfa_offset 8
+ 771 00f2 BD46     		mov	sp, r7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 17
+
+
+ 772              	.LCFI32:
+ 773              		.cfi_def_cfa_register 13
+ 774              		@ sp needed
+ 775 00f4 80BD     		pop	{r7, pc}
+ 776              	.L40:
+ 777 00f6 00BF     		.align	2
+ 778              	.L39:
+ 779 00f8 00000000 		.word	mallco_dev
+ 780 00fc 00000000 		.word	memblksize
+ 781 0100 00000000 		.word	memtblsize
+ 782              		.cfi_endproc
+ 783              	.LFE121:
+ 785              		.section	.text.mem_free,"ax",%progbits
+ 786              		.align	1
+ 787              		.global	mem_free
+ 788              		.syntax unified
+ 789              		.thumb
+ 790              		.thumb_func
+ 792              	mem_free:
+ 793              	.LFB122:
+ 154:MALLOC/malloc.c **** 
+ 155:MALLOC/malloc.c **** //ÊÍ·ÅÄÚ´æ(ÄÚ²¿µ÷ÓÃ) 
+ 156:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ 157:MALLOC/malloc.c **** //offset:ÄÚ´æµØÖ·Æ«ÒÆ
+ 158:MALLOC/malloc.c **** //·µ»ØÖµ:0,ÊÍ·Å³É¹¦;1,ÊÍ·ÅÊ§°Ü;  
+ 159:MALLOC/malloc.c **** uint8_t mem_free(uint8_t memx,uint32_t offset)  
+ 160:MALLOC/malloc.c **** {  
+ 794              		.loc 1 160 1
+ 795              		.cfi_startproc
+ 796              		@ args = 0, pretend = 0, frame = 24
+ 797              		@ frame_needed = 1, uses_anonymous_args = 0
+ 798 0000 80B5     		push	{r7, lr}
+ 799              	.LCFI33:
+ 800              		.cfi_def_cfa_offset 8
+ 801              		.cfi_offset 7, -8
+ 802              		.cfi_offset 14, -4
+ 803 0002 86B0     		sub	sp, sp, #24
+ 804              	.LCFI34:
+ 805              		.cfi_def_cfa_offset 32
+ 806 0004 00AF     		add	r7, sp, #0
+ 807              	.LCFI35:
+ 808              		.cfi_def_cfa_register 7
+ 809 0006 0346     		mov	r3, r0
+ 810 0008 3960     		str	r1, [r7]
+ 811 000a FB71     		strb	r3, [r7, #7]
+ 161:MALLOC/malloc.c **** 	int i;  
+ 162:MALLOC/malloc.c ****   if(!mallco_dev.memrdy[memx])//Î´³õÊ¼»¯,ÏÈÖ´ÐÐ³õÊ¼»¯
+ 812              		.loc 1 162 24
+ 813 000c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 814 000e 224A     		ldr	r2, .L47
+ 815 0010 1344     		add	r3, r3, r2
+ 816 0012 93F82030 		ldrb	r3, [r3, #32]	@ zero_extendqisi2
+ 817              		.loc 1 162 5
+ 818 0016 002B     		cmp	r3, #0
+ 819 0018 06D1     		bne	.L42
+ 163:MALLOC/malloc.c **** 	{
+ 164:MALLOC/malloc.c **** 		mallco_dev.init(memx);    
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 18
+
+
+ 820              		.loc 1 164 13
+ 821 001a 1F4B     		ldr	r3, .L47
+ 822 001c 1B68     		ldr	r3, [r3]
+ 823              		.loc 1 164 3
+ 824 001e FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 825 0020 1046     		mov	r0, r2
+ 826 0022 9847     		blx	r3
+ 827              	.LVL1:
+ 165:MALLOC/malloc.c ****     return 1;//Î´³õÊ¼»¯  
+ 828              		.loc 1 165 12
+ 829 0024 0123     		movs	r3, #1
+ 830 0026 33E0     		b	.L43
+ 831              	.L42:
+ 166:MALLOC/malloc.c ****   }  
+ 167:MALLOC/malloc.c ****   if(offset<memsize[memx])//Æ«ÒÆÔÚÄÚ´æ³ØÄÚ. 
+ 832              		.loc 1 167 20
+ 833 0028 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 834 002a 1C4A     		ldr	r2, .L47+4
+ 835 002c 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 836              		.loc 1 167 5
+ 837 0030 3A68     		ldr	r2, [r7]
+ 838 0032 9A42     		cmp	r2, r3
+ 839 0034 2BD2     		bcs	.L44
+ 840              	.LBB2:
+ 168:MALLOC/malloc.c ****   {  
+ 169:MALLOC/malloc.c **** 		int index=offset/memblksize[memx];			//Æ«ÒÆËùÔÚÄÚ´æ¿éºÅÂë  
+ 841              		.loc 1 169 30
+ 842 0036 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 843 0038 194A     		ldr	r2, .L47+8
+ 844 003a 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 845              		.loc 1 169 19
+ 846 003e 3A68     		ldr	r2, [r7]
+ 847 0040 B2FBF3F3 		udiv	r3, r2, r3
+ 848              		.loc 1 169 7
+ 849 0044 3B61     		str	r3, [r7, #16]
+ 170:MALLOC/malloc.c ****     int nmemb=mallco_dev.memmap[memx][index];	//ÄÚ´æ¿éÊýÁ¿
+ 850              		.loc 1 170 32
+ 851 0046 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 852 0048 134A     		ldr	r2, .L47
+ 853 004a 0433     		adds	r3, r3, #4
+ 854 004c 9B00     		lsls	r3, r3, #2
+ 855 004e 1344     		add	r3, r3, r2
+ 856 0050 5A68     		ldr	r2, [r3, #4]
+ 857              		.loc 1 170 38
+ 858 0052 3B69     		ldr	r3, [r7, #16]
+ 859 0054 5B00     		lsls	r3, r3, #1
+ 860 0056 1344     		add	r3, r3, r2
+ 861 0058 1B88     		ldrh	r3, [r3]
+ 862              		.loc 1 170 9
+ 863 005a FB60     		str	r3, [r7, #12]
+ 171:MALLOC/malloc.c ****     for(i=0;i<nmemb;i++)  						//ÄÚ´æ¿éÇåÁã
+ 864              		.loc 1 171 10
+ 865 005c 0023     		movs	r3, #0
+ 866 005e 7B61     		str	r3, [r7, #20]
+ 867              		.loc 1 171 5
+ 868 0060 0FE0     		b	.L45
+ 869              	.L46:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 19
+
+
+ 172:MALLOC/malloc.c ****     {  
+ 173:MALLOC/malloc.c **** 			mallco_dev.memmap[memx][index+i]=0;  
+ 870              		.loc 1 173 21 discriminator 3
+ 871 0062 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 872 0064 0C4A     		ldr	r2, .L47
+ 873 0066 0433     		adds	r3, r3, #4
+ 874 0068 9B00     		lsls	r3, r3, #2
+ 875 006a 1344     		add	r3, r3, r2
+ 876 006c 5A68     		ldr	r2, [r3, #4]
+ 877              		.loc 1 173 33 discriminator 3
+ 878 006e 3969     		ldr	r1, [r7, #16]
+ 879 0070 7B69     		ldr	r3, [r7, #20]
+ 880 0072 0B44     		add	r3, r3, r1
+ 881              		.loc 1 173 27 discriminator 3
+ 882 0074 5B00     		lsls	r3, r3, #1
+ 883 0076 1344     		add	r3, r3, r2
+ 884              		.loc 1 173 36 discriminator 3
+ 885 0078 0022     		movs	r2, #0
+ 886 007a 1A80     		strh	r2, [r3]	@ movhi
+ 171:MALLOC/malloc.c ****     for(i=0;i<nmemb;i++)  						//ÄÚ´æ¿éÇåÁã
+ 887              		.loc 1 171 22 discriminator 3
+ 888 007c 7B69     		ldr	r3, [r7, #20]
+ 889 007e 0133     		adds	r3, r3, #1
+ 890 0080 7B61     		str	r3, [r7, #20]
+ 891              	.L45:
+ 171:MALLOC/malloc.c ****     for(i=0;i<nmemb;i++)  						//ÄÚ´æ¿éÇåÁã
+ 892              		.loc 1 171 5 discriminator 1
+ 893 0082 7A69     		ldr	r2, [r7, #20]
+ 894 0084 FB68     		ldr	r3, [r7, #12]
+ 895 0086 9A42     		cmp	r2, r3
+ 896 0088 EBDB     		blt	.L46
+ 174:MALLOC/malloc.c ****     }  
+ 175:MALLOC/malloc.c ****     return 0;  
+ 897              		.loc 1 175 12
+ 898 008a 0023     		movs	r3, #0
+ 899 008c 00E0     		b	.L43
+ 900              	.L44:
+ 901              	.LBE2:
+ 176:MALLOC/malloc.c ****   }else return 2;//Æ«ÒÆ³¬ÇøÁË.  
+ 902              		.loc 1 176 16
+ 903 008e 0223     		movs	r3, #2
+ 904              	.L43:
+ 177:MALLOC/malloc.c **** }  
+ 905              		.loc 1 177 1
+ 906 0090 1846     		mov	r0, r3
+ 907 0092 1837     		adds	r7, r7, #24
+ 908              	.LCFI36:
+ 909              		.cfi_def_cfa_offset 8
+ 910 0094 BD46     		mov	sp, r7
+ 911              	.LCFI37:
+ 912              		.cfi_def_cfa_register 13
+ 913              		@ sp needed
+ 914 0096 80BD     		pop	{r7, pc}
+ 915              	.L48:
+ 916              		.align	2
+ 917              	.L47:
+ 918 0098 00000000 		.word	mallco_dev
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 20
+
+
+ 919 009c 00000000 		.word	memsize
+ 920 00a0 00000000 		.word	memblksize
+ 921              		.cfi_endproc
+ 922              	.LFE122:
+ 924              		.section	.text.myfree,"ax",%progbits
+ 925              		.align	1
+ 926              		.global	myfree
+ 927              		.syntax unified
+ 928              		.thumb
+ 929              		.thumb_func
+ 931              	myfree:
+ 932              	.LFB123:
+ 178:MALLOC/malloc.c **** 
+ 179:MALLOC/malloc.c **** //ÊÍ·ÅÄÚ´æ(Íâ²¿µ÷ÓÃ) 
+ 180:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ 181:MALLOC/malloc.c **** //ptr:ÄÚ´æÊ×µØÖ· 
+ 182:MALLOC/malloc.c **** void myfree(uint8_t memx,void *ptr)  
+ 183:MALLOC/malloc.c **** {  
+ 933              		.loc 1 183 1
+ 934              		.cfi_startproc
+ 935              		@ args = 0, pretend = 0, frame = 16
+ 936              		@ frame_needed = 1, uses_anonymous_args = 0
+ 937 0000 80B5     		push	{r7, lr}
+ 938              	.LCFI38:
+ 939              		.cfi_def_cfa_offset 8
+ 940              		.cfi_offset 7, -8
+ 941              		.cfi_offset 14, -4
+ 942 0002 84B0     		sub	sp, sp, #16
+ 943              	.LCFI39:
+ 944              		.cfi_def_cfa_offset 24
+ 945 0004 00AF     		add	r7, sp, #0
+ 946              	.LCFI40:
+ 947              		.cfi_def_cfa_register 7
+ 948 0006 0346     		mov	r3, r0
+ 949 0008 3960     		str	r1, [r7]
+ 950 000a FB71     		strb	r3, [r7, #7]
+ 184:MALLOC/malloc.c **** 	uint32_t offset;  
+ 185:MALLOC/malloc.c ****     if(ptr==NULL)return;//µØÖ·Îª0.  
+ 951              		.loc 1 185 7
+ 952 000c 3B68     		ldr	r3, [r7]
+ 953 000e 002B     		cmp	r3, #0
+ 954 0010 0DD0     		beq	.L52
+ 186:MALLOC/malloc.c ****  	offset=(uint32_t)ptr-(uint32_t)mallco_dev.membase[memx];  
+ 955              		.loc 1 186 10
+ 956 0012 3B68     		ldr	r3, [r7]
+ 957              		.loc 1 186 52
+ 958 0014 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 959 0016 0849     		ldr	r1, .L53
+ 960 0018 0232     		adds	r2, r2, #2
+ 961 001a 51F82220 		ldr	r2, [r1, r2, lsl #2]
+ 962              		.loc 1 186 9
+ 963 001e 9B1A     		subs	r3, r3, r2
+ 964 0020 FB60     		str	r3, [r7, #12]
+ 187:MALLOC/malloc.c ****     mem_free(memx,offset);//ÊÍ·ÅÄÚ´æ     
+ 965              		.loc 1 187 5
+ 966 0022 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 967 0024 F968     		ldr	r1, [r7, #12]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 21
+
+
+ 968 0026 1846     		mov	r0, r3
+ 969 0028 FFF7FEFF 		bl	mem_free
+ 970 002c 00E0     		b	.L49
+ 971              	.L52:
+ 185:MALLOC/malloc.c ****  	offset=(uint32_t)ptr-(uint32_t)mallco_dev.membase[memx];  
+ 972              		.loc 1 185 18
+ 973 002e 00BF     		nop
+ 974              	.L49:
+ 188:MALLOC/malloc.c **** }  
+ 975              		.loc 1 188 1
+ 976 0030 1037     		adds	r7, r7, #16
+ 977              	.LCFI41:
+ 978              		.cfi_def_cfa_offset 8
+ 979 0032 BD46     		mov	sp, r7
+ 980              	.LCFI42:
+ 981              		.cfi_def_cfa_register 13
+ 982              		@ sp needed
+ 983 0034 80BD     		pop	{r7, pc}
+ 984              	.L54:
+ 985 0036 00BF     		.align	2
+ 986              	.L53:
+ 987 0038 00000000 		.word	mallco_dev
+ 988              		.cfi_endproc
+ 989              	.LFE123:
+ 991              		.section	.text.mymalloc,"ax",%progbits
+ 992              		.align	1
+ 993              		.global	mymalloc
+ 994              		.syntax unified
+ 995              		.thumb
+ 996              		.thumb_func
+ 998              	mymalloc:
+ 999              	.LFB124:
+ 189:MALLOC/malloc.c **** 
+ 190:MALLOC/malloc.c **** //·ÖÅäÄÚ´æ(Íâ²¿µ÷ÓÃ)
+ 191:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ 192:MALLOC/malloc.c **** //size:ÄÚ´æ´óÐ¡(×Ö½Ú)
+ 193:MALLOC/malloc.c **** //·µ»ØÖµ:·ÖÅäµ½µÄÄÚ´æÊ×µØÖ·.
+ 194:MALLOC/malloc.c **** void *mymalloc(uint8_t memx,uint32_t size)  
+ 195:MALLOC/malloc.c **** {  
+ 1000              		.loc 1 195 1
+ 1001              		.cfi_startproc
+ 1002              		@ args = 0, pretend = 0, frame = 16
+ 1003              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1004 0000 80B5     		push	{r7, lr}
+ 1005              	.LCFI43:
+ 1006              		.cfi_def_cfa_offset 8
+ 1007              		.cfi_offset 7, -8
+ 1008              		.cfi_offset 14, -4
+ 1009 0002 84B0     		sub	sp, sp, #16
+ 1010              	.LCFI44:
+ 1011              		.cfi_def_cfa_offset 24
+ 1012 0004 00AF     		add	r7, sp, #0
+ 1013              	.LCFI45:
+ 1014              		.cfi_def_cfa_register 7
+ 1015 0006 0346     		mov	r3, r0
+ 1016 0008 3960     		str	r1, [r7]
+ 1017 000a FB71     		strb	r3, [r7, #7]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 22
+
+
+ 196:MALLOC/malloc.c ****   uint32_t offset;  									      
+ 197:MALLOC/malloc.c **** 	offset=mem_malloc(memx,size);  	   				   
+ 1018              		.loc 1 197 9
+ 1019 000c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1020 000e 3968     		ldr	r1, [r7]
+ 1021 0010 1846     		mov	r0, r3
+ 1022 0012 FFF7FEFF 		bl	mem_malloc
+ 1023 0016 F860     		str	r0, [r7, #12]
+ 198:MALLOC/malloc.c ****   if(offset==0XFFFFFFFF)return NULL;  
+ 1024              		.loc 1 198 5
+ 1025 0018 FB68     		ldr	r3, [r7, #12]
+ 1026 001a B3F1FF3F 		cmp	r3, #-1
+ 1027 001e 01D1     		bne	.L56
+ 1028              		.loc 1 198 32 discriminator 1
+ 1029 0020 0023     		movs	r3, #0
+ 1030 0022 07E0     		b	.L57
+ 1031              	.L56:
+ 199:MALLOC/malloc.c ****   else return (void*)((uint32_t)mallco_dev.membase[memx]+offset);  
+ 1032              		.loc 1 199 51
+ 1033 0024 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1034 0026 054A     		ldr	r2, .L58
+ 1035 0028 0233     		adds	r3, r3, #2
+ 1036 002a 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 1037              		.loc 1 199 23
+ 1038 002e 1A46     		mov	r2, r3
+ 1039              		.loc 1 199 57
+ 1040 0030 FB68     		ldr	r3, [r7, #12]
+ 1041 0032 1344     		add	r3, r3, r2
+ 1042              	.L57:
+ 200:MALLOC/malloc.c **** }  
+ 1043              		.loc 1 200 1
+ 1044 0034 1846     		mov	r0, r3
+ 1045 0036 1037     		adds	r7, r7, #16
+ 1046              	.LCFI46:
+ 1047              		.cfi_def_cfa_offset 8
+ 1048 0038 BD46     		mov	sp, r7
+ 1049              	.LCFI47:
+ 1050              		.cfi_def_cfa_register 13
+ 1051              		@ sp needed
+ 1052 003a 80BD     		pop	{r7, pc}
+ 1053              	.L59:
+ 1054              		.align	2
+ 1055              	.L58:
+ 1056 003c 00000000 		.word	mallco_dev
+ 1057              		.cfi_endproc
+ 1058              	.LFE124:
+ 1060              		.section	.text.myrealloc,"ax",%progbits
+ 1061              		.align	1
+ 1062              		.global	myrealloc
+ 1063              		.syntax unified
+ 1064              		.thumb
+ 1065              		.thumb_func
+ 1067              	myrealloc:
+ 1068              	.LFB125:
+ 201:MALLOC/malloc.c **** 
+ 202:MALLOC/malloc.c **** //ÖØÐÂ·ÖÅäÄÚ´æ(Íâ²¿µ÷ÓÃ)
+ 203:MALLOC/malloc.c **** //memx:ËùÊôÄÚ´æ¿é
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 23
+
+
+ 204:MALLOC/malloc.c **** //*ptr:¾ÉÄÚ´æÊ×µØÖ·
+ 205:MALLOC/malloc.c **** //size:Òª·ÖÅäµÄÄÚ´æ´óÐ¡(×Ö½Ú)
+ 206:MALLOC/malloc.c **** //·µ»ØÖµ:ÐÂ·ÖÅäµ½µÄÄÚ´æÊ×µØÖ·.
+ 207:MALLOC/malloc.c **** void *myrealloc(uint8_t memx,void *ptr,uint32_t size)  
+ 208:MALLOC/malloc.c **** {  
+ 1069              		.loc 1 208 1
+ 1070              		.cfi_startproc
+ 1071              		@ args = 0, pretend = 0, frame = 24
+ 1072              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1073 0000 80B5     		push	{r7, lr}
+ 1074              	.LCFI48:
+ 1075              		.cfi_def_cfa_offset 8
+ 1076              		.cfi_offset 7, -8
+ 1077              		.cfi_offset 14, -4
+ 1078 0002 86B0     		sub	sp, sp, #24
+ 1079              	.LCFI49:
+ 1080              		.cfi_def_cfa_offset 32
+ 1081 0004 00AF     		add	r7, sp, #0
+ 1082              	.LCFI50:
+ 1083              		.cfi_def_cfa_register 7
+ 1084 0006 0346     		mov	r3, r0
+ 1085 0008 B960     		str	r1, [r7, #8]
+ 1086 000a 7A60     		str	r2, [r7, #4]
+ 1087 000c FB73     		strb	r3, [r7, #15]
+ 209:MALLOC/malloc.c ****     uint32_t offset;  
+ 210:MALLOC/malloc.c ****     offset=mem_malloc(memx,size);  
+ 1088              		.loc 1 210 12
+ 1089 000e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1090 0010 7968     		ldr	r1, [r7, #4]
+ 1091 0012 1846     		mov	r0, r3
+ 1092 0014 FFF7FEFF 		bl	mem_malloc
+ 1093 0018 7861     		str	r0, [r7, #20]
+ 211:MALLOC/malloc.c ****     if(offset==0XFFFFFFFF)return NULL;     
+ 1094              		.loc 1 211 7
+ 1095 001a 7B69     		ldr	r3, [r7, #20]
+ 1096 001c B3F1FF3F 		cmp	r3, #-1
+ 1097 0020 01D1     		bne	.L61
+ 1098              		.loc 1 211 34 discriminator 1
+ 1099 0022 0023     		movs	r3, #0
+ 1100 0024 19E0     		b	.L62
+ 1101              	.L61:
+ 212:MALLOC/malloc.c ****     else  
+ 213:MALLOC/malloc.c ****     {  									   
+ 214:MALLOC/malloc.c **** 	    mymemcpy((void*)((uint32_t)mallco_dev.membase[memx]+offset),ptr,size);	//¿½±´¾ÉÄÚ´æÄÚÈÝµ½ÐÂÄÚ´
+ 1102              		.loc 1 214 51
+ 1103 0026 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1104 0028 0E4A     		ldr	r2, .L63
+ 1105 002a 0233     		adds	r3, r3, #2
+ 1106 002c 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 1107              		.loc 1 214 23
+ 1108 0030 1A46     		mov	r2, r3
+ 1109              		.loc 1 214 57
+ 1110 0032 7B69     		ldr	r3, [r7, #20]
+ 1111 0034 1344     		add	r3, r3, r2
+ 1112              		.loc 1 214 6
+ 1113 0036 7A68     		ldr	r2, [r7, #4]
+ 1114 0038 B968     		ldr	r1, [r7, #8]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 24
+
+
+ 1115 003a 1846     		mov	r0, r3
+ 1116 003c FFF7FEFF 		bl	mymemcpy
+ 215:MALLOC/malloc.c ****         myfree(memx,ptr);  											  		//ÊÍ·Å¾ÉÄÚ´æ
+ 1117              		.loc 1 215 9
+ 1118 0040 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1119 0042 B968     		ldr	r1, [r7, #8]
+ 1120 0044 1846     		mov	r0, r3
+ 1121 0046 FFF7FEFF 		bl	myfree
+ 216:MALLOC/malloc.c ****         return (void*)((uint32_t)mallco_dev.membase[memx]+offset);  				//·µ»ØÐÂÄÚ´æÊ×µØÖ·
+ 1122              		.loc 1 216 52
+ 1123 004a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1124 004c 054A     		ldr	r2, .L63
+ 1125 004e 0233     		adds	r3, r3, #2
+ 1126 0050 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 1127              		.loc 1 216 24
+ 1128 0054 1A46     		mov	r2, r3
+ 1129              		.loc 1 216 58
+ 1130 0056 7B69     		ldr	r3, [r7, #20]
+ 1131 0058 1344     		add	r3, r3, r2
+ 1132              	.L62:
+ 217:MALLOC/malloc.c ****     }  
+ 218:MALLOC/malloc.c **** }
+ 1133              		.loc 1 218 1
+ 1134 005a 1846     		mov	r0, r3
+ 1135 005c 1837     		adds	r7, r7, #24
+ 1136              	.LCFI51:
+ 1137              		.cfi_def_cfa_offset 8
+ 1138 005e BD46     		mov	sp, r7
+ 1139              	.LCFI52:
+ 1140              		.cfi_def_cfa_register 13
+ 1141              		@ sp needed
+ 1142 0060 80BD     		pop	{r7, pc}
+ 1143              	.L64:
+ 1144 0062 00BF     		.align	2
+ 1145              	.L63:
+ 1146 0064 00000000 		.word	mallco_dev
+ 1147              		.cfi_endproc
+ 1148              	.LFE125:
+ 1150              		.text
+ 1151              	.Letext0:
+ 1152              		.file 2 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 1153              		.file 3 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 1154              		.file 4 "MALLOC/malloc.h"
+ 1155              		.file 5 "FatFs/src/integer.h"
+ 1156              		.file 6 "FatFs/src/ff.h"
+ 1157              		.file 7 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 25
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 malloc.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:22     .bss.mem1base:00000000 mem1base
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:19     .bss.mem1base:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:29     .bss.mem1mapbase:00000000 mem1mapbase
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:26     .bss.mem1mapbase:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:36     .rodata.memtblsize:00000000 memtblsize
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:33     .rodata.memtblsize:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:45     .rodata.memblksize:00000000 memblksize
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:42     .rodata.memblksize:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:54     .rodata.memsize:00000000 memsize
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:51     .rodata.memsize:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:63     .data.mallco_dev:00000000 mallco_dev
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:60     .data.mallco_dev:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:410    .text.mem_init:00000000 mem_init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:492    .text.mem_perused:00000000 mem_perused
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:78     .bss.fs:00000000 fs
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:75     .bss.fs:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:85     .bss.file:00000000 file
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:82     .bss.file:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:92     .bss.ftemp:00000000 ftemp
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:89     .bss.ftemp:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:99     .bss.br:00000000 br
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:96     .bss.br:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:106    .bss.bw:00000000 bw
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:103    .bss.bw:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:113    .bss.fileinfo:00000000 fileinfo
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:110    .bss.fileinfo:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:120    .bss.dir:00000000 dir
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:117    .bss.dir:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:127    .bss.fatbuf:00000000 fatbuf
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:124    .bss.fatbuf:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:130    .text.FATFS_Init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:136    .text.FATFS_Init:00000000 FATFS_Init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:998    .text.mymalloc:00000000 mymalloc
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:255    .text.FATFS_Init:00000098 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:263    .text.mymemcpy:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:269    .text.mymemcpy:00000000 mymemcpy
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:337    .text.mymemset:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:343    .text.mymemset:00000000 mymemset
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:404    .text.mem_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:479    .text.mem_init:00000058 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:486    .text.mem_perused:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:581    .text.mem_perused:00000068 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:587    .text.mem_malloc:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:593    .text.mem_malloc:00000000 mem_malloc
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:779    .text.mem_malloc:000000f8 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:786    .text.mem_free:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:792    .text.mem_free:00000000 mem_free
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:918    .text.mem_free:00000098 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:925    .text.myfree:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:931    .text.myfree:00000000 myfree
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:987    .text.myfree:00000038 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:992    .text.mymalloc:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:1056   .text.mymalloc:0000003c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:1061   .text.myrealloc:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:1067   .text.myrealloc:00000000 myrealloc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s 			page 26
+
+
+C:\Users\ADMINI~1\AppData\Local\Temp\ccNpoZFa.s:1146   .text.myrealloc:00000064 $d
+
+NO UNDEFINED SYMBOLS

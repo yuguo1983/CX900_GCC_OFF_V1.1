@@ -1,0 +1,8 @@
+[10:35:28.509] lineIndex=30, text=[[10:35:20.381] Module/power_task.c:88:13: warning: unused variable 'readbuf' [-Wunused-variable]], file=Module/power_task.c, line=88
+[10:39:21.389] lineIndex=33, text=[[10:39:16.249] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87
+[10:39:26.516] lineIndex=33, text=[[10:39:16.249] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87
+[10:39:55.564] lineIndex=33, text=[[10:39:16.249] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87
+[10:39:57.164] lineIndex=33, text=[[10:39:16.249] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87
+[10:39:58.579] lineIndex=33, text=[[10:39:16.249] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87
+[10:40:59.986] lineIndex=33, text=[[10:40:55.146] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87
+[10:41:16.099] lineIndex=33, text=[[10:40:55.146] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]], file=Module/power_task.c, line=87

@@ -1,0 +1,40 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.csproj.user
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/[Rr]elease/
+[Bb]in/[Dd]ebug/
+[Oo]bj/
+[Bb]uild/
+
+# NuGet
+packages/
+*.nupkg
+
+# VS Code
+.vscode/
+
+# Claude
+.claude/
+
+# Temp files
+*.tmp
+*.bak
+*.log
+UpgradeLog.htm
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Keep bin/x86/Debug/ (distribution files)
+!bin/x86/Debug/
+!bin/x86/Debug/**

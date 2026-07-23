@@ -1,0 +1,119 @@
+﻿使用编译脚本: F:\CX900_GCC_OFF_V1.1\bin\x86\Debug\compile.bat
+工作目录: F:\CX900_GCC_OFF_V1.1\bin\x86\Debug
+
+[19:14:08.671] ================================================
+[19:14:08.672] 编译环境信息
+[19:14:08.673] ================================================
+[19:14:08.674] 工作目录: F:\CX900_GCC_OFF_V1.1\bin\x86\Debug
+[19:14:08.694] GCC版本:
+[19:14:08.706] arm-none-eabi-gcc (GNU Arm Embedded Toolchain 10.3-2021.10) 10.3.1 20210824 (release)
+[19:14:08.711] ================================================
+[19:14:08.713] 开始编译...
+[19:14:08.714] ================================================
+[19:14:08.772] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc -c -mcpu=cortex-m4 -mthumb   -DUSE_STDPERIPH_DRIVER -DGD32F30X_HD -IFirmware/CMSIS -IFirmware/CMSIS/GD/GD32F30x/Include -IFirmware/GD32F30x_standard_peripheral/Include -IUSER -ICMD -IFatFs/src/ -IFatFs/src/drivers -IGPU -ILCD -IMALLOC -Isdio -ISoft_Drive -ITEXT -IYMODEM -IModule -IMB/modbus/include -IMB/modbus/ascii -IMB/modbus/rtu -IMB/modbus/tcp -IMB/port -IMB/user_app  -O0 -Wall -fdata-sections -ffunction-sections -std=c99 -g -gdwarf-2 -MMD -MP -MF"build/power_task.d" -Wa,-a,-ad,-alms=build/power_task.lst Module/power_task.c -o build/power_task.o
+[19:14:08.921] Module/power_task.c: In function 'Power_On':
+[19:14:08.924] Module/power_task.c:89:13: warning: unused variable 'ret' [-Wunused-variable]
+[19:14:08.925] 89 |     uint8_t ret=0;
+[19:14:08.927] |             ^~~
+[19:14:08.928] Module/power_task.c:88:13: warning: unused variable 'readbuf' [-Wunused-variable]
+[19:14:08.929] 88 |     uint8_t readbuf[10]={0};
+[19:14:08.930] |             ^~~~~~~
+[19:14:08.932] Module/power_task.c:87:22: warning: unused variable 'srtmipiport' [-Wunused-variable]
+[19:14:08.933] 87 |     struct mipi_port srtmipiport;
+[19:14:08.935] |                      ^~~~~~~~~~~
+[19:14:08.936] Module/power_task.c:86:19: warning: unused variable 'mipi_dataarray' [-Wunused-variable]
+[19:14:08.937] 86 |     unsigned char mipi_dataarray[20] ;
+[19:14:08.938] |                   ^~~~~~~~~~~~~~
+[19:14:08.939] Module/power_task.c: In function 'jd9365tg_ExitBackDoor':
+[19:14:08.940] Module/power_task.c:436:9: warning: unused variable 'ReCode' [-Wunused-variable]
+[19:14:08.941] 436 |     int ReCode;
+[19:14:08.942] |         ^~~~~~
+[19:14:08.944] In file included from Module/pport_spi.h:5,
+[19:14:08.945] from Module/power_task.c:2:
+[19:14:08.946] Module/power_task.c: At top level:
+[19:14:08.947] Soft_Drive/timer.h:10:13: warning: 'tick_callback' declared 'static' but never defined [-Wunused-function]
+[19:14:08.949] 10 | static void tick_callback(void);
+[19:14:08.951] |             ^~~~~~~~~~~~~
+[19:14:08.952] Soft_Drive/timer.h:12:13: warning: 'bsp_RunPer10ms' declared 'static' but never defined [-Wunused-function]
+[19:14:08.953] 12 | static void bsp_RunPer10ms(void);
+[19:14:08.954] |             ^~~~~~~~~~~~~~
+[19:14:08.955] Module/power_task.c:450:12: warning: 'jd9365tg_EnterBackDoor' defined but not used [-Wunused-function]
+[19:14:08.956] 450 | static int jd9365tg_EnterBackDoor(void)
+[19:14:08.958] |            ^~~~~~~~~~~~~~~~~~~~~~
+[19:14:08.960] Module/power_task.c:434:12: warning: 'jd9365tg_ExitBackDoor' defined but not used [-Wunused-function]
+[19:14:08.961] 434 | static int jd9365tg_ExitBackDoor(void)
+[19:14:08.962] |            ^~~~~~~~~~~~~~~~~~~~~
+[19:14:08.964] Module/power_task.c:401:12: warning: 'jd9365tg_Write_BackDoor_RegSingle' defined but not used [-Wunused-function]
+[19:14:08.965] 401 | static int jd9365tg_Write_BackDoor_RegSingle(uint32_t addr, uint8_t wdata)
+[19:14:08.966] |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[19:14:08.968] Module/power_task.c:335:12: warning: 'jd9365tg_Write_FW_RegSingleSpi' defined but not used [-Wunused-function]
+[19:14:08.968] 335 | static int jd9365tg_Write_FW_RegSingleSpi(uint32_t addr, uint8_t wdata)
+[19:14:08.969] |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[19:14:08.971] Module/power_task.c: In function 'jd9365tg_Read_FW_RegSingleSpi':
+[19:14:08.972] Module/power_task.c:398:12: warning: 'ReCode' is used uninitialized in this function [-Wuninitialized]
+[19:14:08.973] 398 |     return ReCode;
+[19:14:08.987] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc -c -mcpu=cortex-m4 -mthumb   -DUSE_STDPERIPH_DRIVER -DGD32F30X_HD -IFirmware/CMSIS -IFirmware/CMSIS/GD/GD32F30x/Include -IFirmware/GD32F30x_standard_peripheral/Include -IUSER -ICMD -IFatFs/src/ -IFatFs/src/drivers -IGPU -ILCD -IMALLOC -Isdio -ISoft_Drive -ITEXT -IYMODEM -IModule -IMB/modbus/include -IMB/modbus/ascii -IMB/modbus/rtu -IMB/modbus/tcp -IMB/port -IMB/user_app  -O0 -Wall -fdata-sections -ffunction-sections -std=c99 -g -gdwarf-2 -MMD -MP -MF"build/user_config.d" -Wa,-a,-ad,-alms=build/user_config.lst Module/user_config.c -o build/user_config.o
+[19:14:08.988] |            ^~~~~~
+[19:14:08.990] Module/power_task.c: In function 'jd9365tg_Read_BackDoor_RegSingle':
+[19:14:08.992] Module/power_task.c:431:12: warning: 'ReCode' is used uninitialized in this function [-Wuninitialized]
+[19:14:08.993] 431 |     return ReCode;
+[19:14:08.994] |            ^~~~~~
+[19:14:09.147] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc -c -mcpu=cortex-m4 -mthumb   -DUSE_STDPERIPH_DRIVER -DGD32F30X_HD -IFirmware/CMSIS -IFirmware/CMSIS/GD/GD32F30x/Include -IFirmware/GD32F30x_standard_peripheral/Include -IUSER -ICMD -IFatFs/src/ -IFatFs/src/drivers -IGPU -ILCD -IMALLOC -Isdio -ISoft_Drive -ITEXT -IYMODEM -IModule -IMB/modbus/include -IMB/modbus/ascii -IMB/modbus/rtu -IMB/modbus/tcp -IMB/port -IMB/user_app  -O0 -Wall -fdata-sections -ffunction-sections -std=c99 -g -gdwarf-2 -MMD -MP -MF"build/app.d" -Wa,-a,-ad,-alms=build/app.lst Module/app.c -o build/app.o
+[19:14:09.302] In file included from TEXT/mytext.h:3,
+[19:14:09.304] from Module/app.c:8:
+[19:14:09.305] TEXT/fontupd.h:40:1: warning: 'packed' attribute ignored [-Wattributes]
+[19:14:09.306] 40 | }_font_info;
+[19:14:09.307] | ^
+[19:14:09.308] Module/app.c: In function 'Init_IO':
+[19:14:09.310] Module/app.c:17:1: warning: implicit declaration of function 'init_spi' [-Wimplicit-function-declaration]
+[19:14:09.311] 17 | init_spi();
+[19:14:09.312] | ^~~~~~~~
+[19:14:09.313] Module/app.c: In function 'TpTest':
+[19:14:09.315] Module/app.c:87:2: warning: implicit declaration of function 'TP_Main' [-Wimplicit-function-declaration]
+[19:14:09.317] 87 |  TP_Main();
+[19:14:09.318] |  ^~~~~~~
+[19:14:09.330] Module/app.c: In function 'Lcd_ShowMode':
+[19:14:09.332] Module/app.c:93:10: warning: unused variable 'path' [-Wunused-variable]
+[19:14:09.333] 93 |     char path[30];
+[19:14:09.334] |          ^~~~
+[19:14:09.336] Module/app.c:92:13: warning: unused variable 'temp' [-Wunused-variable]
+[19:14:09.337] 92 |     uint8_t temp[64];
+[19:14:09.338] |             ^~~~
+[19:14:09.339] Module/app.c:91:21: warning: unused variable 'Hight' [-Wunused-variable]
+[19:14:09.340] 91 |     uint16_t Width, Hight;
+[19:14:09.342] |                     ^~~~~
+[19:14:09.343] Module/app.c:91:14: warning: unused variable 'Width' [-Wunused-variable]
+[19:14:09.345] 91 |     uint16_t Width, Hight;
+[19:14:09.347] |              ^~~~~
+[19:14:09.348] In file included from GPU/GPU_I2C.h:16,
+[19:14:09.349] from GPU/GPU_PIC.h:6,
+[19:14:09.350] from Module/app.c:4:
+[19:14:09.352] Module/app.c: At top level:
+[19:14:09.360] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc -c -mcpu=cortex-m4 -mthumb   -DUSE_STDPERIPH_DRIVER -DGD32F30X_HD -IFirmware/CMSIS -IFirmware/CMSIS/GD/GD32F30x/Include -IFirmware/GD32F30x_standard_peripheral/Include -IUSER -ICMD -IFatFs/src/ -IFatFs/src/drivers -IGPU -ILCD -IMALLOC -Isdio -ISoft_Drive -ITEXT -IYMODEM -IModule -IMB/modbus/include -IMB/modbus/ascii -IMB/modbus/rtu -IMB/modbus/tcp -IMB/port -IMB/user_app  -O0 -Wall -fdata-sections -ffunction-sections -std=c99 -g -gdwarf-2 -MMD -MP -MF"build/lcd_cfg.d" -Wa,-a,-ad,-alms=build/lcd_cfg.lst Module/lcd_cfg.c -o build/lcd_cfg.o
+[19:14:09.360] Soft_Drive/timer.h:10:13: warning: 'tick_callback' declared 'static' but never defined [-Wunused-function]
+[19:14:09.363] 10 | static void tick_callback(void);
+[19:14:09.364] |             ^~~~~~~~~~~~~
+[19:14:09.365] Soft_Drive/timer.h:12:13: warning: 'bsp_RunPer10ms' declared 'static' but never defined [-Wunused-function]
+[19:14:09.366] 12 | static void bsp_RunPer10ms(void);
+[19:14:09.368] |             ^~~~~~~~~~~~~~
+[19:14:09.496] In file included from Module/pport_spi.h:5,
+[19:14:09.498] from Module/lcd_cfg.c:1:
+[19:14:09.499] Soft_Drive/timer.h:10:13: warning: 'tick_callback' declared 'static' but never defined [-Wunused-function]
+[19:14:09.500] 10 | static void tick_callback(void);
+[19:14:09.501] |             ^~~~~~~~~~~~~
+[19:14:09.502] Soft_Drive/timer.h:12:13: warning: 'bsp_RunPer10ms' declared 'static' but never defined [-Wunused-function]
+[19:14:09.504] 12 | static void bsp_RunPer10ms(void);
+[19:14:09.529] |             ^~~~~~~~~~~~~~
+[19:14:09.712] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gcc build/malloc.o build/power_task.o build/TouchPoint.o build/user_config.o build/app.o build/lcd_cfg.o build/ssd_2832.o build/uart_protocol.o build/systick.o build/gd32f30x_it.o build/main.o build/gd32f303e_eval.o -mcpu=cortex-m4 -mthumb   -u_printf_float -specs=nosys.specs -TFirmware/Ld/Link.ld -L./  -lGD32F303VET6 -Wl,-Map=build/GD32F303VET6.map,--cref -Wl,--gc-sections -static -o build/GD32F303VET6.elf
+[19:14:09.884] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-size build/GD32F303VET6.elf
+[19:14:09.906] text	   data	    bss	    dec	    hex	filename
+[19:14:09.911] 164460	   8312	  56600	 229372	  37ffc	build/GD32F303VET6.elf
+[19:14:09.912] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-objcopy -O ihex build/GD32F303VET6.elf build/GD32F303VET6.hex
+[19:14:09.934] gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-objcopy -O binary  build/GD32F303VET6.elf build/GD32F303VET6.bin
+[19:14:09.962] ================================================
+[19:14:09.963] 编译成功完成
+[19:14:09.965] ================================================
+╔═════════════════════════════╗
+║         编译成功完成!        ║
+║生成文件: GD32F303VET6.bin                    ║
+╚═════════════════════════════╝

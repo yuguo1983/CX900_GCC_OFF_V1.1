@@ -1,0 +1,1763 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"power_task.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.Power_Off,"ax",%progbits
+  18              		.align	1
+  19              		.global	Power_Off
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	Power_Off:
+  25              	.LFB119:
+  26              		.file 1 "Module/power_task.c"
+   1:Module/power_task.c **** #include "power_task.h"
+   2:Module/power_task.c **** #include "pport_spi.h"
+   3:Module/power_task.c **** #include "app.h"
+   4:Module/power_task.c **** #include "user_config.h"
+   5:Module/power_task.c **** #include "GPU_Cfg.h"
+   6:Module/power_task.c **** #include "timer.h"
+   7:Module/power_task.c **** #include "mipi_Cfg.h"
+   8:Module/power_task.c **** #include "file_opration.h"
+   9:Module/power_task.c **** #include "log.h"
+  10:Module/power_task.c **** #include "usartfifo.h"
+  11:Module/power_task.c **** #include "ina220.h"
+  12:Module/power_task.c **** #include "ncs8805_edp.h"
+  13:Module/power_task.c **** #include "ssd_2832.h"
+  14:Module/power_task.c **** #include "GPU_GPIO.h"
+  15:Module/power_task.c **** #include "GPU_Show.h"
+  16:Module/power_task.c **** #include "GPU_SPI.h"
+  17:Module/power_task.c **** #include "lcd_cfg.h"
+  18:Module/power_task.c **** #include "log.h"
+  19:Module/power_task.c **** //////////////////////
+  20:Module/power_task.c **** 
+  21:Module/power_task.c **** void Init_NT36523B(void);
+  22:Module/power_task.c **** void init_nt35516(void);
+  23:Module/power_task.c **** void Power_Off()
+  24:Module/power_task.c **** {
+  27              		.loc 1 24 1
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31 0000 80B5     		push	{r7, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 2
+
+
+  35              		.cfi_offset 14, -4
+  36 0002 00AF     		add	r7, sp, #0
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_register 7
+  25:Module/power_task.c ****     SPI_WriteCmd(0xB7);
+  39              		.loc 1 25 5
+  40 0004 B720     		movs	r0, #183
+  41 0006 FFF7FEFF 		bl	SPI_WriteCmd
+  26:Module/power_task.c ****     SPI_WriteData(0x50);//10=TX_CLK 50=PCLK
+  42              		.loc 1 26 5
+  43 000a 5020     		movs	r0, #80
+  44 000c FFF7FEFF 		bl	SPI_WriteData
+  27:Module/power_task.c ****     SPI_WriteData(0x02);
+  45              		.loc 1 27 5
+  46 0010 0220     		movs	r0, #2
+  47 0012 FFF7FEFF 		bl	SPI_WriteData
+  28:Module/power_task.c ****     SPI_WriteCmd(0xBD);
+  48              		.loc 1 28 5
+  49 0016 BD20     		movs	r0, #189
+  50 0018 FFF7FEFF 		bl	SPI_WriteCmd
+  29:Module/power_task.c ****     SPI_WriteData(0x00);
+  51              		.loc 1 29 5
+  52 001c 0020     		movs	r0, #0
+  53 001e FFF7FEFF 		bl	SPI_WriteData
+  30:Module/power_task.c ****     SPI_WriteData(0x00);
+  54              		.loc 1 30 5
+  55 0022 0020     		movs	r0, #0
+  56 0024 FFF7FEFF 		bl	SPI_WriteData
+  31:Module/power_task.c ****     SSD2828_WritePackageSize(1);
+  57              		.loc 1 31 5
+  58 0028 0120     		movs	r0, #1
+  59 002a FFF7FEFF 		bl	SSD2828_WritePackageSize
+  32:Module/power_task.c ****   	SPI_WriteData(0x28);		   	  //SleepIn
+  60              		.loc 1 32 4
+  61 002e 2820     		movs	r0, #40
+  62 0030 FFF7FEFF 		bl	SPI_WriteData
+  33:Module/power_task.c ****    	bsp_DelayMS(10);
+  63              		.loc 1 33 5
+  64 0034 0A20     		movs	r0, #10
+  65 0036 FFF7FEFF 		bl	bsp_DelayMS
+  34:Module/power_task.c ****    	SSD2828_WritePackageSize(1);
+  66              		.loc 1 34 5
+  67 003a 0120     		movs	r0, #1
+  68 003c FFF7FEFF 		bl	SSD2828_WritePackageSize
+  35:Module/power_task.c ****     SPI_WriteData(0x10);		     //display OFF
+  69              		.loc 1 35 5
+  70 0040 1020     		movs	r0, #16
+  71 0042 FFF7FEFF 		bl	SPI_WriteData
+  36:Module/power_task.c ****   	bsp_DelayMS(5);
+  72              		.loc 1 36 4
+  73 0046 0520     		movs	r0, #5
+  74 0048 FFF7FEFF 		bl	bsp_DelayMS
+  37:Module/power_task.c ****     O_PWR_5V_EN(0);
+  75              		.loc 1 37 5
+  76 004c 0020     		movs	r0, #0
+  77 004e FFF7FEFF 		bl	O_PWR_5V_EN
+  38:Module/power_task.c ****     set_envcc(0);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 3
+
+
+  78              		.loc 1 38 5
+  79 0052 0020     		movs	r0, #0
+  80 0054 FFF7FEFF 		bl	set_envcc
+  39:Module/power_task.c ****     set_eniovcc(0);
+  81              		.loc 1 39 5
+  82 0058 0020     		movs	r0, #0
+  83 005a FFF7FEFF 		bl	set_eniovcc
+  40:Module/power_task.c ****     set_envsp(0);
+  84              		.loc 1 40 5
+  85 005e 0020     		movs	r0, #0
+  86 0060 FFF7FEFF 		bl	set_envsp
+  41:Module/power_task.c ****     set_envsn(0);
+  87              		.loc 1 41 5
+  88 0064 0020     		movs	r0, #0
+  89 0066 FFF7FEFF 		bl	set_envsn
+  42:Module/power_task.c ****     SetGpuExgpio(1,0);
+  90              		.loc 1 42 5
+  91 006a 0021     		movs	r1, #0
+  92 006c 0120     		movs	r0, #1
+  93 006e FFF7FEFF 		bl	SetGpuExgpio
+  43:Module/power_task.c ****     set_vcc(0);
+  94              		.loc 1 43 5
+  95 0072 0020     		movs	r0, #0
+  96 0074 FFF7FEFF 		bl	set_vcc
+  44:Module/power_task.c ****     set_iovcc(0);
+  97              		.loc 1 44 5
+  98 0078 0020     		movs	r0, #0
+  99 007a FFF7FEFF 		bl	set_iovcc
+  45:Module/power_task.c ****     set_resetvcc(0);
+ 100              		.loc 1 45 5
+ 101 007e 0020     		movs	r0, #0
+ 102 0080 FFF7FEFF 		bl	set_resetvcc
+  46:Module/power_task.c ****     set_vspvol(0);
+ 103              		.loc 1 46 5
+ 104 0084 0020     		movs	r0, #0
+ 105 0086 FFF7FEFF 		bl	set_vspvol
+  47:Module/power_task.c ****     set_vsnvol(0);
+ 106              		.loc 1 47 5
+ 107 008a 0020     		movs	r0, #0
+ 108 008c FFF7FEFF 		bl	set_vsnvol
+  48:Module/power_task.c ****     SetGpuExgpio(2,0);//GPIO_2
+ 109              		.loc 1 48 5
+ 110 0090 0021     		movs	r1, #0
+ 111 0092 0220     		movs	r0, #2
+ 112 0094 FFF7FEFF 		bl	SetGpuExgpio
+  49:Module/power_task.c ****     Lcd_Reset(0); //LCD reset 
+ 113              		.loc 1 49 5
+ 114 0098 0020     		movs	r0, #0
+ 115 009a FFF7FEFF 		bl	Lcd_Reset
+  50:Module/power_task.c ****     bridge_RSTPIN_reset();
+ 116              		.loc 1 50 5
+ 117 009e FFF7FEFF 		bl	bridge_RSTPIN_reset
+  51:Module/power_task.c ****     RGB_Disable();
+ 118              		.loc 1 51 5
+ 119 00a2 FFF7FEFF 		bl	RGB_Disable
+  52:Module/power_task.c ****     Ssd2828ON(1);
+ 120              		.loc 1 52 5
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 4
+
+
+ 121 00a6 0120     		movs	r0, #1
+ 122 00a8 FFF7FEFF 		bl	Ssd2828ON
+  53:Module/power_task.c ****     O_PWR_BL_EN(0); //BL_EN
+ 123              		.loc 1 53 5
+ 124 00ac 0020     		movs	r0, #0
+ 125 00ae FFF7FEFF 		bl	O_PWR_BL_EN
+  54:Module/power_task.c ****     O_LCM_5V_EN(0);
+ 126              		.loc 1 54 5
+ 127 00b2 0020     		movs	r0, #0
+ 128 00b4 FFF7FEFF 		bl	O_LCM_5V_EN
+  55:Module/power_task.c ****     O_PWR_LED(0);
+ 129              		.loc 1 55 5
+ 130 00b8 0020     		movs	r0, #0
+ 131 00ba FFF7FEFF 		bl	O_PWR_LED
+  56:Module/power_task.c ****     O_SSD2828_SPI_CS(0);
+ 132              		.loc 1 56 5
+ 133 00be 0020     		movs	r0, #0
+ 134 00c0 FFF7FEFF 		bl	O_SSD2828_SPI_CS
+  57:Module/power_task.c ****     O_SSD2828_SPI_CLK(0);
+ 135              		.loc 1 57 5
+ 136 00c4 0020     		movs	r0, #0
+ 137 00c6 FFF7FEFF 		bl	O_SSD2828_SPI_CLK
+  58:Module/power_task.c ****     O_SSD2828_SPI_SDI(0);
+ 138              		.loc 1 58 5
+ 139 00ca 0020     		movs	r0, #0
+ 140 00cc FFF7FEFF 		bl	O_SSD2828_SPI_SDI
+  59:Module/power_task.c ****     O_SSD2828_RESET(0);	
+ 141              		.loc 1 59 5
+ 142 00d0 0020     		movs	r0, #0
+ 143 00d2 FFF7FEFF 		bl	O_SSD2828_RESET
+  60:Module/power_task.c ****     GPU_Beep(15);
+ 144              		.loc 1 60 5
+ 145 00d6 0F20     		movs	r0, #15
+ 146 00d8 FFF7FEFF 		bl	GPU_Beep
+  61:Module/power_task.c ****     SetGpuGpio(1,0);
+ 147              		.loc 1 61 5
+ 148 00dc 0021     		movs	r1, #0
+ 149 00de 0120     		movs	r0, #1
+ 150 00e0 FFF7FEFF 		bl	SetGpuGpio
+  62:Module/power_task.c ****     SetGpuGpio(2,0);
+ 151              		.loc 1 62 5
+ 152 00e4 0021     		movs	r1, #0
+ 153 00e6 0220     		movs	r0, #2
+ 154 00e8 FFF7FEFF 		bl	SetGpuGpio
+  63:Module/power_task.c ****     SetGpuGpio(3,0);
+ 155              		.loc 1 63 5
+ 156 00ec 0021     		movs	r1, #0
+ 157 00ee 0320     		movs	r0, #3
+ 158 00f0 FFF7FEFF 		bl	SetGpuGpio
+  64:Module/power_task.c ****     SetGpuGpio(4,0);
+ 159              		.loc 1 64 5
+ 160 00f4 0021     		movs	r1, #0
+ 161 00f6 0420     		movs	r0, #4
+ 162 00f8 FFF7FEFF 		bl	SetGpuGpio
+  65:Module/power_task.c **** }
+ 163              		.loc 1 65 1
+ 164 00fc 00BF     		nop
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 5
+
+
+ 165 00fe 80BD     		pop	{r7, pc}
+ 166              		.cfi_endproc
+ 167              	.LFE119:
+ 169              		.global	tempbuf
+ 170              		.section	.bss.tempbuf,"aw",%nobits
+ 171              		.align	2
+ 174              	tempbuf:
+ 175 0000 00000000 		.space	10
+ 175      00000000 
+ 175      0000
+ 176              		.global	rdbuf
+ 177              		.section	.bss.rdbuf,"aw",%nobits
+ 178              		.align	2
+ 181              	rdbuf:
+ 182 0000 00000000 		.space	100
+ 182      00000000 
+ 182      00000000 
+ 182      00000000 
+ 182      00000000 
+ 183              		.section	.text.Power_On,"ax",%progbits
+ 184              		.align	1
+ 185              		.global	Power_On
+ 186              		.syntax unified
+ 187              		.thumb
+ 188              		.thumb_func
+ 190              	Power_On:
+ 191              	.LFB120:
+  66:Module/power_task.c **** 
+  67:Module/power_task.c **** 
+  68:Module/power_task.c **** 
+  69:Module/power_task.c **** 
+  70:Module/power_task.c **** 
+  71:Module/power_task.c **** uint8_t tempbuf[10];
+  72:Module/power_task.c **** uint8_t rdbuf[100];
+  73:Module/power_task.c ****  int jd9365tg_Read_FW_RegMultiSpi(uint32_t addr, uint8_t *rdata, uint16_t rlen);
+  74:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegMulti(uint32_t addr, uint8_t *rdata, uint16_t rlen);
+  75:Module/power_task.c **** static int jd9365tg_Write_BackDoor_RegSingle(uint32_t addr, uint8_t wdata);
+  76:Module/power_task.c ****  int jd9365tg_Read_FW_RegSingleSpi(uint32_t addr, uint8_t *rdata);
+  77:Module/power_task.c **** static int jd9365tg_Write_FW_RegSingleSpi(uint32_t addr, uint8_t wdata);
+  78:Module/power_task.c **** static int jd9365tg_EnterBackDoor(void);
+  79:Module/power_task.c **** static int jd9365tg_ExitBackDoor(void);
+  80:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegSingle(uint32_t addr, uint8_t *rdata);
+  81:Module/power_task.c **** 
+  82:Module/power_task.c **** //#define SSD2832
+  83:Module/power_task.c **** 
+  84:Module/power_task.c **** void Power_On(void)
+  85:Module/power_task.c **** {
+ 192              		.loc 1 85 1
+ 193              		.cfi_startproc
+ 194              		@ args = 0, pretend = 0, frame = 64
+ 195              		@ frame_needed = 1, uses_anonymous_args = 0
+ 196 0000 80B5     		push	{r7, lr}
+ 197              	.LCFI2:
+ 198              		.cfi_def_cfa_offset 8
+ 199              		.cfi_offset 7, -8
+ 200              		.cfi_offset 14, -4
+ 201 0002 90B0     		sub	sp, sp, #64
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 6
+
+
+ 202              	.LCFI3:
+ 203              		.cfi_def_cfa_offset 72
+ 204 0004 00AF     		add	r7, sp, #0
+ 205              	.LCFI4:
+ 206              		.cfi_def_cfa_register 7
+  86:Module/power_task.c ****     unsigned char mipi_dataarray[20] ;
+  87:Module/power_task.c ****     struct mipi_port srtmipiport;
+  88:Module/power_task.c ****     uint8_t readbuf[10]={0};
+ 207              		.loc 1 88 13
+ 208 0006 0023     		movs	r3, #0
+ 209 0008 7B60     		str	r3, [r7, #4]
+ 210 000a 07F10803 		add	r3, r7, #8
+ 211 000e 0022     		movs	r2, #0
+ 212 0010 1A60     		str	r2, [r3]
+ 213 0012 9A80     		strh	r2, [r3, #4]	@ movhi
+  89:Module/power_task.c ****     uint8_t ret=0;
+ 214              		.loc 1 89 13
+ 215 0014 0023     		movs	r3, #0
+ 216 0016 87F83F30 		strb	r3, [r7, #63]
+  90:Module/power_task.c ****     BeepOn();
+ 217              		.loc 1 90 5
+ 218 001a FFF7FEFF 		bl	BeepOn
+  91:Module/power_task.c ****     set_tim_vcc(10, 100);
+ 219              		.loc 1 91 5
+ 220 001e 6421     		movs	r1, #100
+ 221 0020 0A20     		movs	r0, #10
+ 222 0022 FFF7FEFF 		bl	set_tim_vcc
+  92:Module/power_task.c ****     set_tim_iovcc(30, 100);
+ 223              		.loc 1 92 5
+ 224 0026 6421     		movs	r1, #100
+ 225 0028 1E20     		movs	r0, #30
+ 226 002a FFF7FEFF 		bl	set_tim_iovcc
+  93:Module/power_task.c ****     set_tim_reset(30, 100);
+ 227              		.loc 1 93 5
+ 228 002e 6421     		movs	r1, #100
+ 229 0030 1E20     		movs	r0, #30
+ 230 0032 FFF7FEFF 		bl	set_tim_reset
+  94:Module/power_task.c ****     set_tim_vsp(50, 100);
+ 231              		.loc 1 94 5
+ 232 0036 6421     		movs	r1, #100
+ 233 0038 3220     		movs	r0, #50
+ 234 003a FFF7FEFF 		bl	set_tim_vsp
+  95:Module/power_task.c ****     set_tim_vsn(50, 100);
+ 235              		.loc 1 95 5
+ 236 003e 6421     		movs	r1, #100
+ 237 0040 3220     		movs	r0, #50
+ 238 0042 FFF7FEFF 		bl	set_tim_vsn
+  96:Module/power_task.c ****     set_vspvol(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVSPSET);
+ 239              		.loc 1 96 30
+ 240 0046 804B     		ldr	r3, .L4
+ 241 0048 1B78     		ldrb	r3, [r3]
+ 242 004a DBB2     		uxtb	r3, r3
+ 243 004c 1A46     		mov	r2, r3
+ 244 004e 7F4B     		ldr	r3, .L4+4
+ 245 0050 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 246              		.loc 1 96 5
+ 247 0054 B3F8AE30 		ldrh	r3, [r3, #174]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 7
+
+
+ 248 0058 1846     		mov	r0, r3
+ 249 005a FFF7FEFF 		bl	set_vspvol
+  97:Module/power_task.c ****     set_vsnvol(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVSNSET);
+ 250              		.loc 1 97 30
+ 251 005e 7A4B     		ldr	r3, .L4
+ 252 0060 1B78     		ldrb	r3, [r3]
+ 253 0062 DBB2     		uxtb	r3, r3
+ 254 0064 1A46     		mov	r2, r3
+ 255 0066 794B     		ldr	r3, .L4+4
+ 256 0068 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 257              		.loc 1 97 5
+ 258 006c B3F8B830 		ldrh	r3, [r3, #184]
+ 259 0070 1846     		mov	r0, r3
+ 260 0072 FFF7FEFF 		bl	set_vsnvol
+  98:Module/power_task.c ****     set_vcc1(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC1SET);
+ 261              		.loc 1 98 28
+ 262 0076 744B     		ldr	r3, .L4
+ 263 0078 1B78     		ldrb	r3, [r3]
+ 264 007a DBB2     		uxtb	r3, r3
+ 265 007c 1A46     		mov	r2, r3
+ 266 007e 734B     		ldr	r3, .L4+4
+ 267 0080 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 268              		.loc 1 98 5
+ 269 0084 B3F87230 		ldrh	r3, [r3, #114]
+ 270 0088 1846     		mov	r0, r3
+ 271 008a FFF7FEFF 		bl	set_vcc1
+  99:Module/power_task.c ****     set_vcc2(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC2SET);
+ 272              		.loc 1 99 28
+ 273 008e 6E4B     		ldr	r3, .L4
+ 274 0090 1B78     		ldrb	r3, [r3]
+ 275 0092 DBB2     		uxtb	r3, r3
+ 276 0094 1A46     		mov	r2, r3
+ 277 0096 6D4B     		ldr	r3, .L4+4
+ 278 0098 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 279              		.loc 1 99 5
+ 280 009c B3F87C30 		ldrh	r3, [r3, #124]
+ 281 00a0 1846     		mov	r0, r3
+ 282 00a2 FFF7FEFF 		bl	set_vcc2
+ 100:Module/power_task.c ****     set_vcc3(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC3SET);
+ 283              		.loc 1 100 28
+ 284 00a6 684B     		ldr	r3, .L4
+ 285 00a8 1B78     		ldrb	r3, [r3]
+ 286 00aa DBB2     		uxtb	r3, r3
+ 287 00ac 1A46     		mov	r2, r3
+ 288 00ae 674B     		ldr	r3, .L4+4
+ 289 00b0 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 290              		.loc 1 100 5
+ 291 00b4 B3F88630 		ldrh	r3, [r3, #134]
+ 292 00b8 1846     		mov	r0, r3
+ 293 00ba FFF7FEFF 		bl	set_vcc3
+ 101:Module/power_task.c ****     set_vcc4(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC4SET);
+ 294              		.loc 1 101 28
+ 295 00be 624B     		ldr	r3, .L4
+ 296 00c0 1B78     		ldrb	r3, [r3]
+ 297 00c2 DBB2     		uxtb	r3, r3
+ 298 00c4 1A46     		mov	r2, r3
+ 299 00c6 614B     		ldr	r3, .L4+4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 8
+
+
+ 300 00c8 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 301              		.loc 1 101 5
+ 302 00cc B3F89030 		ldrh	r3, [r3, #144]
+ 303 00d0 1846     		mov	r0, r3
+ 304 00d2 FFF7FEFF 		bl	set_vcc4
+ 102:Module/power_task.c ****     set_vcc5(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC5SET);
+ 305              		.loc 1 102 28
+ 306 00d6 5C4B     		ldr	r3, .L4
+ 307 00d8 1B78     		ldrb	r3, [r3]
+ 308 00da DBB2     		uxtb	r3, r3
+ 309 00dc 1A46     		mov	r2, r3
+ 310 00de 5B4B     		ldr	r3, .L4+4
+ 311 00e0 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 312              		.loc 1 102 5
+ 313 00e4 B3F89A30 		ldrh	r3, [r3, #154]
+ 314 00e8 1846     		mov	r0, r3
+ 315 00ea FFF7FEFF 		bl	set_vcc5
+ 103:Module/power_task.c ****     set_vcc6(ptr_MIPI_TABLE[gMipiTableIndex]->NomalVCC6SET);
+ 316              		.loc 1 103 28
+ 317 00ee 564B     		ldr	r3, .L4
+ 318 00f0 1B78     		ldrb	r3, [r3]
+ 319 00f2 DBB2     		uxtb	r3, r3
+ 320 00f4 1A46     		mov	r2, r3
+ 321 00f6 554B     		ldr	r3, .L4+4
+ 322 00f8 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 323              		.loc 1 103 5
+ 324 00fc B3F8A430 		ldrh	r3, [r3, #164]
+ 325 0100 1846     		mov	r0, r3
+ 326 0102 FFF7FEFF 		bl	set_vcc6
+ 104:Module/power_task.c ****     set_envcc1(1);
+ 327              		.loc 1 104 5
+ 328 0106 0120     		movs	r0, #1
+ 329 0108 FFF7FEFF 		bl	set_envcc1
+ 105:Module/power_task.c ****     set_envcc2(1);
+ 330              		.loc 1 105 5
+ 331 010c 0120     		movs	r0, #1
+ 332 010e FFF7FEFF 		bl	set_envcc2
+ 106:Module/power_task.c ****     set_envcc3(1);
+ 333              		.loc 1 106 5
+ 334 0112 0120     		movs	r0, #1
+ 335 0114 FFF7FEFF 		bl	set_envcc3
+ 107:Module/power_task.c ****     set_envcc4(1);
+ 336              		.loc 1 107 5
+ 337 0118 0120     		movs	r0, #1
+ 338 011a FFF7FEFF 		bl	set_envcc4
+ 108:Module/power_task.c ****     set_envcc5(1);
+ 339              		.loc 1 108 5
+ 340 011e 0120     		movs	r0, #1
+ 341 0120 FFF7FEFF 		bl	set_envcc5
+ 109:Module/power_task.c ****     set_envcc6(1);
+ 342              		.loc 1 109 5
+ 343 0124 0120     		movs	r0, #1
+ 344 0126 FFF7FEFF 		bl	set_envcc6
+ 110:Module/power_task.c **** 
+ 111:Module/power_task.c ****     set_envsp(1);
+ 345              		.loc 1 111 5
+ 346 012a 0120     		movs	r0, #1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 9
+
+
+ 347 012c FFF7FEFF 		bl	set_envsp
+ 112:Module/power_task.c ****     set_envsn(1);
+ 348              		.loc 1 112 5
+ 349 0130 0120     		movs	r0, #1
+ 350 0132 FFF7FEFF 		bl	set_envsn
+ 113:Module/power_task.c ****     O_PWR_5V_EN(1);
+ 351              		.loc 1 113 5
+ 352 0136 0120     		movs	r0, #1
+ 353 0138 FFF7FEFF 		bl	O_PWR_5V_EN
+ 114:Module/power_task.c ****     Ssd2828ON(0);
+ 354              		.loc 1 114 5
+ 355 013c 0020     		movs	r0, #0
+ 356 013e FFF7FEFF 		bl	Ssd2828ON
+ 115:Module/power_task.c ****     //	  O_PWR_EN_OTP(1,500);
+ 116:Module/power_task.c **** #ifdef  SSD2832
+ 117:Module/power_task.c **** 
+ 118:Module/power_task.c **** 
+ 119:Module/power_task.c **** 
+ 120:Module/power_task.c **** 
+ 121:Module/power_task.c **** #else
+ 122:Module/power_task.c ****     O_SSD2828_RESET(1);
+ 357              		.loc 1 122 5
+ 358 0142 0120     		movs	r0, #1
+ 359 0144 FFF7FEFF 		bl	O_SSD2828_RESET
+ 123:Module/power_task.c ****     O_SSD2828_SHUT(0);
+ 360              		.loc 1 123 5
+ 361 0148 0020     		movs	r0, #0
+ 362 014a FFF7FEFF 		bl	O_SSD2828_SHUT
+ 124:Module/power_task.c ****     O_SSD2828_SPI_CS(1);
+ 363              		.loc 1 124 5
+ 364 014e 0120     		movs	r0, #1
+ 365 0150 FFF7FEFF 		bl	O_SSD2828_SPI_CS
+ 125:Module/power_task.c ****     Reset(1);
+ 366              		.loc 1 125 5
+ 367 0154 0120     		movs	r0, #1
+ 368 0156 FFF7FEFF 		bl	Reset
+ 126:Module/power_task.c ****     bsp_DelayMS(10);
+ 369              		.loc 1 126 5
+ 370 015a 0A20     		movs	r0, #10
+ 371 015c FFF7FEFF 		bl	bsp_DelayMS
+ 127:Module/power_task.c ****     Reset(0);
+ 372              		.loc 1 127 5
+ 373 0160 0020     		movs	r0, #0
+ 374 0162 FFF7FEFF 		bl	Reset
+ 128:Module/power_task.c ****     bsp_DelayMS(50);
+ 375              		.loc 1 128 5
+ 376 0166 3220     		movs	r0, #50
+ 377 0168 FFF7FEFF 		bl	bsp_DelayMS
+ 129:Module/power_task.c ****     Reset(1);
+ 378              		.loc 1 129 5
+ 379 016c 0120     		movs	r0, #1
+ 380 016e FFF7FEFF 		bl	Reset
+ 130:Module/power_task.c ****     bsp_DelayMS(50);	
+ 381              		.loc 1 130 5
+ 382 0172 3220     		movs	r0, #50
+ 383 0174 FFF7FEFF 		bl	bsp_DelayMS
+ 131:Module/power_task.c **** #endif
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 10
+
+
+ 132:Module/power_task.c ****     O_LCD_RESET(1);
+ 384              		.loc 1 132 5
+ 385 0178 0120     		movs	r0, #1
+ 386 017a FFF7FEFF 		bl	O_LCD_RESET
+ 133:Module/power_task.c ****     O_PWR_LED(1);
+ 387              		.loc 1 133 5
+ 388 017e 0120     		movs	r0, #1
+ 389 0180 FFF7FEFF 		bl	O_PWR_LED
+ 134:Module/power_task.c ****     bsp_DelayMS(50);
+ 390              		.loc 1 134 5
+ 391 0184 3220     		movs	r0, #50
+ 392 0186 FFF7FEFF 		bl	bsp_DelayMS
+ 135:Module/power_task.c ****     O_LCD_RESET(0);
+ 393              		.loc 1 135 5
+ 394 018a 0020     		movs	r0, #0
+ 395 018c FFF7FEFF 		bl	O_LCD_RESET
+ 136:Module/power_task.c ****     GPU_Beep(15);
+ 396              		.loc 1 136 5
+ 397 0190 0F20     		movs	r0, #15
+ 398 0192 FFF7FEFF 		bl	GPU_Beep
+ 137:Module/power_task.c ****     bsp_DelayMS(50);
+ 399              		.loc 1 137 5
+ 400 0196 3220     		movs	r0, #50
+ 401 0198 FFF7FEFF 		bl	bsp_DelayMS
+ 138:Module/power_task.c ****     O_LCD_RESET(1);
+ 402              		.loc 1 138 5
+ 403 019c 0120     		movs	r0, #1
+ 404 019e FFF7FEFF 		bl	O_LCD_RESET
+ 139:Module/power_task.c ****     bsp_DelayMS(50);
+ 405              		.loc 1 139 5
+ 406 01a2 3220     		movs	r0, #50
+ 407 01a4 FFF7FEFF 		bl	bsp_DelayMS
+ 140:Module/power_task.c **** //////////////TPRESET//////////		
+ 141:Module/power_task.c ****     SetGpuExgpio(2,1);
+ 408              		.loc 1 141 5
+ 409 01a8 0121     		movs	r1, #1
+ 410 01aa 0220     		movs	r0, #2
+ 411 01ac FFF7FEFF 		bl	SetGpuExgpio
+ 142:Module/power_task.c ****     bsp_DelayMS(50);
+ 412              		.loc 1 142 5
+ 413 01b0 3220     		movs	r0, #50
+ 414 01b2 FFF7FEFF 		bl	bsp_DelayMS
+ 143:Module/power_task.c ****     SetGpuExgpio(2,0);
+ 415              		.loc 1 143 5
+ 416 01b6 0021     		movs	r1, #0
+ 417 01b8 0220     		movs	r0, #2
+ 418 01ba FFF7FEFF 		bl	SetGpuExgpio
+ 144:Module/power_task.c ****     bsp_DelayMS(50);
+ 419              		.loc 1 144 5
+ 420 01be 3220     		movs	r0, #50
+ 421 01c0 FFF7FEFF 		bl	bsp_DelayMS
+ 145:Module/power_task.c ****     SetGpuExgpio(2,1);
+ 422              		.loc 1 145 5
+ 423 01c4 0121     		movs	r1, #1
+ 424 01c6 0220     		movs	r0, #2
+ 425 01c8 FFF7FEFF 		bl	SetGpuExgpio
+ 146:Module/power_task.c **** //////////////TPRESET//////////	
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 11
+
+
+ 147:Module/power_task.c **** 
+ 148:Module/power_task.c ****     GPU_BL(ptr_MIPI_TABLE[gMipiTableIndex]->BLMASET); //PWM
+ 426              		.loc 1 148 26
+ 427 01cc 1E4B     		ldr	r3, .L4
+ 428 01ce 1B78     		ldrb	r3, [r3]
+ 429 01d0 DBB2     		uxtb	r3, r3
+ 430 01d2 1A46     		mov	r2, r3
+ 431 01d4 1D4B     		ldr	r3, .L4+4
+ 432 01d6 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 433              		.loc 1 148 43
+ 434 01da B3F8CC30 		ldrh	r3, [r3, #204]
+ 435              		.loc 1 148 5
+ 436 01de DBB2     		uxtb	r3, r3
+ 437 01e0 1846     		mov	r0, r3
+ 438 01e2 FFF7FEFF 		bl	GPU_BL
+ 149:Module/power_task.c ****     if(ptr_MIPI_TABLE[gMipiTableIndex]->Display_Mode <= 2)
+ 439              		.loc 1 149 22
+ 440 01e6 184B     		ldr	r3, .L4
+ 441 01e8 1B78     		ldrb	r3, [r3]
+ 442 01ea DBB2     		uxtb	r3, r3
+ 443 01ec 1A46     		mov	r2, r3
+ 444 01ee 174B     		ldr	r3, .L4+4
+ 445 01f0 53F82230 		ldr	r3, [r3, r2, lsl #2]
+ 446              		.loc 1 149 39
+ 447 01f4 93F86130 		ldrb	r3, [r3, #97]	@ zero_extendqisi2
+ 448              		.loc 1 149 7
+ 449 01f8 022B     		cmp	r3, #2
+ 450 01fa 01D8     		bhi	.L3
+ 150:Module/power_task.c ****     RGB_Enable();else ;
+ 451              		.loc 1 150 5
+ 452 01fc FFF7FEFF 		bl	RGB_Enable
+ 453              	.L3:
+ 151:Module/power_task.c ****     Lcd_ShowMode(0);
+ 454              		.loc 1 151 5
+ 455 0200 0020     		movs	r0, #0
+ 456 0202 FFF7FEFF 		bl	Lcd_ShowMode
+ 152:Module/power_task.c **** 		
+ 153:Module/power_task.c **** //   Ssd2828_ID_OK_check();
+ 154:Module/power_task.c **** //   int temp=SSD2828_SPI_Read_Chip_ID();
+ 155:Module/power_task.c **** //	 log_info("0x%x 0x%x",temp>>16,(uint16_t)temp);
+ 156:Module/power_task.c **** 	
+ 157:Module/power_task.c **** /////////////////////////////////////////
+ 158:Module/power_task.c **** 
+ 159:Module/power_task.c **** #ifdef SSD2832
+ 160:Module/power_task.c ****     SSD2832_GPIO_Init();
+ 161:Module/power_task.c ****     bsp_DelayMS(20);
+ 162:Module/power_task.c ****     bridge_init();
+ 163:Module/power_task.c **** 	srtmipiport.hs_or_lp = 0;
+ 164:Module/power_task.c **** 	srtmipiport.dual = 3;  		
+ 165:Module/power_task.c **** 	srtmipiport.video_or_cmd = 0;
+ 166:Module/power_task.c **** 	srtmipiport.port = 0;
+ 167:Module/power_task.c **** 	srtmipiport.data_type = 0x15;
+ 168:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 169:Module/power_task.c **** 	mipi_dataarray[1] = 0xd0;
+ 170:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 171:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 172:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 12
+
+
+ 173:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 174:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);
+ 175:Module/power_task.c **** 	mipi_dataarray[0] = 0x09;
+ 176:Module/power_task.c **** 	mipi_dataarray[1] = 0xa6;
+ 177:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 178:Module/power_task.c **** 	mipi_dataarray[0] = 0x1c;
+ 179:Module/power_task.c **** 	mipi_dataarray[1] = 0x99;
+ 180:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 181:Module/power_task.c **** 	mipi_dataarray[0] = 0x1d;
+ 182:Module/power_task.c **** 	mipi_dataarray[1] = 0x09;
+ 183:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 184:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 185:Module/power_task.c **** 	mipi_dataarray[1] = 0xe0;
+ 186:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 187:Module/power_task.c **** 	bsp_DelayMS(10);		
+ 188:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 189:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 190:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 191:Module/power_task.c **** 	mipi_dataarray[0] = 0x92;
+ 192:Module/power_task.c **** 	mipi_dataarray[1] = 0xd0;
+ 193:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 194:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 195:Module/power_task.c **** 	mipi_dataarray[1] = 0xf0;
+ 196:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 197:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 198:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 199:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 200:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 201:Module/power_task.c **** 	mipi_dataarray[0] = 0xc6;
+ 202:Module/power_task.c **** 	mipi_dataarray[1] = 0x00;
+ 203:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 204:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 205:Module/power_task.c **** 	mipi_dataarray[1] = 0x27;
+ 206:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 207:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 208:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 209:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 210:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 211:Module/power_task.c **** 	mipi_dataarray[0] = 0x3f;
+ 212:Module/power_task.c **** 	mipi_dataarray[1] = 0x35;
+ 213:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 214:Module/power_task.c **** 	mipi_dataarray[0] = 0x40;
+ 215:Module/power_task.c **** 	mipi_dataarray[1] = 0x28;
+ 216:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 217:Module/power_task.c **** 	mipi_dataarray[0] = 0x41;
+ 218:Module/power_task.c **** 	mipi_dataarray[1] = 0x30;
+ 219:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 220:Module/power_task.c **** 	mipi_dataarray[0] = 0x4d;
+ 221:Module/power_task.c **** 	mipi_dataarray[1] = 0xfb;
+ 222:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 223:Module/power_task.c **** 	mipi_dataarray[0] = 0x4e;
+ 224:Module/power_task.c **** 	mipi_dataarray[1] = 0x9f;
+ 225:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 226:Module/power_task.c **** 	mipi_dataarray[0] = 0xff;
+ 227:Module/power_task.c **** 	mipi_dataarray[1] = 0x10;
+ 228:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);			
+ 229:Module/power_task.c **** 	bsp_DelayMS(10);		
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 13
+
+
+ 230:Module/power_task.c **** 	mipi_dataarray[0] = 0xfb;
+ 231:Module/power_task.c **** 	mipi_dataarray[1] = 0x00;
+ 232:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 233:Module/power_task.c **** 	mipi_dataarray[0] = 0xb0;
+ 234:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 235:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);	
+ 236:Module/power_task.c **** 	mipi_dataarray[0] = 0x55;
+ 237:Module/power_task.c **** 	mipi_dataarray[1] = 0x80;
+ 238:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 239:Module/power_task.c **** 	mipi_dataarray[0] = 0x26;
+ 240:Module/power_task.c **** 	mipi_dataarray[1] = 0x01;
+ 241:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);		
+ 242:Module/power_task.c **** 	mipi_dataarray[0] = 0xc0;
+ 243:Module/power_task.c **** 	mipi_dataarray[1] = 0x10;//0x11:10bit 0x10:8bit 0x03:dsc10bit
+ 244:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,2);			
+ 245:Module/power_task.c ****     bsp_DelayMS(10);	
+ 246:Module/power_task.c **** 	srtmipiport.data_type = 0x39;	
+ 247:Module/power_task.c **** 	
+ 248:Module/power_task.c **** 	mipi_dataarray[0] = 0xc1;
+ 249:Module/power_task.c **** 	mipi_dataarray[1] = 0xAB;
+ 250:Module/power_task.c **** 	mipi_dataarray[2] = 0x2A;
+ 251:Module/power_task.c **** 	mipi_dataarray[3] = 0x00;
+ 252:Module/power_task.c **** 	mipi_dataarray[4] = 0x20;
+ 253:Module/power_task.c **** 	mipi_dataarray[5] = 0x02;
+ 254:Module/power_task.c **** 	mipi_dataarray[6] = 0x00;	
+ 255:Module/power_task.c **** 	mipi_dataarray[7] = 0x01;		
+ 256:Module/power_task.c **** 	mipi_dataarray[8] = 0xD8;		
+ 257:Module/power_task.c **** 	mipi_dataarray[9] = 0x03;		
+ 258:Module/power_task.c **** 	mipi_dataarray[10] = 0xB3;	
+ 259:Module/power_task.c **** 	mipi_dataarray[11] = 0x00;	
+ 260:Module/power_task.c **** 	mipi_dataarray[12] = 0x0A;	
+ 261:Module/power_task.c **** 	mipi_dataarray[13] = 0x03;	
+ 262:Module/power_task.c **** 	mipi_dataarray[14] = 0x19;	
+ 263:Module/power_task.c **** 	mipi_dataarray[15] = 0x03;	
+ 264:Module/power_task.c **** 	mipi_dataarray[16] = 0xE4;		
+ 265:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,17);		
+ 266:Module/power_task.c ****     bsp_DelayMS(10);	
+ 267:Module/power_task.c **** 	mipi_dataarray[0] = 0xc2;
+ 268:Module/power_task.c **** 	mipi_dataarray[1] = 0x0C;
+ 269:Module/power_task.c **** 	mipi_dataarray[2] = 0xF0;
+ 270:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,3);		
+ 271:Module/power_task.c **** 	bsp_DelayMS(10);	
+ 272:Module/power_task.c **** 
+ 273:Module/power_task.c ****     srtmipiport.data_type = 0x15;
+ 274:Module/power_task.c **** 	mipi_dataarray[0] = 0x11;
+ 275:Module/power_task.c **** 	mipi_write_regs(&srtmipiport, mipi_dataarray,1);	
+ 276:Module/power_task.c **** 	bsp_DelayMS(200);
+ 277:Module/power_task.c **** 	mipi_dataarray[0] = 0x29;
+ 278:Module/power_task.c **** 	mipi_write_regs(&srtmipiport,mipi_dataarray,1);	
+ 279:Module/power_task.c **** 	bsp_DelayMS(100);	
+ 280:Module/power_task.c **** 		
+ 281:Module/power_task.c **** 
+ 282:Module/power_task.c ****    // bridge_setbistmode(1);
+ 283:Module/power_task.c **** 	
+ 284:Module/power_task.c **** 	srtmipiport.data_type = 0x15;
+ 285:Module/power_task.c **** 	//video enable
+ 286:Module/power_task.c **** 	bridge_write_reg_16bit(0xB7, 0x034B);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 14
+
+
+ 287:Module/power_task.c **** 
+ 288:Module/power_task.c **** 
+ 289:Module/power_task.c **** 
+ 290:Module/power_task.c **** 
+ 291:Module/power_task.c **** O_PWR_BL_EN(1);
+ 292:Module/power_task.c **** 
+ 293:Module/power_task.c **** 
+ 294:Module/power_task.c **** 
+ 295:Module/power_task.c **** 
+ 296:Module/power_task.c **** #else
+ 297:Module/power_task.c **** //////////////////////////////tp reset
+ 298:Module/power_task.c **** 
+ 299:Module/power_task.c ****     SetGpuExgpio(1,1);
+ 457              		.loc 1 299 5
+ 458 0206 0121     		movs	r1, #1
+ 459 0208 0120     		movs	r0, #1
+ 460 020a FFF7FEFF 		bl	SetGpuExgpio
+ 300:Module/power_task.c ****     bsp_DelayUS(10);
+ 461              		.loc 1 300 5
+ 462 020e 0A20     		movs	r0, #10
+ 463 0210 FFF7FEFF 		bl	bsp_DelayUS
+ 301:Module/power_task.c ****     SetGpuExgpio(1,0);		
+ 464              		.loc 1 301 5
+ 465 0214 0021     		movs	r1, #0
+ 466 0216 0120     		movs	r0, #1
+ 467 0218 FFF7FEFF 		bl	SetGpuExgpio
+ 302:Module/power_task.c ****     bsp_DelayUS(50);		
+ 468              		.loc 1 302 5
+ 469 021c 3220     		movs	r0, #50
+ 470 021e FFF7FEFF 		bl	bsp_DelayUS
+ 303:Module/power_task.c ****     SetGpuExgpio(1,1);		
+ 471              		.loc 1 303 5
+ 472 0222 0121     		movs	r1, #1
+ 473 0224 0120     		movs	r0, #1
+ 474 0226 FFF7FEFF 		bl	SetGpuExgpio
+ 304:Module/power_task.c **** //////////////////////////////////////
+ 305:Module/power_task.c **** //	O_PWR_EN_OTP(1);
+ 306:Module/power_task.c **** 
+ 307:Module/power_task.c ****     //bsp_DelayMS(200);
+ 308:Module/power_task.c ****     //Read_ID_OriseIC();
+ 309:Module/power_task.c ****     //Init_SSD2828READ();
+ 310:Module/power_task.c **** 	//SSD2828_WritePackageSize(2);
+ 311:Module/power_task.c **** 
+ 312:Module/power_task.c ****     //bsp_DelayMS(100);
+ 313:Module/power_task.c ****     //ret=SSD2828GenericReadDT14(0X04,4,readbuf,1);
+ 314:Module/power_task.c ****     //log_info("ret: %s",ret?"SUSCEED":"FAIL");
+ 315:Module/power_task.c ****     //for(int i=0;i<4;i++)
+ 316:Module/power_task.c ****     //log_info("ID:0X%x",readbuf[i]);
+ 317:Module/power_task.c ****     lcm_mipi_set(0);
+ 475              		.loc 1 317 5
+ 476 022a 0020     		movs	r0, #0
+ 477 022c FFF7FEFF 		bl	lcm_mipi_set
+ 318:Module/power_task.c ****     Initial_LCM_CODE();
+ 478              		.loc 1 318 5
+ 479 0230 FFF7FEFF 		bl	Initial_LCM_CODE
+ 319:Module/power_task.c ****     lcm_mipi_set(1);
+ 480              		.loc 1 319 5
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 15
+
+
+ 481 0234 0120     		movs	r0, #1
+ 482 0236 FFF7FEFF 		bl	lcm_mipi_set
+ 320:Module/power_task.c ****     O_PWR_BL_EN(1);
+ 483              		.loc 1 320 5
+ 484 023a 0120     		movs	r0, #1
+ 485 023c FFF7FEFF 		bl	O_PWR_BL_EN
+ 321:Module/power_task.c ****     
+ 322:Module/power_task.c **** /*
+ 323:Module/power_task.c ****     spi_set_spispeed(6);  ///spi opration
+ 324:Module/power_task.c ****     spi_set_spimode(0);
+ 325:Module/power_task.c **** 
+ 326:Module/power_task.c ****     SetGpuGpio(1,1);  ///gipo opration
+ 327:Module/power_task.c ****     SetGpuGpio(2,1);
+ 328:Module/power_task.c ****     SetGpuGpio(3,1);
+ 329:Module/power_task.c ****     SetGpuGpio(4,1);
+ 330:Module/power_task.c **** */
+ 331:Module/power_task.c **** #endif
+ 332:Module/power_task.c **** }
+ 486              		.loc 1 332 1
+ 487 0240 00BF     		nop
+ 488 0242 4037     		adds	r7, r7, #64
+ 489              	.LCFI5:
+ 490              		.cfi_def_cfa_offset 8
+ 491 0244 BD46     		mov	sp, r7
+ 492              	.LCFI6:
+ 493              		.cfi_def_cfa_register 13
+ 494              		@ sp needed
+ 495 0246 80BD     		pop	{r7, pc}
+ 496              	.L5:
+ 497              		.align	2
+ 498              	.L4:
+ 499 0248 00000000 		.word	gMipiTableIndex
+ 500 024c 00000000 		.word	ptr_MIPI_TABLE
+ 501              		.cfi_endproc
+ 502              	.LFE120:
+ 504              		.section	.text.jd9365tg_Write_FW_RegSingleSpi,"ax",%progbits
+ 505              		.align	1
+ 506              		.syntax unified
+ 507              		.thumb
+ 508              		.thumb_func
+ 510              	jd9365tg_Write_FW_RegSingleSpi:
+ 511              	.LFB121:
+ 333:Module/power_task.c **** 
+ 334:Module/power_task.c **** 
+ 335:Module/power_task.c **** static int jd9365tg_Write_FW_RegSingleSpi(uint32_t addr, uint8_t wdata)
+ 336:Module/power_task.c **** {
+ 512              		.loc 1 336 1
+ 513              		.cfi_startproc
+ 514              		@ args = 0, pretend = 0, frame = 16
+ 515              		@ frame_needed = 1, uses_anonymous_args = 0
+ 516 0000 80B5     		push	{r7, lr}
+ 517              	.LCFI7:
+ 518              		.cfi_def_cfa_offset 8
+ 519              		.cfi_offset 7, -8
+ 520              		.cfi_offset 14, -4
+ 521 0002 84B0     		sub	sp, sp, #16
+ 522              	.LCFI8:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 16
+
+
+ 523              		.cfi_def_cfa_offset 24
+ 524 0004 00AF     		add	r7, sp, #0
+ 525              	.LCFI9:
+ 526              		.cfi_def_cfa_register 7
+ 527 0006 7860     		str	r0, [r7, #4]
+ 528 0008 0B46     		mov	r3, r1
+ 529 000a FB70     		strb	r3, [r7, #3]
+ 337:Module/power_task.c ****     uint8_t addrBuf[8];
+ 338:Module/power_task.c ****     addrBuf[0] = 0xF2;
+ 530              		.loc 1 338 16
+ 531 000c F223     		movs	r3, #242
+ 532 000e 3B72     		strb	r3, [r7, #8]
+ 339:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 533              		.loc 1 339 48
+ 534 0010 7B68     		ldr	r3, [r7, #4]
+ 535 0012 1B0E     		lsrs	r3, r3, #24
+ 536              		.loc 1 339 18
+ 537 0014 DBB2     		uxtb	r3, r3
+ 538              		.loc 1 339 16
+ 539 0016 7B72     		strb	r3, [r7, #9]
+ 340:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 540              		.loc 1 340 48
+ 541 0018 7B68     		ldr	r3, [r7, #4]
+ 542 001a 1B0C     		lsrs	r3, r3, #16
+ 543              		.loc 1 340 18
+ 544 001c DBB2     		uxtb	r3, r3
+ 545              		.loc 1 340 16
+ 546 001e BB72     		strb	r3, [r7, #10]
+ 341:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 547              		.loc 1 341 48
+ 548 0020 7B68     		ldr	r3, [r7, #4]
+ 549 0022 1B0A     		lsrs	r3, r3, #8
+ 550              		.loc 1 341 18
+ 551 0024 DBB2     		uxtb	r3, r3
+ 552              		.loc 1 341 16
+ 553 0026 FB72     		strb	r3, [r7, #11]
+ 342:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 554              		.loc 1 342 18
+ 555 0028 7B68     		ldr	r3, [r7, #4]
+ 556 002a DBB2     		uxtb	r3, r3
+ 557              		.loc 1 342 16
+ 558 002c 3B73     		strb	r3, [r7, #12]
+ 343:Module/power_task.c ****     addrBuf[5] = 0x00;
+ 559              		.loc 1 343 16
+ 560 002e 0023     		movs	r3, #0
+ 561 0030 7B73     		strb	r3, [r7, #13]
+ 344:Module/power_task.c ****     addrBuf[6] = 0x01;
+ 562              		.loc 1 344 16
+ 563 0032 0123     		movs	r3, #1
+ 564 0034 BB73     		strb	r3, [r7, #14]
+ 345:Module/power_task.c ****     addrBuf[7] = wdata;
+ 565              		.loc 1 345 16
+ 566 0036 FB78     		ldrb	r3, [r7, #3]
+ 567 0038 FB73     		strb	r3, [r7, #15]
+ 346:Module/power_task.c **** 		spi_write(addrBuf,8);
+ 568              		.loc 1 346 3
+ 569 003a 07F10803 		add	r3, r7, #8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 17
+
+
+ 570 003e 0821     		movs	r1, #8
+ 571 0040 1846     		mov	r0, r3
+ 572 0042 FFF7FEFF 		bl	spi_write
+ 347:Module/power_task.c ****     return 1;
+ 573              		.loc 1 347 12
+ 574 0046 0123     		movs	r3, #1
+ 348:Module/power_task.c **** }
+ 575              		.loc 1 348 1
+ 576 0048 1846     		mov	r0, r3
+ 577 004a 1037     		adds	r7, r7, #16
+ 578              	.LCFI10:
+ 579              		.cfi_def_cfa_offset 8
+ 580 004c BD46     		mov	sp, r7
+ 581              	.LCFI11:
+ 582              		.cfi_def_cfa_register 13
+ 583              		@ sp needed
+ 584 004e 80BD     		pop	{r7, pc}
+ 585              		.cfi_endproc
+ 586              	.LFE121:
+ 588              		.section	.text.jd9365tg_Read_FW_RegMultiSpi,"ax",%progbits
+ 589              		.align	1
+ 590              		.global	jd9365tg_Read_FW_RegMultiSpi
+ 591              		.syntax unified
+ 592              		.thumb
+ 593              		.thumb_func
+ 595              	jd9365tg_Read_FW_RegMultiSpi:
+ 596              	.LFB122:
+ 349:Module/power_task.c **** 
+ 350:Module/power_task.c **** 
+ 351:Module/power_task.c **** 
+ 352:Module/power_task.c **** 
+ 353:Module/power_task.c ****  int jd9365tg_Read_FW_RegMultiSpi(uint32_t addr, uint8_t *rdata, uint16_t rlen)
+ 354:Module/power_task.c **** {
+ 597              		.loc 1 354 1
+ 598              		.cfi_startproc
+ 599              		@ args = 0, pretend = 0, frame = 24
+ 600              		@ frame_needed = 1, uses_anonymous_args = 0
+ 601 0000 80B5     		push	{r7, lr}
+ 602              	.LCFI12:
+ 603              		.cfi_def_cfa_offset 8
+ 604              		.cfi_offset 7, -8
+ 605              		.cfi_offset 14, -4
+ 606 0002 86B0     		sub	sp, sp, #24
+ 607              	.LCFI13:
+ 608              		.cfi_def_cfa_offset 32
+ 609 0004 00AF     		add	r7, sp, #0
+ 610              	.LCFI14:
+ 611              		.cfi_def_cfa_register 7
+ 612 0006 F860     		str	r0, [r7, #12]
+ 613 0008 B960     		str	r1, [r7, #8]
+ 614 000a 1346     		mov	r3, r2
+ 615 000c FB80     		strh	r3, [r7, #6]	@ movhi
+ 355:Module/power_task.c ****     uint8_t addrBuf[7];
+ 356:Module/power_task.c **** 
+ 357:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 616              		.loc 1 357 16
+ 617 000e F323     		movs	r3, #243
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 18
+
+
+ 618 0010 3B74     		strb	r3, [r7, #16]
+ 358:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 619              		.loc 1 358 48
+ 620 0012 FB68     		ldr	r3, [r7, #12]
+ 621 0014 1B0E     		lsrs	r3, r3, #24
+ 622              		.loc 1 358 18
+ 623 0016 DBB2     		uxtb	r3, r3
+ 624              		.loc 1 358 16
+ 625 0018 7B74     		strb	r3, [r7, #17]
+ 359:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 626              		.loc 1 359 48
+ 627 001a FB68     		ldr	r3, [r7, #12]
+ 628 001c 1B0C     		lsrs	r3, r3, #16
+ 629              		.loc 1 359 18
+ 630 001e DBB2     		uxtb	r3, r3
+ 631              		.loc 1 359 16
+ 632 0020 BB74     		strb	r3, [r7, #18]
+ 360:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 633              		.loc 1 360 48
+ 634 0022 FB68     		ldr	r3, [r7, #12]
+ 635 0024 1B0A     		lsrs	r3, r3, #8
+ 636              		.loc 1 360 18
+ 637 0026 DBB2     		uxtb	r3, r3
+ 638              		.loc 1 360 16
+ 639 0028 FB74     		strb	r3, [r7, #19]
+ 361:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 640              		.loc 1 361 18
+ 641 002a FB68     		ldr	r3, [r7, #12]
+ 642 002c DBB2     		uxtb	r3, r3
+ 643              		.loc 1 361 16
+ 644 002e 3B75     		strb	r3, [r7, #20]
+ 362:Module/power_task.c ****     addrBuf[5] = (uint8_t)((rlen & 0xFF00) >> 8);
+ 645              		.loc 1 362 44
+ 646 0030 FB88     		ldrh	r3, [r7, #6]
+ 647 0032 1B0A     		lsrs	r3, r3, #8
+ 648 0034 9BB2     		uxth	r3, r3
+ 649              		.loc 1 362 18
+ 650 0036 DBB2     		uxtb	r3, r3
+ 651              		.loc 1 362 16
+ 652 0038 7B75     		strb	r3, [r7, #21]
+ 363:Module/power_task.c ****     addrBuf[6] = (uint8_t)((rlen & 0x00FF) >> 0);
+ 653              		.loc 1 363 18
+ 654 003a FB88     		ldrh	r3, [r7, #6]	@ movhi
+ 655 003c DBB2     		uxtb	r3, r3
+ 656              		.loc 1 363 16
+ 657 003e BB75     		strb	r3, [r7, #22]
+ 364:Module/power_task.c **** 		spi_read(addrBuf, sizeof(addrBuf), rdata, rlen);
+ 658              		.loc 1 364 3
+ 659 0040 FB88     		ldrh	r3, [r7, #6]	@ movhi
+ 660 0042 DBB2     		uxtb	r3, r3
+ 661 0044 07F11000 		add	r0, r7, #16
+ 662 0048 BA68     		ldr	r2, [r7, #8]
+ 663 004a 0721     		movs	r1, #7
+ 664 004c FFF7FEFF 		bl	spi_read
+ 365:Module/power_task.c ****     return 1;
+ 665              		.loc 1 365 12
+ 666 0050 0123     		movs	r3, #1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 19
+
+
+ 366:Module/power_task.c **** }
+ 667              		.loc 1 366 1
+ 668 0052 1846     		mov	r0, r3
+ 669 0054 1837     		adds	r7, r7, #24
+ 670              	.LCFI15:
+ 671              		.cfi_def_cfa_offset 8
+ 672 0056 BD46     		mov	sp, r7
+ 673              	.LCFI16:
+ 674              		.cfi_def_cfa_register 13
+ 675              		@ sp needed
+ 676 0058 80BD     		pop	{r7, pc}
+ 677              		.cfi_endproc
+ 678              	.LFE122:
+ 680              		.section	.text.jd9365tg_Read_BackDoor_RegMulti,"ax",%progbits
+ 681              		.align	1
+ 682              		.global	jd9365tg_Read_BackDoor_RegMulti
+ 683              		.syntax unified
+ 684              		.thumb
+ 685              		.thumb_func
+ 687              	jd9365tg_Read_BackDoor_RegMulti:
+ 688              	.LFB123:
+ 367:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegMulti(uint32_t addr, uint8_t *rdata, uint16_t rlen)
+ 368:Module/power_task.c **** {
+ 689              		.loc 1 368 1
+ 690              		.cfi_startproc
+ 691              		@ args = 0, pretend = 0, frame = 24
+ 692              		@ frame_needed = 1, uses_anonymous_args = 0
+ 693 0000 80B5     		push	{r7, lr}
+ 694              	.LCFI17:
+ 695              		.cfi_def_cfa_offset 8
+ 696              		.cfi_offset 7, -8
+ 697              		.cfi_offset 14, -4
+ 698 0002 86B0     		sub	sp, sp, #24
+ 699              	.LCFI18:
+ 700              		.cfi_def_cfa_offset 32
+ 701 0004 00AF     		add	r7, sp, #0
+ 702              	.LCFI19:
+ 703              		.cfi_def_cfa_register 7
+ 704 0006 F860     		str	r0, [r7, #12]
+ 705 0008 B960     		str	r1, [r7, #8]
+ 706 000a 1346     		mov	r3, r2
+ 707 000c FB80     		strh	r3, [r7, #6]	@ movhi
+ 369:Module/power_task.c ****     uint8_t addrBuf[6];
+ 370:Module/power_task.c **** 
+ 371:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 708              		.loc 1 371 16
+ 709 000e F323     		movs	r3, #243
+ 710 0010 3B74     		strb	r3, [r7, #16]
+ 372:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 711              		.loc 1 372 48
+ 712 0012 FB68     		ldr	r3, [r7, #12]
+ 713 0014 1B0E     		lsrs	r3, r3, #24
+ 714              		.loc 1 372 18
+ 715 0016 DBB2     		uxtb	r3, r3
+ 716              		.loc 1 372 16
+ 717 0018 7B74     		strb	r3, [r7, #17]
+ 373:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 20
+
+
+ 718              		.loc 1 373 48
+ 719 001a FB68     		ldr	r3, [r7, #12]
+ 720 001c 1B0C     		lsrs	r3, r3, #16
+ 721              		.loc 1 373 18
+ 722 001e DBB2     		uxtb	r3, r3
+ 723              		.loc 1 373 16
+ 724 0020 BB74     		strb	r3, [r7, #18]
+ 374:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 725              		.loc 1 374 48
+ 726 0022 FB68     		ldr	r3, [r7, #12]
+ 727 0024 1B0A     		lsrs	r3, r3, #8
+ 728              		.loc 1 374 18
+ 729 0026 DBB2     		uxtb	r3, r3
+ 730              		.loc 1 374 16
+ 731 0028 FB74     		strb	r3, [r7, #19]
+ 375:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 732              		.loc 1 375 18
+ 733 002a FB68     		ldr	r3, [r7, #12]
+ 734 002c DBB2     		uxtb	r3, r3
+ 735              		.loc 1 375 16
+ 736 002e 3B75     		strb	r3, [r7, #20]
+ 376:Module/power_task.c ****     addrBuf[5] = 0x03;
+ 737              		.loc 1 376 16
+ 738 0030 0323     		movs	r3, #3
+ 739 0032 7B75     		strb	r3, [r7, #21]
+ 377:Module/power_task.c **** 		spi_read(addrBuf, sizeof(addrBuf), rdata, rlen);
+ 740              		.loc 1 377 3
+ 741 0034 FB88     		ldrh	r3, [r7, #6]	@ movhi
+ 742 0036 DBB2     		uxtb	r3, r3
+ 743 0038 07F11000 		add	r0, r7, #16
+ 744 003c BA68     		ldr	r2, [r7, #8]
+ 745 003e 0621     		movs	r1, #6
+ 746 0040 FFF7FEFF 		bl	spi_read
+ 378:Module/power_task.c ****     return 1;
+ 747              		.loc 1 378 12
+ 748 0044 0123     		movs	r3, #1
+ 379:Module/power_task.c **** }
+ 749              		.loc 1 379 1
+ 750 0046 1846     		mov	r0, r3
+ 751 0048 1837     		adds	r7, r7, #24
+ 752              	.LCFI20:
+ 753              		.cfi_def_cfa_offset 8
+ 754 004a BD46     		mov	sp, r7
+ 755              	.LCFI21:
+ 756              		.cfi_def_cfa_register 13
+ 757              		@ sp needed
+ 758 004c 80BD     		pop	{r7, pc}
+ 759              		.cfi_endproc
+ 760              	.LFE123:
+ 762              		.section	.text.jd9365tg_Read_FW_RegSingleSpi,"ax",%progbits
+ 763              		.align	1
+ 764              		.global	jd9365tg_Read_FW_RegSingleSpi
+ 765              		.syntax unified
+ 766              		.thumb
+ 767              		.thumb_func
+ 769              	jd9365tg_Read_FW_RegSingleSpi:
+ 770              	.LFB124:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 21
+
+
+ 380:Module/power_task.c **** 
+ 381:Module/power_task.c ****  int jd9365tg_Read_FW_RegSingleSpi(uint32_t addr, uint8_t *rdata)
+ 382:Module/power_task.c **** {
+ 771              		.loc 1 382 1
+ 772              		.cfi_startproc
+ 773              		@ args = 0, pretend = 0, frame = 24
+ 774              		@ frame_needed = 1, uses_anonymous_args = 0
+ 775 0000 80B5     		push	{r7, lr}
+ 776              	.LCFI22:
+ 777              		.cfi_def_cfa_offset 8
+ 778              		.cfi_offset 7, -8
+ 779              		.cfi_offset 14, -4
+ 780 0002 86B0     		sub	sp, sp, #24
+ 781              	.LCFI23:
+ 782              		.cfi_def_cfa_offset 32
+ 783 0004 00AF     		add	r7, sp, #0
+ 784              	.LCFI24:
+ 785              		.cfi_def_cfa_register 7
+ 786 0006 7860     		str	r0, [r7, #4]
+ 787 0008 3960     		str	r1, [r7]
+ 383:Module/power_task.c ****     int ReCode;
+ 384:Module/power_task.c ****     uint8_t addrBuf[7];
+ 385:Module/power_task.c ****     uint8_t readBuf[1];
+ 386:Module/power_task.c **** 
+ 387:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 788              		.loc 1 387 16
+ 789 000a F323     		movs	r3, #243
+ 790 000c 3B73     		strb	r3, [r7, #12]
+ 388:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 791              		.loc 1 388 48
+ 792 000e 7B68     		ldr	r3, [r7, #4]
+ 793 0010 1B0E     		lsrs	r3, r3, #24
+ 794              		.loc 1 388 18
+ 795 0012 DBB2     		uxtb	r3, r3
+ 796              		.loc 1 388 16
+ 797 0014 7B73     		strb	r3, [r7, #13]
+ 389:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 798              		.loc 1 389 48
+ 799 0016 7B68     		ldr	r3, [r7, #4]
+ 800 0018 1B0C     		lsrs	r3, r3, #16
+ 801              		.loc 1 389 18
+ 802 001a DBB2     		uxtb	r3, r3
+ 803              		.loc 1 389 16
+ 804 001c BB73     		strb	r3, [r7, #14]
+ 390:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 805              		.loc 1 390 48
+ 806 001e 7B68     		ldr	r3, [r7, #4]
+ 807 0020 1B0A     		lsrs	r3, r3, #8
+ 808              		.loc 1 390 18
+ 809 0022 DBB2     		uxtb	r3, r3
+ 810              		.loc 1 390 16
+ 811 0024 FB73     		strb	r3, [r7, #15]
+ 391:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 812              		.loc 1 391 18
+ 813 0026 7B68     		ldr	r3, [r7, #4]
+ 814 0028 DBB2     		uxtb	r3, r3
+ 815              		.loc 1 391 16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 22
+
+
+ 816 002a 3B74     		strb	r3, [r7, #16]
+ 392:Module/power_task.c ****     addrBuf[5] = 0x00;
+ 817              		.loc 1 392 16
+ 818 002c 0023     		movs	r3, #0
+ 819 002e 7B74     		strb	r3, [r7, #17]
+ 393:Module/power_task.c ****     addrBuf[6] = 0x01;
+ 820              		.loc 1 393 16
+ 821 0030 0123     		movs	r3, #1
+ 822 0032 BB74     		strb	r3, [r7, #18]
+ 394:Module/power_task.c **** 
+ 395:Module/power_task.c ****     spi_read(addrBuf, sizeof(addrBuf), readBuf, sizeof(readBuf));
+ 823              		.loc 1 395 5
+ 824 0034 07F10802 		add	r2, r7, #8
+ 825 0038 07F10C00 		add	r0, r7, #12
+ 826 003c 0123     		movs	r3, #1
+ 827 003e 0721     		movs	r1, #7
+ 828 0040 FFF7FEFF 		bl	spi_read
+ 396:Module/power_task.c ****     *rdata = readBuf[0];
+ 829              		.loc 1 396 21
+ 830 0044 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 831              		.loc 1 396 12
+ 832 0046 3B68     		ldr	r3, [r7]
+ 833 0048 1A70     		strb	r2, [r3]
+ 397:Module/power_task.c **** 
+ 398:Module/power_task.c ****     return ReCode;
+ 834              		.loc 1 398 12
+ 835 004a 7B69     		ldr	r3, [r7, #20]
+ 399:Module/power_task.c **** }
+ 836              		.loc 1 399 1
+ 837 004c 1846     		mov	r0, r3
+ 838 004e 1837     		adds	r7, r7, #24
+ 839              	.LCFI25:
+ 840              		.cfi_def_cfa_offset 8
+ 841 0050 BD46     		mov	sp, r7
+ 842              	.LCFI26:
+ 843              		.cfi_def_cfa_register 13
+ 844              		@ sp needed
+ 845 0052 80BD     		pop	{r7, pc}
+ 846              		.cfi_endproc
+ 847              	.LFE124:
+ 849              		.section	.text.jd9365tg_Write_BackDoor_RegSingle,"ax",%progbits
+ 850              		.align	1
+ 851              		.syntax unified
+ 852              		.thumb
+ 853              		.thumb_func
+ 855              	jd9365tg_Write_BackDoor_RegSingle:
+ 856              	.LFB125:
+ 400:Module/power_task.c **** 
+ 401:Module/power_task.c **** static int jd9365tg_Write_BackDoor_RegSingle(uint32_t addr, uint8_t wdata)
+ 402:Module/power_task.c **** {
+ 857              		.loc 1 402 1
+ 858              		.cfi_startproc
+ 859              		@ args = 0, pretend = 0, frame = 16
+ 860              		@ frame_needed = 1, uses_anonymous_args = 0
+ 861 0000 80B5     		push	{r7, lr}
+ 862              	.LCFI27:
+ 863              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 23
+
+
+ 864              		.cfi_offset 7, -8
+ 865              		.cfi_offset 14, -4
+ 866 0002 84B0     		sub	sp, sp, #16
+ 867              	.LCFI28:
+ 868              		.cfi_def_cfa_offset 24
+ 869 0004 00AF     		add	r7, sp, #0
+ 870              	.LCFI29:
+ 871              		.cfi_def_cfa_register 7
+ 872 0006 7860     		str	r0, [r7, #4]
+ 873 0008 0B46     		mov	r3, r1
+ 874 000a FB70     		strb	r3, [r7, #3]
+ 403:Module/power_task.c ****     uint8_t addrBuf[7];
+ 404:Module/power_task.c **** 
+ 405:Module/power_task.c ****     addrBuf[0] = 0xF2;
+ 875              		.loc 1 405 16
+ 876 000c F223     		movs	r3, #242
+ 877 000e 3B72     		strb	r3, [r7, #8]
+ 406:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 878              		.loc 1 406 48
+ 879 0010 7B68     		ldr	r3, [r7, #4]
+ 880 0012 1B0E     		lsrs	r3, r3, #24
+ 881              		.loc 1 406 18
+ 882 0014 DBB2     		uxtb	r3, r3
+ 883              		.loc 1 406 16
+ 884 0016 7B72     		strb	r3, [r7, #9]
+ 407:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 885              		.loc 1 407 48
+ 886 0018 7B68     		ldr	r3, [r7, #4]
+ 887 001a 1B0C     		lsrs	r3, r3, #16
+ 888              		.loc 1 407 18
+ 889 001c DBB2     		uxtb	r3, r3
+ 890              		.loc 1 407 16
+ 891 001e BB72     		strb	r3, [r7, #10]
+ 408:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 892              		.loc 1 408 48
+ 893 0020 7B68     		ldr	r3, [r7, #4]
+ 894 0022 1B0A     		lsrs	r3, r3, #8
+ 895              		.loc 1 408 18
+ 896 0024 DBB2     		uxtb	r3, r3
+ 897              		.loc 1 408 16
+ 898 0026 FB72     		strb	r3, [r7, #11]
+ 409:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 899              		.loc 1 409 18
+ 900 0028 7B68     		ldr	r3, [r7, #4]
+ 901 002a DBB2     		uxtb	r3, r3
+ 902              		.loc 1 409 16
+ 903 002c 3B73     		strb	r3, [r7, #12]
+ 410:Module/power_task.c ****     addrBuf[5] = 0x03;
+ 904              		.loc 1 410 16
+ 905 002e 0323     		movs	r3, #3
+ 906 0030 7B73     		strb	r3, [r7, #13]
+ 411:Module/power_task.c ****     addrBuf[6] = wdata;
+ 907              		.loc 1 411 16
+ 908 0032 FB78     		ldrb	r3, [r7, #3]
+ 909 0034 BB73     		strb	r3, [r7, #14]
+ 412:Module/power_task.c **** 		spi_write(addrBuf,7);
+ 910              		.loc 1 412 3
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 24
+
+
+ 911 0036 07F10803 		add	r3, r7, #8
+ 912 003a 0721     		movs	r1, #7
+ 913 003c 1846     		mov	r0, r3
+ 914 003e FFF7FEFF 		bl	spi_write
+ 413:Module/power_task.c ****     return 1;
+ 915              		.loc 1 413 12
+ 916 0042 0123     		movs	r3, #1
+ 414:Module/power_task.c **** }
+ 917              		.loc 1 414 1
+ 918 0044 1846     		mov	r0, r3
+ 919 0046 1037     		adds	r7, r7, #16
+ 920              	.LCFI30:
+ 921              		.cfi_def_cfa_offset 8
+ 922 0048 BD46     		mov	sp, r7
+ 923              	.LCFI31:
+ 924              		.cfi_def_cfa_register 13
+ 925              		@ sp needed
+ 926 004a 80BD     		pop	{r7, pc}
+ 927              		.cfi_endproc
+ 928              	.LFE125:
+ 930              		.section	.text.jd9365tg_Read_BackDoor_RegSingle,"ax",%progbits
+ 931              		.align	1
+ 932              		.global	jd9365tg_Read_BackDoor_RegSingle
+ 933              		.syntax unified
+ 934              		.thumb
+ 935              		.thumb_func
+ 937              	jd9365tg_Read_BackDoor_RegSingle:
+ 938              	.LFB126:
+ 415:Module/power_task.c **** int jd9365tg_Read_BackDoor_RegSingle(uint32_t addr, uint8_t *rdata)
+ 416:Module/power_task.c **** {
+ 939              		.loc 1 416 1
+ 940              		.cfi_startproc
+ 941              		@ args = 0, pretend = 0, frame = 24
+ 942              		@ frame_needed = 1, uses_anonymous_args = 0
+ 943 0000 80B5     		push	{r7, lr}
+ 944              	.LCFI32:
+ 945              		.cfi_def_cfa_offset 8
+ 946              		.cfi_offset 7, -8
+ 947              		.cfi_offset 14, -4
+ 948 0002 86B0     		sub	sp, sp, #24
+ 949              	.LCFI33:
+ 950              		.cfi_def_cfa_offset 32
+ 951 0004 00AF     		add	r7, sp, #0
+ 952              	.LCFI34:
+ 953              		.cfi_def_cfa_register 7
+ 954 0006 7860     		str	r0, [r7, #4]
+ 955 0008 3960     		str	r1, [r7]
+ 417:Module/power_task.c ****     int ReCode;
+ 418:Module/power_task.c ****     uint8_t addrBuf[6];
+ 419:Module/power_task.c ****     uint8_t readBuf[1];
+ 420:Module/power_task.c **** 
+ 421:Module/power_task.c ****     addrBuf[0] = 0xF3;
+ 956              		.loc 1 421 16
+ 957 000a F323     		movs	r3, #243
+ 958 000c 3B73     		strb	r3, [r7, #12]
+ 422:Module/power_task.c ****     addrBuf[1] = (uint8_t)((addr & 0xFF000000) >> 24);
+ 959              		.loc 1 422 48
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 25
+
+
+ 960 000e 7B68     		ldr	r3, [r7, #4]
+ 961 0010 1B0E     		lsrs	r3, r3, #24
+ 962              		.loc 1 422 18
+ 963 0012 DBB2     		uxtb	r3, r3
+ 964              		.loc 1 422 16
+ 965 0014 7B73     		strb	r3, [r7, #13]
+ 423:Module/power_task.c ****     addrBuf[2] = (uint8_t)((addr & 0x00FF0000) >> 16);
+ 966              		.loc 1 423 48
+ 967 0016 7B68     		ldr	r3, [r7, #4]
+ 968 0018 1B0C     		lsrs	r3, r3, #16
+ 969              		.loc 1 423 18
+ 970 001a DBB2     		uxtb	r3, r3
+ 971              		.loc 1 423 16
+ 972 001c BB73     		strb	r3, [r7, #14]
+ 424:Module/power_task.c ****     addrBuf[3] = (uint8_t)((addr & 0x0000FF00) >> 8);
+ 973              		.loc 1 424 48
+ 974 001e 7B68     		ldr	r3, [r7, #4]
+ 975 0020 1B0A     		lsrs	r3, r3, #8
+ 976              		.loc 1 424 18
+ 977 0022 DBB2     		uxtb	r3, r3
+ 978              		.loc 1 424 16
+ 979 0024 FB73     		strb	r3, [r7, #15]
+ 425:Module/power_task.c ****     addrBuf[4] = (uint8_t)((addr & 0x000000FF) >> 0);
+ 980              		.loc 1 425 18
+ 981 0026 7B68     		ldr	r3, [r7, #4]
+ 982 0028 DBB2     		uxtb	r3, r3
+ 983              		.loc 1 425 16
+ 984 002a 3B74     		strb	r3, [r7, #16]
+ 426:Module/power_task.c ****     addrBuf[5] = 0x03;
+ 985              		.loc 1 426 16
+ 986 002c 0323     		movs	r3, #3
+ 987 002e 7B74     		strb	r3, [r7, #17]
+ 427:Module/power_task.c **** 
+ 428:Module/power_task.c ****     spi_read(addrBuf, sizeof(addrBuf), readBuf, sizeof(readBuf));
+ 988              		.loc 1 428 5
+ 989 0030 07F10802 		add	r2, r7, #8
+ 990 0034 07F10C00 		add	r0, r7, #12
+ 991 0038 0123     		movs	r3, #1
+ 992 003a 0621     		movs	r1, #6
+ 993 003c FFF7FEFF 		bl	spi_read
+ 429:Module/power_task.c ****     *rdata = readBuf[0];
+ 994              		.loc 1 429 21
+ 995 0040 3A7A     		ldrb	r2, [r7, #8]	@ zero_extendqisi2
+ 996              		.loc 1 429 12
+ 997 0042 3B68     		ldr	r3, [r7]
+ 998 0044 1A70     		strb	r2, [r3]
+ 430:Module/power_task.c **** 
+ 431:Module/power_task.c ****     return ReCode;
+ 999              		.loc 1 431 12
+ 1000 0046 7B69     		ldr	r3, [r7, #20]
+ 432:Module/power_task.c **** }
+ 1001              		.loc 1 432 1
+ 1002 0048 1846     		mov	r0, r3
+ 1003 004a 1837     		adds	r7, r7, #24
+ 1004              	.LCFI35:
+ 1005              		.cfi_def_cfa_offset 8
+ 1006 004c BD46     		mov	sp, r7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 26
+
+
+ 1007              	.LCFI36:
+ 1008              		.cfi_def_cfa_register 13
+ 1009              		@ sp needed
+ 1010 004e 80BD     		pop	{r7, pc}
+ 1011              		.cfi_endproc
+ 1012              	.LFE126:
+ 1014              		.section	.text.jd9365tg_ExitBackDoor,"ax",%progbits
+ 1015              		.align	1
+ 1016              		.syntax unified
+ 1017              		.thumb
+ 1018              		.thumb_func
+ 1020              	jd9365tg_ExitBackDoor:
+ 1021              	.LFB127:
+ 433:Module/power_task.c **** 
+ 434:Module/power_task.c **** static int jd9365tg_ExitBackDoor(void)
+ 435:Module/power_task.c **** {
+ 1022              		.loc 1 435 1
+ 1023              		.cfi_startproc
+ 1024              		@ args = 0, pretend = 0, frame = 8
+ 1025              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1026 0000 80B5     		push	{r7, lr}
+ 1027              	.LCFI37:
+ 1028              		.cfi_def_cfa_offset 8
+ 1029              		.cfi_offset 7, -8
+ 1030              		.cfi_offset 14, -4
+ 1031 0002 82B0     		sub	sp, sp, #8
+ 1032              	.LCFI38:
+ 1033              		.cfi_def_cfa_offset 16
+ 1034 0004 00AF     		add	r7, sp, #0
+ 1035              	.LCFI39:
+ 1036              		.cfi_def_cfa_register 7
+ 436:Module/power_task.c ****     int ReCode;
+ 437:Module/power_task.c ****     uint8_t addrBuf[6];
+ 438:Module/power_task.c **** 
+ 439:Module/power_task.c ****     addrBuf[0] = 0xF2;
+ 1037              		.loc 1 439 16
+ 1038 0006 F223     		movs	r3, #242
+ 1039 0008 3B70     		strb	r3, [r7]
+ 440:Module/power_task.c ****     addrBuf[1] = 0xAA;
+ 1040              		.loc 1 440 16
+ 1041 000a AA23     		movs	r3, #170
+ 1042 000c 7B70     		strb	r3, [r7, #1]
+ 441:Module/power_task.c ****     addrBuf[2] = 0x88;
+ 1043              		.loc 1 441 16
+ 1044 000e 8823     		movs	r3, #136
+ 1045 0010 BB70     		strb	r3, [r7, #2]
+ 442:Module/power_task.c ****     addrBuf[3] = 0x00;
+ 1046              		.loc 1 442 16
+ 1047 0012 0023     		movs	r3, #0
+ 1048 0014 FB70     		strb	r3, [r7, #3]
+ 443:Module/power_task.c ****     addrBuf[4] = 0x00;
+ 1049              		.loc 1 443 16
+ 1050 0016 0023     		movs	r3, #0
+ 1051 0018 3B71     		strb	r3, [r7, #4]
+ 444:Module/power_task.c ****     addrBuf[5] = 0x00;
+ 1052              		.loc 1 444 16
+ 1053 001a 0023     		movs	r3, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 27
+
+
+ 1054 001c 7B71     		strb	r3, [r7, #5]
+ 445:Module/power_task.c **** 
+ 446:Module/power_task.c ****     spi_write(addrBuf,6);
+ 1055              		.loc 1 446 5
+ 1056 001e 3B46     		mov	r3, r7
+ 1057 0020 0621     		movs	r1, #6
+ 1058 0022 1846     		mov	r0, r3
+ 1059 0024 FFF7FEFF 		bl	spi_write
+ 447:Module/power_task.c **** 	return 1;
+ 1060              		.loc 1 447 9
+ 1061 0028 0123     		movs	r3, #1
+ 448:Module/power_task.c **** }
+ 1062              		.loc 1 448 1
+ 1063 002a 1846     		mov	r0, r3
+ 1064 002c 0837     		adds	r7, r7, #8
+ 1065              	.LCFI40:
+ 1066              		.cfi_def_cfa_offset 8
+ 1067 002e BD46     		mov	sp, r7
+ 1068              	.LCFI41:
+ 1069              		.cfi_def_cfa_register 13
+ 1070              		@ sp needed
+ 1071 0030 80BD     		pop	{r7, pc}
+ 1072              		.cfi_endproc
+ 1073              	.LFE127:
+ 1075              		.section	.text.jd9365tg_EnterBackDoor,"ax",%progbits
+ 1076              		.align	1
+ 1077              		.syntax unified
+ 1078              		.thumb
+ 1079              		.thumb_func
+ 1081              	jd9365tg_EnterBackDoor:
+ 1082              	.LFB128:
+ 449:Module/power_task.c **** 
+ 450:Module/power_task.c **** static int jd9365tg_EnterBackDoor(void)
+ 451:Module/power_task.c **** {
+ 1083              		.loc 1 451 1
+ 1084              		.cfi_startproc
+ 1085              		@ args = 0, pretend = 0, frame = 0
+ 1086              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1087 0000 80B5     		push	{r7, lr}
+ 1088              	.LCFI42:
+ 1089              		.cfi_def_cfa_offset 8
+ 1090              		.cfi_offset 7, -8
+ 1091              		.cfi_offset 14, -4
+ 1092 0002 00AF     		add	r7, sp, #0
+ 1093              	.LCFI43:
+ 1094              		.cfi_def_cfa_register 7
+ 452:Module/power_task.c **** 			tempbuf[0]=0xF2  ;
+ 1095              		.loc 1 452 14
+ 1096 0004 0C4B     		ldr	r3, .L22
+ 1097 0006 F222     		movs	r2, #242
+ 1098 0008 1A70     		strb	r2, [r3]
+ 453:Module/power_task.c **** 			tempbuf[1]=0xAA  ;
+ 1099              		.loc 1 453 14
+ 1100 000a 0B4B     		ldr	r3, .L22
+ 1101 000c AA22     		movs	r2, #170
+ 1102 000e 5A70     		strb	r2, [r3, #1]
+ 454:Module/power_task.c **** 			tempbuf[2]=0xF0  ;
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 28
+
+
+ 1103              		.loc 1 454 14
+ 1104 0010 094B     		ldr	r3, .L22
+ 1105 0012 F022     		movs	r2, #240
+ 1106 0014 9A70     		strb	r2, [r3, #2]
+ 455:Module/power_task.c **** 			tempbuf[3]=0x0F  ;
+ 1107              		.loc 1 455 14
+ 1108 0016 084B     		ldr	r3, .L22
+ 1109 0018 0F22     		movs	r2, #15
+ 1110 001a DA70     		strb	r2, [r3, #3]
+ 456:Module/power_task.c **** 			tempbuf[4]=0x55  ;
+ 1111              		.loc 1 456 14
+ 1112 001c 064B     		ldr	r3, .L22
+ 1113 001e 5522     		movs	r2, #85
+ 1114 0020 1A71     		strb	r2, [r3, #4]
+ 457:Module/power_task.c **** 			tempbuf[5]=0x68  ;			
+ 1115              		.loc 1 457 14
+ 1116 0022 054B     		ldr	r3, .L22
+ 1117 0024 6822     		movs	r2, #104
+ 1118 0026 5A71     		strb	r2, [r3, #5]
+ 458:Module/power_task.c **** 
+ 459:Module/power_task.c **** 			spi_write(tempbuf,6);
+ 1119              		.loc 1 459 4
+ 1120 0028 0621     		movs	r1, #6
+ 1121 002a 0348     		ldr	r0, .L22
+ 1122 002c FFF7FEFF 		bl	spi_write
+ 460:Module/power_task.c **** 	return 1;
+ 1123              		.loc 1 460 9
+ 1124 0030 0123     		movs	r3, #1
+ 461:Module/power_task.c **** }
+ 1125              		.loc 1 461 1
+ 1126 0032 1846     		mov	r0, r3
+ 1127 0034 80BD     		pop	{r7, pc}
+ 1128              	.L23:
+ 1129 0036 00BF     		.align	2
+ 1130              	.L22:
+ 1131 0038 00000000 		.word	tempbuf
+ 1132              		.cfi_endproc
+ 1133              	.LFE128:
+ 1135              		.text
+ 1136              	.Letext0:
+ 1137              		.file 2 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 1138              		.file 3 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 1139              		.file 4 "Module/user_config.h"
+ 1140              		.file 5 "Module/ssd_2832.h"
+ 1141              		.file 6 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 29
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 power_task.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:18     .text.Power_Off:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:24     .text.Power_Off:00000000 Power_Off
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:174    .bss.tempbuf:00000000 tempbuf
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:171    .bss.tempbuf:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:181    .bss.rdbuf:00000000 rdbuf
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:178    .bss.rdbuf:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:184    .text.Power_On:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:190    .text.Power_On:00000000 Power_On
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:499    .text.Power_On:00000248 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:505    .text.jd9365tg_Write_FW_RegSingleSpi:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:510    .text.jd9365tg_Write_FW_RegSingleSpi:00000000 jd9365tg_Write_FW_RegSingleSpi
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:589    .text.jd9365tg_Read_FW_RegMultiSpi:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:595    .text.jd9365tg_Read_FW_RegMultiSpi:00000000 jd9365tg_Read_FW_RegMultiSpi
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:681    .text.jd9365tg_Read_BackDoor_RegMulti:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:687    .text.jd9365tg_Read_BackDoor_RegMulti:00000000 jd9365tg_Read_BackDoor_RegMulti
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:763    .text.jd9365tg_Read_FW_RegSingleSpi:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:769    .text.jd9365tg_Read_FW_RegSingleSpi:00000000 jd9365tg_Read_FW_RegSingleSpi
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:850    .text.jd9365tg_Write_BackDoor_RegSingle:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:855    .text.jd9365tg_Write_BackDoor_RegSingle:00000000 jd9365tg_Write_BackDoor_RegSingle
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:931    .text.jd9365tg_Read_BackDoor_RegSingle:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:937    .text.jd9365tg_Read_BackDoor_RegSingle:00000000 jd9365tg_Read_BackDoor_RegSingle
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:1015   .text.jd9365tg_ExitBackDoor:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:1020   .text.jd9365tg_ExitBackDoor:00000000 jd9365tg_ExitBackDoor
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:1076   .text.jd9365tg_EnterBackDoor:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:1081   .text.jd9365tg_EnterBackDoor:00000000 jd9365tg_EnterBackDoor
+C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s:1131   .text.jd9365tg_EnterBackDoor:00000038 $d
+
+UNDEFINED SYMBOLS
+SPI_WriteCmd
+SPI_WriteData
+SSD2828_WritePackageSize
+bsp_DelayMS
+O_PWR_5V_EN
+set_envcc
+set_eniovcc
+set_envsp
+set_envsn
+SetGpuExgpio
+set_vcc
+set_iovcc
+set_resetvcc
+set_vspvol
+set_vsnvol
+Lcd_Reset
+bridge_RSTPIN_reset
+RGB_Disable
+Ssd2828ON
+O_PWR_BL_EN
+O_LCM_5V_EN
+O_PWR_LED
+O_SSD2828_SPI_CS
+O_SSD2828_SPI_CLK
+O_SSD2828_SPI_SDI
+O_SSD2828_RESET
+GPU_Beep
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccpZGxlT.s 			page 30
+
+
+SetGpuGpio
+BeepOn
+set_tim_vcc
+set_tim_iovcc
+set_tim_reset
+set_tim_vsp
+set_tim_vsn
+set_vcc1
+set_vcc2
+set_vcc3
+set_vcc4
+set_vcc5
+set_vcc6
+set_envcc1
+set_envcc2
+set_envcc3
+set_envcc4
+set_envcc5
+set_envcc6
+O_SSD2828_SHUT
+Reset
+O_LCD_RESET
+GPU_BL
+RGB_Enable
+Lcd_ShowMode
+bsp_DelayUS
+lcm_mipi_set
+Initial_LCM_CODE
+gMipiTableIndex
+ptr_MIPI_TABLE
+spi_write
+spi_read

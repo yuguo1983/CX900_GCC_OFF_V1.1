@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <pix>
+    <HBW>70</HBW>
+    <HFW>70</HFW>
+    <HACT>800</HACT>
+    <HSW>2</HSW>
+    <VBW>20</VBW>
+    <VFW>60</VFW>
+    <VACT>1280</VACT>
+    <VSW>2</VSW>
+    <LCDNAME>JX_7.9_CPHY_10801920</LCDNAME>
+    <ICNAME>NT435r3453</ICNAME>
+    <CODEZIP>20240829</CODEZIP>
+    <PCLK>70</PCLK>
+    <MIPILAN>4</MIPILAN>
+    <AENABLE>False</AENABLE>
+    <BENABLE>False</BENABLE>
+    <ALLMODE>12</ALLMODE>
+    <DESET>1:高电平</DESET>
+    <VSSET>1:高电平</VSSET>
+    <HSSET>1:高电平</HSSET>
+    <MIPISWAP>False</MIPISWAP>
+    <ODLR>False</ODLR>
+    <MIPIMODE>2:Burst mode</MIPIMODE>
+    <DUALPORT>False</DUALPORT>
+    <DELAY>300</DELAY>
+    <TimeLock>1</TimeLock>
+    <AlarmFlag>False</AlarmFlag>
+  </pix>
+</DocumentElement>

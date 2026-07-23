@@ -1,0 +1,2051 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	System_Ready
+  18              		.section	.bss.System_Ready,"aw",%nobits
+  21              	System_Ready:
+  22 0000 00       		.space	1
+  23              		.section	.rodata
+  24              		.align	2
+  25              	.LC0:
+  26 0000 43583930 		.ascii	"CX900\000"
+  26      3000
+  27 0006 0000     		.align	2
+  28              	.LC1:
+  29 0008 25733A46 		.ascii	"%s:Flash init successfull\015\012\000"
+  29      6C617368 
+  29      20696E69 
+  29      74207375 
+  29      63636573 
+  30              		.align	2
+  31              	.LC2:
+  32 0024 25733A46 		.ascii	"%s:Flash init FAIL!!!\015\012\000"
+  32      6C617368 
+  32      20696E69 
+  32      74204641 
+  32      494C2121 
+  33              		.section	.text.bsp_init,"ax",%progbits
+  34              		.align	1
+  35              		.global	bsp_init
+  36              		.syntax unified
+  37              		.thumb
+  38              		.thumb_func
+  40              	bsp_init:
+  41              	.LFB119:
+  42              		.file 1 "User/main.c"
+   1:User/main.c   **** /*!
+   2:User/main.c   ****     \file  main.c
+   3:User/main.c   ****     \brief SPI flash demo
+   4:User/main.c   **** 
+   5:User/main.c   ****     \version 2021-03-23, V2.0.0, demo for GD32F30x
+   6:User/main.c   **** */
+   7:User/main.c   **** 
+   8:User/main.c   **** /*
+   9:User/main.c   ****     Copyright (c) 2021, GigaDevice Semiconductor Inc.
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 2
+
+
+  10:User/main.c   **** 
+  11:User/main.c   ****     Redistribution and use in source and binary forms, with or without modification,
+  12:User/main.c   **** are permitted provided that the following conditions are met:
+  13:User/main.c   **** 
+  14:User/main.c   ****     1. Redistributions of source code must retain the above copyright notice, this
+  15:User/main.c   ****        list of conditions and the following disclaimer.
+  16:User/main.c   ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  17:User/main.c   ****        this list of conditions and the following disclaimer in the documentation
+  18:User/main.c   ****        and/or other materials provided with the distribution.
+  19:User/main.c   ****     3. Neither the name of the copyright holder nor the names of its contributors
+  20:User/main.c   ****        may be used to endorse or promote products derived from this software without
+  21:User/main.c   ****        specific prior written permission.
+  22:User/main.c   **** 
+  23:User/main.c   ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  24:User/main.c   **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  25:User/main.c   **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  26:User/main.c   **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  27:User/main.c   **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  28:User/main.c   **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  29:User/main.c   **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  30:User/main.c   **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  31:User/main.c   **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  32:User/main.c   **** OF SUCH DAMAGE.
+  33:User/main.c   **** */
+  34:User/main.c   **** 
+  35:User/main.c   **** #include <stdio.h>
+  36:User/main.c   **** #include "gd32f30x.h"
+  37:User/main.c   **** #include "gd25qxx.h"
+  38:User/main.c   **** #include "gd32f303e_eval.h"
+  39:User/main.c   **** #include "bsp_lcd.h"
+  40:User/main.c   **** #include "screenUI.h"
+  41:User/main.c   **** #include "malloc.h"
+  42:User/main.c   **** #include "timer.h"
+  43:User/main.c   **** #include "usart.h"
+  44:User/main.c   **** #include "display.h"
+  45:User/main.c   **** #include "log.h"
+  46:User/main.c   **** #include "GPU_PIC.h"
+  47:User/main.c   **** #include "GPU_DAC.h"
+  48:User/main.c   **** #include "GPU_SDIO.h"
+  49:User/main.c   **** #include "BSP.h"
+  50:User/main.c   **** #include "GPU_GPIO.h"
+  51:User/main.c   **** #include "stdio.h"
+  52:User/main.c   **** #include "chipiic.h"
+  53:User/main.c   **** #include "ina220.h"
+  54:User/main.c   **** #include "pll_freq_def.h"
+  55:User/main.c   **** #include "mb.h"
+  56:User/main.c   **** #include "mbport.h"
+  57:User/main.c   **** #include "user_mb_app.h"
+  58:User/main.c   **** #include "bspdrivermemory.h"
+  59:User/main.c   **** #include "calibthread.h"
+  60:User/main.c   **** #include "Function.h"
+  61:User/main.c   **** #include "file_opration.h"
+  62:User/main.c   **** #include "bsp_driver_sd.h"
+  63:User/main.c   **** #include "fatfs.h"
+  64:User/main.c   **** #include "dac5571.h"
+  65:User/main.c   **** //#include "fontupd.h"
+  66:User/main.c   **** #include "iap.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 3
+
+
+  67:User/main.c   **** #include "menu.h"
+  68:User/main.c   **** #include "usartfifo.h"
+  69:User/main.c   **** #include "ff.h"
+  70:User/main.c   **** #include "fatfs.h"
+  71:User/main.c   **** #include "GPU_Show.h"
+  72:User/main.c   **** 
+  73:User/main.c   **** 
+  74:User/main.c   **** #define  SFLASH_ID                     0xEF4017
+  75:User/main.c   **** #define  MAX_TASK			10
+  76:User/main.c   **** #include  "uart_protocol.h"
+  77:User/main.c   **** 
+  78:User/main.c   **** uint8_t System_Ready;
+  79:User/main.c   **** extern uint8_t modbusflag;
+  80:User/main.c   **** void Recevefile(void);
+  81:User/main.c   **** void init_receivefile(void);
+  82:User/main.c   **** 
+  83:User/main.c   **** extern uint8_t Fatfs_init(uint8_t driver);
+  84:User/main.c   **** extern uint32_t crcvalue;
+  85:User/main.c   **** extern uint32_t crc_read;
+  86:User/main.c   **** ErrStatus memory_compare(uint8_t *src, uint8_t *dst, uint16_t length);
+  87:User/main.c   **** 
+  88:User/main.c   **** void led_init(void);
+  89:User/main.c   **** void bsp_Idle(void);
+  90:User/main.c   **** void bsp_init(void);
+  91:User/main.c   **** void start_usb(void);
+  92:User/main.c   **** void dis_usb (void);
+  93:User/main.c   **** void start_usb(void);
+  94:User/main.c   **** void app_fatfs_init(void);
+  95:User/main.c   **** 
+  96:User/main.c   **** extern uint8_t temp_read_data[14];
+  97:User/main.c   **** 
+  98:User/main.c   **** 
+  99:User/main.c   **** 
+ 100:User/main.c   **** 
+ 101:User/main.c   **** ///************************************************************************************************
+ 102:User/main.c   **** // 函数名：bsp_init
+ 103:User/main.c   **** // 功能：初始化一些相关外设和必要的函数
+ 104:User/main.c   **** // 参数：无
+ 105:User/main.c   **** //返回：无
+ 106:User/main.c   **** //*************************************************************************************************
+ 107:User/main.c   **** void bsp_init(void)
+ 108:User/main.c   **** {
+  43              		.loc 1 108 1
+  44              		.cfi_startproc
+  45              		@ args = 0, pretend = 0, frame = 8
+  46              		@ frame_needed = 1, uses_anonymous_args = 0
+  47 0000 80B5     		push	{r7, lr}
+  48              	.LCFI0:
+  49              		.cfi_def_cfa_offset 8
+  50              		.cfi_offset 7, -8
+  51              		.cfi_offset 14, -4
+  52 0002 84B0     		sub	sp, sp, #16
+  53              	.LCFI1:
+  54              		.cfi_def_cfa_offset 24
+  55 0004 02AF     		add	r7, sp, #8
+  56              	.LCFI2:
+  57              		.cfi_def_cfa 7, 16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 4
+
+
+ 109:User/main.c   ****     uint32_t flash_id = 0;
+  58              		.loc 1 109 14
+  59 0006 0023     		movs	r3, #0
+  60 0008 7B60     		str	r3, [r7, #4]
+ 110:User/main.c   ****     systick_config();   
+  61              		.loc 1 110 5
+  62 000a FFF7FEFF 		bl	systick_config
+ 111:User/main.c   ****     gd_eval_com_init(EVAL_COM1);
+  63              		.loc 1 111 5
+  64 000e 2348     		ldr	r0, .L6
+  65 0010 FFF7FEFF 		bl	gd_eval_com_init
+ 112:User/main.c   ****     gd_eval_com_init(EVAL_COM2);
+  66              		.loc 1 112 5
+  67 0014 2248     		ldr	r0, .L6+4
+  68 0016 FFF7FEFF 		bl	gd_eval_com_init
+ 113:User/main.c   ****     gd_eval_com_init(EVAL_COM3);
+  69              		.loc 1 113 5
+  70 001a 2248     		ldr	r0, .L6+8
+  71 001c FFF7FEFF 		bl	gd_eval_com_init
+ 114:User/main.c   **** 		led_init();
+  72              		.loc 1 114 3
+  73 0020 FFF7FEFF 		bl	led_init
+ 115:User/main.c   ****     time_config();
+  74              		.loc 1 115 5
+  75 0024 FFF7FEFF 		bl	time_config
+ 116:User/main.c   ****     spi_flash_init();
+  76              		.loc 1 116 5
+  77 0028 FFF7FEFF 		bl	spi_flash_init
+ 117:User/main.c   ****     GPIO_Configuration();
+  78              		.loc 1 117 5
+  79 002c FFF7FEFF 		bl	GPIO_Configuration
+ 118:User/main.c   ****     MCU_GPU_FSMCConfig();
+  80              		.loc 1 118 5
+  81 0030 FFF7FEFF 		bl	MCU_GPU_FSMCConfig
+ 119:User/main.c   **** 	//modbusflag=0;
+ 120:User/main.c   **** 	if(modbusflag)
+  82              		.loc 1 120 5
+  83 0034 1C4B     		ldr	r3, .L6+12
+  84 0036 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  85              		.loc 1 120 4
+  86 0038 002B     		cmp	r3, #0
+  87 003a 0BD0     		beq	.L2
+ 121:User/main.c   **** 	{
+ 122:User/main.c   **** 		eMBInit( MB_RTU, 1, 0, 115200, MB_PAR_NONE);  //modbus init
+  88              		.loc 1 122 3
+  89 003c 0023     		movs	r3, #0
+  90 003e 0093     		str	r3, [sp]
+  91 0040 4FF4E133 		mov	r3, #115200
+  92 0044 0022     		movs	r2, #0
+  93 0046 0121     		movs	r1, #1
+  94 0048 0020     		movs	r0, #0
+  95 004a FFF7FEFF 		bl	eMBInit
+ 123:User/main.c   **** 		eMBEnable();
+  96              		.loc 1 123 3
+  97 004e FFF7FEFF 		bl	eMBEnable
+  98 0052 03E0     		b	.L3
+  99              	.L2:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 5
+
+
+ 124:User/main.c   **** 	}else
+ 125:User/main.c   **** 	{
+ 126:User/main.c   **** 		msgfifo_init();
+ 100              		.loc 1 126 3
+ 101 0054 FFF7FEFF 		bl	msgfifo_init
+ 127:User/main.c   **** 		msg_init();	
+ 102              		.loc 1 127 3
+ 103 0058 FFF7FEFF 		bl	msg_init
+ 104              	.L3:
+ 128:User/main.c   **** 	}
+ 129:User/main.c   ****     CHIP_IIC_Init();
+ 105              		.loc 1 129 5
+ 106 005c FFF7FEFF 		bl	CHIP_IIC_Init
+ 130:User/main.c   ****     MEMORY_Init();
+ 107              		.loc 1 130 5
+ 108 0060 FFF7FEFF 		bl	MEMORY_Init
+ 131:User/main.c   ****     InitDac();
+ 109              		.loc 1 131 5
+ 110 0064 FFF7FEFF 		bl	InitDac
+ 132:User/main.c   ****     Ina220_Iint();
+ 111              		.loc 1 132 5
+ 112 0068 FFF7FEFF 		bl	Ina220_Iint
+ 133:User/main.c   ****     flash_id = spi_flash_read_id();
+ 113              		.loc 1 133 16
+ 114 006c FFF7FEFF 		bl	spi_flash_read_id
+ 115 0070 7860     		str	r0, [r7, #4]
+ 134:User/main.c   ****     if(flash_id == SFLASH_ID)
+ 116              		.loc 1 134 7
+ 117 0072 7B68     		ldr	r3, [r7, #4]
+ 118 0074 0D4A     		ldr	r2, .L6+16
+ 119 0076 9342     		cmp	r3, r2
+ 120 0078 04D1     		bne	.L4
+ 135:User/main.c   ****     {
+ 136:User/main.c   ****         log_info("Flash init successfull");
+ 121              		.loc 1 136 9
+ 122 007a 0D49     		ldr	r1, .L6+20
+ 123 007c 0D48     		ldr	r0, .L6+24
+ 124 007e FFF7FEFF 		bl	printf
+ 125 0082 03E0     		b	.L5
+ 126              	.L4:
+ 137:User/main.c   ****     }
+ 138:User/main.c   ****     else log_info("Flash init FAIL!!!");
+ 127              		.loc 1 138 10
+ 128 0084 0A49     		ldr	r1, .L6+20
+ 129 0086 0C48     		ldr	r0, .L6+28
+ 130 0088 FFF7FEFF 		bl	printf
+ 131              	.L5:
+ 139:User/main.c   ****     read_pass_num(temp_read_data);
+ 132              		.loc 1 139 5
+ 133 008c 0B48     		ldr	r0, .L6+32
+ 134 008e FFF7FEFF 		bl	read_pass_num
+ 140:User/main.c   **** }
+ 135              		.loc 1 140 1
+ 136 0092 00BF     		nop
+ 137 0094 0837     		adds	r7, r7, #8
+ 138              	.LCFI3:
+ 139              		.cfi_def_cfa_offset 8
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 6
+
+
+ 140 0096 BD46     		mov	sp, r7
+ 141              	.LCFI4:
+ 142              		.cfi_def_cfa_register 13
+ 143              		@ sp needed
+ 144 0098 80BD     		pop	{r7, pc}
+ 145              	.L7:
+ 146 009a 00BF     		.align	2
+ 147              	.L6:
+ 148 009c 00380140 		.word	1073821696
+ 149 00a0 00440040 		.word	1073759232
+ 150 00a4 00480040 		.word	1073760256
+ 151 00a8 00000000 		.word	modbusflag
+ 152 00ac 1740EF00 		.word	15679511
+ 153 00b0 00000000 		.word	.LC0
+ 154 00b4 08000000 		.word	.LC1
+ 155 00b8 24000000 		.word	.LC2
+ 156 00bc 00000000 		.word	temp_read_data
+ 157              		.cfi_endproc
+ 158              	.LFE119:
+ 160              		.global	pixcolor
+ 161              		.section	.data.pixcolor,"aw"
+ 162              		.align	2
+ 165              	pixcolor:
+ 166 0000 0000FF00 		.word	16711680
+ 167 0004 00000000 		.space	396
+ 167      00000000 
+ 167      00000000 
+ 167      00000000 
+ 167      00000000 
+ 168              		.section	.rodata
+ 169              		.align	2
+ 170              	.LC3:
+ 171 003c 0D0A2323 		.ascii	"\015\012#################################User Start"
+ 171      23232323 
+ 171      23232323 
+ 171      23232323 
+ 171      23232323 
+ 172 0069 23232323 		.ascii	"######################################\015\000"
+ 172      23232323 
+ 172      23232323 
+ 172      23232323 
+ 172      23232323 
+ 173 0091 000000   		.align	2
+ 174              	.LC4:
+ 175 0094 63686563 		.ascii	"checktestnum%d \015\012\000"
+ 175      6B746573 
+ 175      746E756D 
+ 175      2564200D 
+ 175      0A00
+ 176 00a6 0000     		.align	2
+ 177              	.LC5:
+ 178 00a8 25733A53 		.ascii	"%s:SDCard :%d \015\012\015\012\000"
+ 178      44436172 
+ 178      64203A25 
+ 178      64200D0A 
+ 178      0D0A00
+ 179 00bb 00       		.align	2
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 7
+
+
+ 180              	.LC6:
+ 181 00bc 25733A53 		.ascii	"%s:SPIFlash :%d \015\012\015\012\000"
+ 181      5049466C 
+ 181      61736820 
+ 181      3A256420 
+ 181      0D0A0D0A 
+ 182 00d1 000000   		.align	2
+ 183              	.LC7:
+ 184 00d4 313A00   		.ascii	"1:\000"
+ 185 00d7 00       		.align	2
+ 186              	.LC8:
+ 187 00d8 25733A6F 		.ascii	"%s:open %d \015\012\015\012\000"
+ 187      70656E20 
+ 187      2564200D 
+ 187      0A0D0A00 
+ 188              		.align	2
+ 189              	.LC9:
+ 190 00e8 313A2F74 		.ascii	"1:/test1.txt\000"
+ 190      65737431 
+ 190      2E747874 
+ 190      00
+ 191 00f5 000000   		.align	2
+ 192              	.LC10:
+ 193 00f8 25733A6F 		.ascii	"%s:open %d size %d\015\012\015\012\000"
+ 193      70656E20 
+ 193      25642073 
+ 193      697A6520 
+ 193      25640D0A 
+ 194 010f 00       		.align	2
+ 195              	.LC12:
+ 196 0110 25732025 		.ascii	"%s %d\000"
+ 196      6400
+ 197 0116 0000     		.align	2
+ 198              	.LC13:
+ 199 0118 25733A77 		.ascii	"%s:write %d len %d\015\012\015\012\000"
+ 199      72697465 
+ 199      20256420 
+ 199      6C656E20 
+ 199      25640D0A 
+ 200 012f 00       		.align	2
+ 201              	.LC14:
+ 202 0130 25733A72 		.ascii	"%s:read %s len %d res %d\015\012\015\012\000"
+ 202      65616420 
+ 202      2573206C 
+ 202      656E2025 
+ 202      64207265 
+ 203 014d 000000   		.align	2
+ 204              	.LC15:
+ 205 0150 25733A25 		.ascii	"%s:%s\015\012\000"
+ 205      730D0A00 
+ 206              		.align	2
+ 207              	.LC11:
+ 208 0158 68656C6C 		.ascii	"hello word\000"
+ 208      6F20776F 
+ 208      726400
+ 209              		.section	.text.main,"ax",%progbits
+ 210              		.align	1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 8
+
+
+ 211              		.global	main
+ 212              		.syntax unified
+ 213              		.thumb
+ 214              		.thumb_func
+ 216              	main:
+ 217              	.LFB120:
+ 141:User/main.c   **** 
+ 142:User/main.c   **** ///************************************************************************************************
+ 143:User/main.c   **** // 函数名：main
+ 144:User/main.c   **** // 功能：入口函数
+ 145:User/main.c   **** // 参数：无
+ 146:User/main.c   **** //返回：无
+ 147:User/main.c   **** //*************************************************************************************************
+ 148:User/main.c   **** //extern  _srtCalibInfor srtCalibInfor;
+ 149:User/main.c   **** uint32_t pixcolor[100]={0xff0000};
+ 150:User/main.c   **** int main(void)
+ 151:User/main.c   **** {
+ 218              		.loc 1 151 1
+ 219              		.cfi_startproc
+ 220              		@ args = 0, pretend = 0, frame = 4264
+ 221              		@ frame_needed = 1, uses_anonymous_args = 0
+ 222 0000 80B5     		push	{r7, lr}
+ 223              	.LCFI5:
+ 224              		.cfi_def_cfa_offset 8
+ 225              		.cfi_offset 7, -8
+ 226              		.cfi_offset 14, -4
+ 227 0002 ADF5855D 		sub	sp, sp, #4256
+ 228              	.LCFI6:
+ 229              		.cfi_def_cfa_offset 4264
+ 230 0006 84B0     		sub	sp, sp, #16
+ 231              	.LCFI7:
+ 232              		.cfi_def_cfa_offset 4280
+ 233 0008 02AF     		add	r7, sp, #8
+ 234              	.LCFI8:
+ 235              		.cfi_def_cfa 7, 4272
+ 236 000a 0123     		movs	r3, #1
+ 237 000c 07F58452 		add	r2, r7, #4224
+ 238 0010 02F11002 		add	r2, r2, #16
+ 239 0014 1360     		str	r3, [r2]
+ 240              	.LBB10:
+ 241              	.LBB11:
+ 242              		.file 2 "Firmware/CMSIS/core_cmFunc.h"
+   1:Firmware/CMSIS/core_cmFunc.h **** /**************************************************************************//**
+   2:Firmware/CMSIS/core_cmFunc.h ****  * @file     core_cmFunc.h
+   3:Firmware/CMSIS/core_cmFunc.h ****  * @brief    CMSIS Cortex-M Core Function Access Header File
+   4:Firmware/CMSIS/core_cmFunc.h ****  * @version  V3.01
+   5:Firmware/CMSIS/core_cmFunc.h ****  * @date     06. March 2012
+   6:Firmware/CMSIS/core_cmFunc.h ****  *
+   7:Firmware/CMSIS/core_cmFunc.h ****  * @note
+   8:Firmware/CMSIS/core_cmFunc.h ****  * Copyright (C) 2009-2012 ARM Limited. All rights reserved.
+   9:Firmware/CMSIS/core_cmFunc.h ****  *
+  10:Firmware/CMSIS/core_cmFunc.h ****  * @par
+  11:Firmware/CMSIS/core_cmFunc.h ****  * ARM Limited (ARM) is supplying this software for use with Cortex-M
+  12:Firmware/CMSIS/core_cmFunc.h ****  * processor based microcontrollers.  This file can be freely distributed
+  13:Firmware/CMSIS/core_cmFunc.h ****  * within development tools that are supporting such ARM based processors.
+  14:Firmware/CMSIS/core_cmFunc.h ****  *
+  15:Firmware/CMSIS/core_cmFunc.h ****  * @par
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 9
+
+
+  16:Firmware/CMSIS/core_cmFunc.h ****  * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+  17:Firmware/CMSIS/core_cmFunc.h ****  * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+  18:Firmware/CMSIS/core_cmFunc.h ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+  19:Firmware/CMSIS/core_cmFunc.h ****  * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
+  20:Firmware/CMSIS/core_cmFunc.h ****  * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:Firmware/CMSIS/core_cmFunc.h ****  *
+  22:Firmware/CMSIS/core_cmFunc.h ****  ******************************************************************************/
+  23:Firmware/CMSIS/core_cmFunc.h **** 
+  24:Firmware/CMSIS/core_cmFunc.h **** #ifndef __CORE_CMFUNC_H
+  25:Firmware/CMSIS/core_cmFunc.h **** #define __CORE_CMFUNC_H
+  26:Firmware/CMSIS/core_cmFunc.h **** 
+  27:Firmware/CMSIS/core_cmFunc.h **** 
+  28:Firmware/CMSIS/core_cmFunc.h **** /* ###########################  Core Function Access  ########################### */
+  29:Firmware/CMSIS/core_cmFunc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+  30:Firmware/CMSIS/core_cmFunc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+  31:Firmware/CMSIS/core_cmFunc.h ****   @{
+  32:Firmware/CMSIS/core_cmFunc.h ****  */
+  33:Firmware/CMSIS/core_cmFunc.h **** 
+  34:Firmware/CMSIS/core_cmFunc.h **** #if   defined ( __CC_ARM ) /*------------------RealView Compiler -----------------*/
+  35:Firmware/CMSIS/core_cmFunc.h **** /* ARM armcc specific functions */
+  36:Firmware/CMSIS/core_cmFunc.h **** 
+  37:Firmware/CMSIS/core_cmFunc.h **** #if (__ARMCC_VERSION < 400677)
+  38:Firmware/CMSIS/core_cmFunc.h ****   #error "Please use ARM Compiler Toolchain V4.0.677 or later!"
+  39:Firmware/CMSIS/core_cmFunc.h **** #endif
+  40:Firmware/CMSIS/core_cmFunc.h **** 
+  41:Firmware/CMSIS/core_cmFunc.h **** /* intrinsic void __enable_irq();     */
+  42:Firmware/CMSIS/core_cmFunc.h **** /* intrinsic void __disable_irq();    */
+  43:Firmware/CMSIS/core_cmFunc.h **** 
+  44:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Control Register
+  45:Firmware/CMSIS/core_cmFunc.h **** 
+  46:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the Control Register.
+  47:Firmware/CMSIS/core_cmFunc.h **** 
+  48:Firmware/CMSIS/core_cmFunc.h ****     \return               Control Register value
+  49:Firmware/CMSIS/core_cmFunc.h ****  */
+  50:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_CONTROL(void)
+  51:Firmware/CMSIS/core_cmFunc.h **** {
+  52:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regControl         __ASM("control");
+  53:Firmware/CMSIS/core_cmFunc.h ****   return(__regControl);
+  54:Firmware/CMSIS/core_cmFunc.h **** }
+  55:Firmware/CMSIS/core_cmFunc.h **** 
+  56:Firmware/CMSIS/core_cmFunc.h **** 
+  57:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Control Register
+  58:Firmware/CMSIS/core_cmFunc.h **** 
+  59:Firmware/CMSIS/core_cmFunc.h ****     This function writes the given value to the Control Register.
+  60:Firmware/CMSIS/core_cmFunc.h **** 
+  61:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    control  Control Register value to set
+  62:Firmware/CMSIS/core_cmFunc.h ****  */
+  63:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_CONTROL(uint32_t control)
+  64:Firmware/CMSIS/core_cmFunc.h **** {
+  65:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regControl         __ASM("control");
+  66:Firmware/CMSIS/core_cmFunc.h ****   __regControl = control;
+  67:Firmware/CMSIS/core_cmFunc.h **** }
+  68:Firmware/CMSIS/core_cmFunc.h **** 
+  69:Firmware/CMSIS/core_cmFunc.h **** 
+  70:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get IPSR Register
+  71:Firmware/CMSIS/core_cmFunc.h **** 
+  72:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the IPSR Register.
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 10
+
+
+  73:Firmware/CMSIS/core_cmFunc.h **** 
+  74:Firmware/CMSIS/core_cmFunc.h ****     \return               IPSR Register value
+  75:Firmware/CMSIS/core_cmFunc.h ****  */
+  76:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_IPSR(void)
+  77:Firmware/CMSIS/core_cmFunc.h **** {
+  78:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regIPSR          __ASM("ipsr");
+  79:Firmware/CMSIS/core_cmFunc.h ****   return(__regIPSR);
+  80:Firmware/CMSIS/core_cmFunc.h **** }
+  81:Firmware/CMSIS/core_cmFunc.h **** 
+  82:Firmware/CMSIS/core_cmFunc.h **** 
+  83:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get APSR Register
+  84:Firmware/CMSIS/core_cmFunc.h **** 
+  85:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the APSR Register.
+  86:Firmware/CMSIS/core_cmFunc.h **** 
+  87:Firmware/CMSIS/core_cmFunc.h ****     \return               APSR Register value
+  88:Firmware/CMSIS/core_cmFunc.h ****  */
+  89:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_APSR(void)
+  90:Firmware/CMSIS/core_cmFunc.h **** {
+  91:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regAPSR          __ASM("apsr");
+  92:Firmware/CMSIS/core_cmFunc.h ****   return(__regAPSR);
+  93:Firmware/CMSIS/core_cmFunc.h **** }
+  94:Firmware/CMSIS/core_cmFunc.h **** 
+  95:Firmware/CMSIS/core_cmFunc.h **** 
+  96:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get xPSR Register
+  97:Firmware/CMSIS/core_cmFunc.h **** 
+  98:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the xPSR Register.
+  99:Firmware/CMSIS/core_cmFunc.h **** 
+ 100:Firmware/CMSIS/core_cmFunc.h ****     \return               xPSR Register value
+ 101:Firmware/CMSIS/core_cmFunc.h ****  */
+ 102:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_xPSR(void)
+ 103:Firmware/CMSIS/core_cmFunc.h **** {
+ 104:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regXPSR          __ASM("xpsr");
+ 105:Firmware/CMSIS/core_cmFunc.h ****   return(__regXPSR);
+ 106:Firmware/CMSIS/core_cmFunc.h **** }
+ 107:Firmware/CMSIS/core_cmFunc.h **** 
+ 108:Firmware/CMSIS/core_cmFunc.h **** 
+ 109:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Process Stack Pointer
+ 110:Firmware/CMSIS/core_cmFunc.h **** 
+ 111:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Process Stack Pointer (PSP).
+ 112:Firmware/CMSIS/core_cmFunc.h **** 
+ 113:Firmware/CMSIS/core_cmFunc.h ****     \return               PSP Register value
+ 114:Firmware/CMSIS/core_cmFunc.h ****  */
+ 115:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_PSP(void)
+ 116:Firmware/CMSIS/core_cmFunc.h **** {
+ 117:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regProcessStackPointer  __ASM("psp");
+ 118:Firmware/CMSIS/core_cmFunc.h ****   return(__regProcessStackPointer);
+ 119:Firmware/CMSIS/core_cmFunc.h **** }
+ 120:Firmware/CMSIS/core_cmFunc.h **** 
+ 121:Firmware/CMSIS/core_cmFunc.h **** 
+ 122:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Process Stack Pointer
+ 123:Firmware/CMSIS/core_cmFunc.h **** 
+ 124:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Process Stack Pointer (PSP).
+ 125:Firmware/CMSIS/core_cmFunc.h **** 
+ 126:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 127:Firmware/CMSIS/core_cmFunc.h ****  */
+ 128:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_PSP(uint32_t topOfProcStack)
+ 129:Firmware/CMSIS/core_cmFunc.h **** {
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 11
+
+
+ 130:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regProcessStackPointer  __ASM("psp");
+ 131:Firmware/CMSIS/core_cmFunc.h ****   __regProcessStackPointer = topOfProcStack;
+ 132:Firmware/CMSIS/core_cmFunc.h **** }
+ 133:Firmware/CMSIS/core_cmFunc.h **** 
+ 134:Firmware/CMSIS/core_cmFunc.h **** 
+ 135:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Main Stack Pointer
+ 136:Firmware/CMSIS/core_cmFunc.h **** 
+ 137:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Main Stack Pointer (MSP).
+ 138:Firmware/CMSIS/core_cmFunc.h **** 
+ 139:Firmware/CMSIS/core_cmFunc.h ****     \return               MSP Register value
+ 140:Firmware/CMSIS/core_cmFunc.h ****  */
+ 141:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_MSP(void)
+ 142:Firmware/CMSIS/core_cmFunc.h **** {
+ 143:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regMainStackPointer     __ASM("msp");
+ 144:Firmware/CMSIS/core_cmFunc.h ****   return(__regMainStackPointer);
+ 145:Firmware/CMSIS/core_cmFunc.h **** }
+ 146:Firmware/CMSIS/core_cmFunc.h **** 
+ 147:Firmware/CMSIS/core_cmFunc.h **** 
+ 148:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Main Stack Pointer
+ 149:Firmware/CMSIS/core_cmFunc.h **** 
+ 150:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Main Stack Pointer (MSP).
+ 151:Firmware/CMSIS/core_cmFunc.h **** 
+ 152:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 153:Firmware/CMSIS/core_cmFunc.h ****  */
+ 154:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_MSP(uint32_t topOfMainStack)
+ 155:Firmware/CMSIS/core_cmFunc.h **** {
+ 156:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regMainStackPointer     __ASM("msp");
+ 157:Firmware/CMSIS/core_cmFunc.h ****   __regMainStackPointer = topOfMainStack;
+ 158:Firmware/CMSIS/core_cmFunc.h **** }
+ 159:Firmware/CMSIS/core_cmFunc.h **** 
+ 160:Firmware/CMSIS/core_cmFunc.h **** 
+ 161:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Priority Mask
+ 162:Firmware/CMSIS/core_cmFunc.h **** 
+ 163:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current state of the priority mask bit from the Priority Mask Registe
+ 164:Firmware/CMSIS/core_cmFunc.h **** 
+ 165:Firmware/CMSIS/core_cmFunc.h ****     \return               Priority Mask value
+ 166:Firmware/CMSIS/core_cmFunc.h ****  */
+ 167:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_PRIMASK(void)
+ 168:Firmware/CMSIS/core_cmFunc.h **** {
+ 169:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regPriMask         __ASM("primask");
+ 170:Firmware/CMSIS/core_cmFunc.h ****   return(__regPriMask);
+ 171:Firmware/CMSIS/core_cmFunc.h **** }
+ 172:Firmware/CMSIS/core_cmFunc.h **** 
+ 173:Firmware/CMSIS/core_cmFunc.h **** 
+ 174:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Priority Mask
+ 175:Firmware/CMSIS/core_cmFunc.h **** 
+ 176:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Priority Mask Register.
+ 177:Firmware/CMSIS/core_cmFunc.h **** 
+ 178:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    priMask  Priority Mask
+ 179:Firmware/CMSIS/core_cmFunc.h ****  */
+ 180:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_PRIMASK(uint32_t priMask)
+ 181:Firmware/CMSIS/core_cmFunc.h **** {
+ 182:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regPriMask         __ASM("primask");
+ 183:Firmware/CMSIS/core_cmFunc.h ****   __regPriMask = (priMask);
+ 184:Firmware/CMSIS/core_cmFunc.h **** }
+ 185:Firmware/CMSIS/core_cmFunc.h **** 
+ 186:Firmware/CMSIS/core_cmFunc.h **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 12
+
+
+ 187:Firmware/CMSIS/core_cmFunc.h **** #if       (__CORTEX_M >= 0x03)
+ 188:Firmware/CMSIS/core_cmFunc.h **** 
+ 189:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Enable FIQ
+ 190:Firmware/CMSIS/core_cmFunc.h **** 
+ 191:Firmware/CMSIS/core_cmFunc.h ****     This function enables FIQ interrupts by clearing the F-bit in the CPSR.
+ 192:Firmware/CMSIS/core_cmFunc.h ****     Can only be executed in Privileged modes.
+ 193:Firmware/CMSIS/core_cmFunc.h ****  */
+ 194:Firmware/CMSIS/core_cmFunc.h **** #define __enable_fault_irq                __enable_fiq
+ 195:Firmware/CMSIS/core_cmFunc.h **** 
+ 196:Firmware/CMSIS/core_cmFunc.h **** 
+ 197:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Disable FIQ
+ 198:Firmware/CMSIS/core_cmFunc.h **** 
+ 199:Firmware/CMSIS/core_cmFunc.h ****     This function disables FIQ interrupts by setting the F-bit in the CPSR.
+ 200:Firmware/CMSIS/core_cmFunc.h ****     Can only be executed in Privileged modes.
+ 201:Firmware/CMSIS/core_cmFunc.h ****  */
+ 202:Firmware/CMSIS/core_cmFunc.h **** #define __disable_fault_irq               __disable_fiq
+ 203:Firmware/CMSIS/core_cmFunc.h **** 
+ 204:Firmware/CMSIS/core_cmFunc.h **** 
+ 205:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Base Priority
+ 206:Firmware/CMSIS/core_cmFunc.h **** 
+ 207:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Base Priority register.
+ 208:Firmware/CMSIS/core_cmFunc.h **** 
+ 209:Firmware/CMSIS/core_cmFunc.h ****     \return               Base Priority register value
+ 210:Firmware/CMSIS/core_cmFunc.h ****  */
+ 211:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t  __get_BASEPRI(void)
+ 212:Firmware/CMSIS/core_cmFunc.h **** {
+ 213:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regBasePri         __ASM("basepri");
+ 214:Firmware/CMSIS/core_cmFunc.h ****   return(__regBasePri);
+ 215:Firmware/CMSIS/core_cmFunc.h **** }
+ 216:Firmware/CMSIS/core_cmFunc.h **** 
+ 217:Firmware/CMSIS/core_cmFunc.h **** 
+ 218:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Base Priority
+ 219:Firmware/CMSIS/core_cmFunc.h **** 
+ 220:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Base Priority register.
+ 221:Firmware/CMSIS/core_cmFunc.h **** 
+ 222:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    basePri  Base Priority value to set
+ 223:Firmware/CMSIS/core_cmFunc.h ****  */
+ 224:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_BASEPRI(uint32_t basePri)
+ 225:Firmware/CMSIS/core_cmFunc.h **** {
+ 226:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regBasePri         __ASM("basepri");
+ 227:Firmware/CMSIS/core_cmFunc.h ****   __regBasePri = (basePri & 0xff);
+ 228:Firmware/CMSIS/core_cmFunc.h **** }
+ 229:Firmware/CMSIS/core_cmFunc.h **** 
+ 230:Firmware/CMSIS/core_cmFunc.h **** 
+ 231:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Fault Mask
+ 232:Firmware/CMSIS/core_cmFunc.h **** 
+ 233:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Fault Mask register.
+ 234:Firmware/CMSIS/core_cmFunc.h **** 
+ 235:Firmware/CMSIS/core_cmFunc.h ****     \return               Fault Mask register value
+ 236:Firmware/CMSIS/core_cmFunc.h ****  */
+ 237:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_FAULTMASK(void)
+ 238:Firmware/CMSIS/core_cmFunc.h **** {
+ 239:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regFaultMask       __ASM("faultmask");
+ 240:Firmware/CMSIS/core_cmFunc.h ****   return(__regFaultMask);
+ 241:Firmware/CMSIS/core_cmFunc.h **** }
+ 242:Firmware/CMSIS/core_cmFunc.h **** 
+ 243:Firmware/CMSIS/core_cmFunc.h **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 13
+
+
+ 244:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Fault Mask
+ 245:Firmware/CMSIS/core_cmFunc.h **** 
+ 246:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Fault Mask register.
+ 247:Firmware/CMSIS/core_cmFunc.h **** 
+ 248:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    faultMask  Fault Mask value to set
+ 249:Firmware/CMSIS/core_cmFunc.h ****  */
+ 250:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_FAULTMASK(uint32_t faultMask)
+ 251:Firmware/CMSIS/core_cmFunc.h **** {
+ 252:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regFaultMask       __ASM("faultmask");
+ 253:Firmware/CMSIS/core_cmFunc.h ****   __regFaultMask = (faultMask & (uint32_t)1);
+ 254:Firmware/CMSIS/core_cmFunc.h **** }
+ 255:Firmware/CMSIS/core_cmFunc.h **** 
+ 256:Firmware/CMSIS/core_cmFunc.h **** #endif /* (__CORTEX_M >= 0x03) */
+ 257:Firmware/CMSIS/core_cmFunc.h **** 
+ 258:Firmware/CMSIS/core_cmFunc.h **** 
+ 259:Firmware/CMSIS/core_cmFunc.h **** #if       (__CORTEX_M == 0x04)
+ 260:Firmware/CMSIS/core_cmFunc.h **** 
+ 261:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get FPSCR
+ 262:Firmware/CMSIS/core_cmFunc.h **** 
+ 263:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Floating Point Status/Control register.
+ 264:Firmware/CMSIS/core_cmFunc.h **** 
+ 265:Firmware/CMSIS/core_cmFunc.h ****     \return               Floating Point Status/Control register value
+ 266:Firmware/CMSIS/core_cmFunc.h ****  */
+ 267:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE uint32_t __get_FPSCR(void)
+ 268:Firmware/CMSIS/core_cmFunc.h **** {
+ 269:Firmware/CMSIS/core_cmFunc.h **** #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+ 270:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regfpscr         __ASM("fpscr");
+ 271:Firmware/CMSIS/core_cmFunc.h ****   return(__regfpscr);
+ 272:Firmware/CMSIS/core_cmFunc.h **** #else
+ 273:Firmware/CMSIS/core_cmFunc.h ****    return(0);
+ 274:Firmware/CMSIS/core_cmFunc.h **** #endif
+ 275:Firmware/CMSIS/core_cmFunc.h **** }
+ 276:Firmware/CMSIS/core_cmFunc.h **** 
+ 277:Firmware/CMSIS/core_cmFunc.h **** 
+ 278:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set FPSCR
+ 279:Firmware/CMSIS/core_cmFunc.h **** 
+ 280:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Floating Point Status/Control register.
+ 281:Firmware/CMSIS/core_cmFunc.h **** 
+ 282:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    fpscr  Floating Point Status/Control value to set
+ 283:Firmware/CMSIS/core_cmFunc.h ****  */
+ 284:Firmware/CMSIS/core_cmFunc.h **** __STATIC_INLINE void __set_FPSCR(uint32_t fpscr)
+ 285:Firmware/CMSIS/core_cmFunc.h **** {
+ 286:Firmware/CMSIS/core_cmFunc.h **** #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+ 287:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t __regfpscr         __ASM("fpscr");
+ 288:Firmware/CMSIS/core_cmFunc.h ****   __regfpscr = (fpscr);
+ 289:Firmware/CMSIS/core_cmFunc.h **** #endif
+ 290:Firmware/CMSIS/core_cmFunc.h **** }
+ 291:Firmware/CMSIS/core_cmFunc.h **** 
+ 292:Firmware/CMSIS/core_cmFunc.h **** #endif /* (__CORTEX_M == 0x04) */
+ 293:Firmware/CMSIS/core_cmFunc.h **** 
+ 294:Firmware/CMSIS/core_cmFunc.h **** 
+ 295:Firmware/CMSIS/core_cmFunc.h **** #elif defined ( __ICCARM__ ) /*------------------ ICC Compiler -------------------*/
+ 296:Firmware/CMSIS/core_cmFunc.h **** /* IAR iccarm specific functions */
+ 297:Firmware/CMSIS/core_cmFunc.h **** 
+ 298:Firmware/CMSIS/core_cmFunc.h **** #include <cmsis_iar.h>
+ 299:Firmware/CMSIS/core_cmFunc.h **** 
+ 300:Firmware/CMSIS/core_cmFunc.h **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 14
+
+
+ 301:Firmware/CMSIS/core_cmFunc.h **** #elif defined ( __TMS470__ ) /*---------------- TI CCS Compiler ------------------*/
+ 302:Firmware/CMSIS/core_cmFunc.h **** /* TI CCS specific functions */
+ 303:Firmware/CMSIS/core_cmFunc.h **** 
+ 304:Firmware/CMSIS/core_cmFunc.h **** #include <cmsis_ccs.h>
+ 305:Firmware/CMSIS/core_cmFunc.h **** 
+ 306:Firmware/CMSIS/core_cmFunc.h **** 
+ 307:Firmware/CMSIS/core_cmFunc.h **** #elif defined ( __GNUC__ ) /*------------------ GNU Compiler ---------------------*/
+ 308:Firmware/CMSIS/core_cmFunc.h **** /* GNU gcc specific functions */
+ 309:Firmware/CMSIS/core_cmFunc.h **** 
+ 310:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Enable IRQ Interrupts
+ 311:Firmware/CMSIS/core_cmFunc.h **** 
+ 312:Firmware/CMSIS/core_cmFunc.h ****   This function enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 313:Firmware/CMSIS/core_cmFunc.h ****   Can only be executed in Privileged modes.
+ 314:Firmware/CMSIS/core_cmFunc.h ****  */
+ 315:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __enable_irq(void)
+ 316:Firmware/CMSIS/core_cmFunc.h **** {
+ 317:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("cpsie i");
+ 318:Firmware/CMSIS/core_cmFunc.h **** }
+ 319:Firmware/CMSIS/core_cmFunc.h **** 
+ 320:Firmware/CMSIS/core_cmFunc.h **** 
+ 321:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Disable IRQ Interrupts
+ 322:Firmware/CMSIS/core_cmFunc.h **** 
+ 323:Firmware/CMSIS/core_cmFunc.h ****   This function disables IRQ interrupts by setting the I-bit in the CPSR.
+ 324:Firmware/CMSIS/core_cmFunc.h ****   Can only be executed in Privileged modes.
+ 325:Firmware/CMSIS/core_cmFunc.h ****  */
+ 326:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __disable_irq(void)
+ 327:Firmware/CMSIS/core_cmFunc.h **** {
+ 328:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("cpsid i");
+ 329:Firmware/CMSIS/core_cmFunc.h **** }
+ 330:Firmware/CMSIS/core_cmFunc.h **** 
+ 331:Firmware/CMSIS/core_cmFunc.h **** 
+ 332:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Control Register
+ 333:Firmware/CMSIS/core_cmFunc.h **** 
+ 334:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the Control Register.
+ 335:Firmware/CMSIS/core_cmFunc.h **** 
+ 336:Firmware/CMSIS/core_cmFunc.h ****     \return               Control Register value
+ 337:Firmware/CMSIS/core_cmFunc.h ****  */
+ 338:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_CONTROL(void)
+ 339:Firmware/CMSIS/core_cmFunc.h **** {
+ 340:Firmware/CMSIS/core_cmFunc.h ****   uint32_t result;
+ 341:Firmware/CMSIS/core_cmFunc.h **** 
+ 342:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, control" : "=r" (result) );
+ 343:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 344:Firmware/CMSIS/core_cmFunc.h **** }
+ 345:Firmware/CMSIS/core_cmFunc.h **** 
+ 346:Firmware/CMSIS/core_cmFunc.h **** 
+ 347:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Control Register
+ 348:Firmware/CMSIS/core_cmFunc.h **** 
+ 349:Firmware/CMSIS/core_cmFunc.h ****     This function writes the given value to the Control Register.
+ 350:Firmware/CMSIS/core_cmFunc.h **** 
+ 351:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    control  Control Register value to set
+ 352:Firmware/CMSIS/core_cmFunc.h ****  */
+ 353:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_CONTROL(uint32_t control)
+ 354:Firmware/CMSIS/core_cmFunc.h **** {
+ 355:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MSR control, %0" : : "r" (control) );
+ 356:Firmware/CMSIS/core_cmFunc.h **** }
+ 357:Firmware/CMSIS/core_cmFunc.h **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 15
+
+
+ 358:Firmware/CMSIS/core_cmFunc.h **** 
+ 359:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get IPSR Register
+ 360:Firmware/CMSIS/core_cmFunc.h **** 
+ 361:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the IPSR Register.
+ 362:Firmware/CMSIS/core_cmFunc.h **** 
+ 363:Firmware/CMSIS/core_cmFunc.h ****     \return               IPSR Register value
+ 364:Firmware/CMSIS/core_cmFunc.h ****  */
+ 365:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_IPSR(void)
+ 366:Firmware/CMSIS/core_cmFunc.h **** {
+ 367:Firmware/CMSIS/core_cmFunc.h ****   uint32_t result;
+ 368:Firmware/CMSIS/core_cmFunc.h **** 
+ 369:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, ipsr" : "=r" (result) );
+ 370:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 371:Firmware/CMSIS/core_cmFunc.h **** }
+ 372:Firmware/CMSIS/core_cmFunc.h **** 
+ 373:Firmware/CMSIS/core_cmFunc.h **** 
+ 374:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get APSR Register
+ 375:Firmware/CMSIS/core_cmFunc.h **** 
+ 376:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the APSR Register.
+ 377:Firmware/CMSIS/core_cmFunc.h **** 
+ 378:Firmware/CMSIS/core_cmFunc.h ****     \return               APSR Register value
+ 379:Firmware/CMSIS/core_cmFunc.h ****  */
+ 380:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_APSR(void)
+ 381:Firmware/CMSIS/core_cmFunc.h **** {
+ 382:Firmware/CMSIS/core_cmFunc.h ****   uint32_t result;
+ 383:Firmware/CMSIS/core_cmFunc.h **** 
+ 384:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, apsr" : "=r" (result) );
+ 385:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 386:Firmware/CMSIS/core_cmFunc.h **** }
+ 387:Firmware/CMSIS/core_cmFunc.h **** 
+ 388:Firmware/CMSIS/core_cmFunc.h **** 
+ 389:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get xPSR Register
+ 390:Firmware/CMSIS/core_cmFunc.h **** 
+ 391:Firmware/CMSIS/core_cmFunc.h ****     This function returns the content of the xPSR Register.
+ 392:Firmware/CMSIS/core_cmFunc.h **** 
+ 393:Firmware/CMSIS/core_cmFunc.h ****     \return               xPSR Register value
+ 394:Firmware/CMSIS/core_cmFunc.h ****  */
+ 395:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_xPSR(void)
+ 396:Firmware/CMSIS/core_cmFunc.h **** {
+ 397:Firmware/CMSIS/core_cmFunc.h ****   uint32_t result;
+ 398:Firmware/CMSIS/core_cmFunc.h **** 
+ 399:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, xpsr" : "=r" (result) );
+ 400:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 401:Firmware/CMSIS/core_cmFunc.h **** }
+ 402:Firmware/CMSIS/core_cmFunc.h **** 
+ 403:Firmware/CMSIS/core_cmFunc.h **** 
+ 404:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Process Stack Pointer
+ 405:Firmware/CMSIS/core_cmFunc.h **** 
+ 406:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Process Stack Pointer (PSP).
+ 407:Firmware/CMSIS/core_cmFunc.h **** 
+ 408:Firmware/CMSIS/core_cmFunc.h ****     \return               PSP Register value
+ 409:Firmware/CMSIS/core_cmFunc.h ****  */
+ 410:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_PSP(void)
+ 411:Firmware/CMSIS/core_cmFunc.h **** {
+ 412:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t result;
+ 413:Firmware/CMSIS/core_cmFunc.h **** 
+ 414:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, psp\n"  : "=r" (result) );
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 16
+
+
+ 415:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 416:Firmware/CMSIS/core_cmFunc.h **** }
+ 417:Firmware/CMSIS/core_cmFunc.h **** 
+ 418:Firmware/CMSIS/core_cmFunc.h **** 
+ 419:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Process Stack Pointer
+ 420:Firmware/CMSIS/core_cmFunc.h **** 
+ 421:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Process Stack Pointer (PSP).
+ 422:Firmware/CMSIS/core_cmFunc.h **** 
+ 423:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 424:Firmware/CMSIS/core_cmFunc.h ****  */
+ 425:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_PSP(uint32_t topOfProcStack)
+ 426:Firmware/CMSIS/core_cmFunc.h **** {
+ 427:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MSR psp, %0\n" : : "r" (topOfProcStack) );
+ 428:Firmware/CMSIS/core_cmFunc.h **** }
+ 429:Firmware/CMSIS/core_cmFunc.h **** 
+ 430:Firmware/CMSIS/core_cmFunc.h **** 
+ 431:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Main Stack Pointer
+ 432:Firmware/CMSIS/core_cmFunc.h **** 
+ 433:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current value of the Main Stack Pointer (MSP).
+ 434:Firmware/CMSIS/core_cmFunc.h **** 
+ 435:Firmware/CMSIS/core_cmFunc.h ****     \return               MSP Register value
+ 436:Firmware/CMSIS/core_cmFunc.h ****  */
+ 437:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_MSP(void)
+ 438:Firmware/CMSIS/core_cmFunc.h **** {
+ 439:Firmware/CMSIS/core_cmFunc.h ****   register uint32_t result;
+ 440:Firmware/CMSIS/core_cmFunc.h **** 
+ 441:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, msp\n" : "=r" (result) );
+ 442:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 443:Firmware/CMSIS/core_cmFunc.h **** }
+ 444:Firmware/CMSIS/core_cmFunc.h **** 
+ 445:Firmware/CMSIS/core_cmFunc.h **** 
+ 446:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Main Stack Pointer
+ 447:Firmware/CMSIS/core_cmFunc.h **** 
+ 448:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Main Stack Pointer (MSP).
+ 449:Firmware/CMSIS/core_cmFunc.h **** 
+ 450:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 451:Firmware/CMSIS/core_cmFunc.h ****  */
+ 452:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_MSP(uint32_t topOfMainStack)
+ 453:Firmware/CMSIS/core_cmFunc.h **** {
+ 454:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack) );
+ 455:Firmware/CMSIS/core_cmFunc.h **** }
+ 456:Firmware/CMSIS/core_cmFunc.h **** 
+ 457:Firmware/CMSIS/core_cmFunc.h **** 
+ 458:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Get Priority Mask
+ 459:Firmware/CMSIS/core_cmFunc.h **** 
+ 460:Firmware/CMSIS/core_cmFunc.h ****     This function returns the current state of the priority mask bit from the Priority Mask Registe
+ 461:Firmware/CMSIS/core_cmFunc.h **** 
+ 462:Firmware/CMSIS/core_cmFunc.h ****     \return               Priority Mask value
+ 463:Firmware/CMSIS/core_cmFunc.h ****  */
+ 464:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE uint32_t __get_PRIMASK(void)
+ 465:Firmware/CMSIS/core_cmFunc.h **** {
+ 466:Firmware/CMSIS/core_cmFunc.h ****   uint32_t result;
+ 467:Firmware/CMSIS/core_cmFunc.h **** 
+ 468:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MRS %0, primask" : "=r" (result) );
+ 469:Firmware/CMSIS/core_cmFunc.h ****   return(result);
+ 470:Firmware/CMSIS/core_cmFunc.h **** }
+ 471:Firmware/CMSIS/core_cmFunc.h **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 17
+
+
+ 472:Firmware/CMSIS/core_cmFunc.h **** 
+ 473:Firmware/CMSIS/core_cmFunc.h **** /** \brief  Set Priority Mask
+ 474:Firmware/CMSIS/core_cmFunc.h **** 
+ 475:Firmware/CMSIS/core_cmFunc.h ****     This function assigns the given value to the Priority Mask Register.
+ 476:Firmware/CMSIS/core_cmFunc.h **** 
+ 477:Firmware/CMSIS/core_cmFunc.h ****     \param [in]    priMask  Priority Mask
+ 478:Firmware/CMSIS/core_cmFunc.h ****  */
+ 479:Firmware/CMSIS/core_cmFunc.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __set_PRIMASK(uint32_t priMask)
+ 480:Firmware/CMSIS/core_cmFunc.h **** {
+ 481:Firmware/CMSIS/core_cmFunc.h ****   __ASM volatile ("MSR primask, %0" : : "r" (priMask) );
+ 243              		.loc 2 481 3
+ 244 0016 07F58453 		add	r3, r7, #4224
+ 245 001a 03F11003 		add	r3, r3, #16
+ 246 001e 1B68     		ldr	r3, [r3]
+ 247              		.syntax unified
+ 248              	@ 481 "Firmware/CMSIS/core_cmFunc.h" 1
+ 249 0020 83F31088 		MSR primask, r3
+ 250              	@ 0 "" 2
+ 482:Firmware/CMSIS/core_cmFunc.h **** }
+ 251              		.loc 2 482 1
+ 252              		.thumb
+ 253              		.syntax unified
+ 254 0024 00BF     		nop
+ 255 0026 0023     		movs	r3, #0
+ 256 0028 07F58452 		add	r2, r7, #4224
+ 257 002c 02F11402 		add	r2, r2, #20
+ 258 0030 1360     		str	r3, [r2]
+ 259              	.LBE11:
+ 260              	.LBE10:
+ 261              	.LBB12:
+ 262              	.LBB13:
+ 481:Firmware/CMSIS/core_cmFunc.h **** }
+ 263              		.loc 2 481 3
+ 264 0032 07F58453 		add	r3, r7, #4224
+ 265 0036 03F11403 		add	r3, r3, #20
+ 266 003a 1B68     		ldr	r3, [r3]
+ 267              		.syntax unified
+ 268              	@ 481 "Firmware/CMSIS/core_cmFunc.h" 1
+ 269 003c 83F31088 		MSR primask, r3
+ 270              	@ 0 "" 2
+ 271              		.loc 2 482 1
+ 272              		.thumb
+ 273              		.syntax unified
+ 274 0040 00BF     		nop
+ 275              	.LBE13:
+ 276              	.LBE12:
+ 152:User/main.c   **** 		UINT bw;
+ 153:User/main.c   **** 		FRESULT res;
+ 154:User/main.c   **** 		DISABLE_INT();
+ 155:User/main.c   ****     ENABLE_INT();
+ 156:User/main.c   ****     nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x10000);
+ 277              		.loc 1 156 5
+ 278 0042 4FF48031 		mov	r1, #65536
+ 279 0046 4FF00060 		mov	r0, #134217728
+ 280 004a FFF7FEFF 		bl	nvic_vector_table_set
+ 157:User/main.c   **** 	  System_Ready=0;
+ 281              		.loc 1 157 16
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 18
+
+
+ 282 004e BB4B     		ldr	r3, .L22
+ 283 0050 0022     		movs	r2, #0
+ 284 0052 1A70     		strb	r2, [r3]
+ 158:User/main.c   ****     bsp_init();
+ 285              		.loc 1 158 5
+ 286 0054 FFF7FEFF 		bl	bsp_init
+ 159:User/main.c   **** 	  ringbuffer_init();
+ 287              		.loc 1 159 4
+ 288 0058 FFF7FEFF 		bl	ringbuffer_init
+ 160:User/main.c   **** 		Fpga_Start();
+ 289              		.loc 1 160 3
+ 290 005c FFF7FEFF 		bl	Fpga_Start
+ 161:User/main.c   **** 	  mainInit();
+ 291              		.loc 1 161 4
+ 292 0060 FFF7FEFF 		bl	mainInit
+ 162:User/main.c   **** 		GPU_Beep(1);
+ 293              		.loc 1 162 3
+ 294 0064 0120     		movs	r0, #1
+ 295 0066 FFF7FEFF 		bl	GPU_Beep
+ 163:User/main.c   ****     O_PWR_5V_EN(1);
+ 296              		.loc 1 163 5
+ 297 006a 0120     		movs	r0, #1
+ 298 006c FFF7FEFF 		bl	O_PWR_5V_EN
+ 164:User/main.c   **** 	GPU_SDIO_INIT();
+ 299              		.loc 1 164 2
+ 300 0070 FFF7FEFF 		bl	GPU_SDIO_INIT
+ 165:User/main.c   **** 	GPU_FindBmp();
+ 301              		.loc 1 165 2
+ 302 0074 FFF7FEFF 		bl	GPU_FindBmp
+ 166:User/main.c   **** 	  //Gpu_Mcu_Fill(0,0,10,10,pixcolor);
+ 167:User/main.c   ****     GPU_PIC_Init();
+ 303              		.loc 1 167 5
+ 304 0078 FFF7FEFF 		bl	GPU_PIC_Init
+ 168:User/main.c   ****     CALIB_THREAD_Init();
+ 305              		.loc 1 168 5
+ 306 007c FFF7FEFF 		bl	CALIB_THREAD_Init
+ 169:User/main.c   ****     Init_Alarm();
+ 307              		.loc 1 169 5
+ 308 0080 FFF7FEFF 		bl	Init_Alarm
+ 170:User/main.c   ****     printf("\r\n#################################User Start######################################\r
+ 309              		.loc 1 170 5
+ 310 0084 AE48     		ldr	r0, .L22+4
+ 311 0086 FFF7FEFF 		bl	puts
+ 171:User/main.c   **** 	  printk("checktestnum%d \r\n",temp_read_data[0] << 8 | temp_read_data[1]);
+ 312              		.loc 1 171 47
+ 313 008a AE4B     		ldr	r3, .L22+8
+ 314 008c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 315              		.loc 1 171 51
+ 316 008e 1B02     		lsls	r3, r3, #8
+ 317              		.loc 1 171 72
+ 318 0090 AC4A     		ldr	r2, .L22+8
+ 319 0092 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 320              		.loc 1 171 4
+ 321 0094 1343     		orrs	r3, r3, r2
+ 322 0096 1946     		mov	r1, r3
+ 323 0098 AB48     		ldr	r0, .L22+12
+ 324 009a FFF7FEFF 		bl	printk
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 19
+
+
+ 172:User/main.c   **** 
+ 173:User/main.c   **** 		FATFS_Init();
+ 325              		.loc 1 173 3
+ 326 009e FFF7FEFF 		bl	FATFS_Init
+ 174:User/main.c   ****     mem_init(SRAMIN);
+ 327              		.loc 1 174 5
+ 328 00a2 0020     		movs	r0, #0
+ 329 00a4 FFF7FEFF 		bl	mem_init
+ 175:User/main.c   ****     log_info("SDCard :%d \r\n",Fatfs_init(SDCard));
+ 330              		.loc 1 175 5
+ 331 00a8 0120     		movs	r0, #1
+ 332 00aa FFF7FEFF 		bl	Fatfs_init
+ 333 00ae 0346     		mov	r3, r0
+ 334 00b0 1A46     		mov	r2, r3
+ 335 00b2 A649     		ldr	r1, .L22+16
+ 336 00b4 A648     		ldr	r0, .L22+20
+ 337 00b6 FFF7FEFF 		bl	printf
+ 176:User/main.c   **** 		log_info("SPIFlash :%d \r\n",Fatfs_init(SPIFlash));
+ 338              		.loc 1 176 3
+ 339 00ba 0220     		movs	r0, #2
+ 340 00bc FFF7FEFF 		bl	Fatfs_init
+ 341 00c0 0346     		mov	r3, r0
+ 342 00c2 1A46     		mov	r2, r3
+ 343 00c4 A149     		ldr	r1, .L22+16
+ 344 00c6 A348     		ldr	r0, .L22+24
+ 345 00c8 FFF7FEFF 		bl	printf
+ 177:User/main.c   **** 		// res=f_mount(NULL,"0:",1);
+ 178:User/main.c   **** 		// log_info("f_mount NULL :%d \r\n",res);
+ 179:User/main.c   **** 		// ShowBMP("0:\F01.BMP");
+ 180:User/main.c   ****     f_mount(NULL,"1:",1);
+ 346              		.loc 1 180 5
+ 347 00cc 0122     		movs	r2, #1
+ 348 00ce A249     		ldr	r1, .L22+28
+ 349 00d0 0020     		movs	r0, #0
+ 350 00d2 FFF7FEFF 		bl	f_mount
+ 181:User/main.c   ****     res=f_mount(&Flash,"1:",1);
+ 351              		.loc 1 181 9
+ 352 00d6 0122     		movs	r2, #1
+ 353 00d8 9F49     		ldr	r1, .L22+28
+ 354 00da A048     		ldr	r0, .L22+32
+ 355 00dc FFF7FEFF 		bl	f_mount
+ 356 00e0 0346     		mov	r3, r0
+ 357 00e2 07F58452 		add	r2, r7, #4224
+ 358 00e6 02F11B02 		add	r2, r2, #27
+ 359 00ea 1370     		strb	r3, [r2]
+ 182:User/main.c   ****     if(res==FR_NO_FILESYSTEM)
+ 360              		.loc 1 182 7
+ 361 00ec 07F58453 		add	r3, r7, #4224
+ 362 00f0 03F11B03 		add	r3, r3, #27
+ 363 00f4 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 364 00f6 0D2B     		cmp	r3, #13
+ 365 00f8 40F00381 		bne	.L9
+ 366              	.LBB14:
+ 183:User/main.c   ****     {
+ 184:User/main.c   ****         res=f_mkfs("1:",0,0);
+ 367              		.loc 1 184 13
+ 368 00fc 0022     		movs	r2, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 20
+
+
+ 369 00fe 0021     		movs	r1, #0
+ 370 0100 9548     		ldr	r0, .L22+28
+ 371 0102 FFF7FEFF 		bl	f_mkfs
+ 372 0106 0346     		mov	r3, r0
+ 373 0108 07F58452 		add	r2, r7, #4224
+ 374 010c 02F11B02 		add	r2, r2, #27
+ 375 0110 1370     		strb	r3, [r2]
+ 185:User/main.c   ****         log_info("open %d \r\n",res);
+ 376              		.loc 1 185 9
+ 377 0112 07F58453 		add	r3, r7, #4224
+ 378 0116 03F11B03 		add	r3, r3, #27
+ 379 011a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 380 011c 1A46     		mov	r2, r3
+ 381 011e 8B49     		ldr	r1, .L22+16
+ 382 0120 8F48     		ldr	r0, .L22+36
+ 383 0122 FFF7FEFF 		bl	printf
+ 186:User/main.c   ****         f_mount(NULL,"1:",1);
+ 384              		.loc 1 186 9
+ 385 0126 0122     		movs	r2, #1
+ 386 0128 8B49     		ldr	r1, .L22+28
+ 387 012a 0020     		movs	r0, #0
+ 388 012c FFF7FEFF 		bl	f_mount
+ 187:User/main.c   ****         f_mount(&Flash,"1:",1);
+ 389              		.loc 1 187 9
+ 390 0130 0122     		movs	r2, #1
+ 391 0132 8949     		ldr	r1, .L22+28
+ 392 0134 8948     		ldr	r0, .L22+32
+ 393 0136 FFF7FEFF 		bl	f_mount
+ 188:User/main.c   ****         FIL fil;
+ 189:User/main.c   ****         res = f_open(&fil, "1:/test1.txt",FA_OPEN_ALWAYS|FA_WRITE|FA_READ);
+ 394              		.loc 1 189 15
+ 395 013a 07F10803 		add	r3, r7, #8
+ 396 013e 083B     		subs	r3, r3, #8
+ 397 0140 1322     		movs	r2, #19
+ 398 0142 8849     		ldr	r1, .L22+40
+ 399 0144 1846     		mov	r0, r3
+ 400 0146 FFF7FEFF 		bl	f_open
+ 401 014a 0346     		mov	r3, r0
+ 402 014c 07F58452 		add	r2, r7, #4224
+ 403 0150 02F11B02 		add	r2, r2, #27
+ 404 0154 1370     		strb	r3, [r2]
+ 190:User/main.c   ****         log_info("open %d size %d\r\n",res,(uint32_t)f_size(&fil));
+ 405              		.loc 1 190 9
+ 406 0156 07F58453 		add	r3, r7, #4224
+ 407 015a 03F11B03 		add	r3, r3, #27
+ 408 015e 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 409 0160 07F1A803 		add	r3, r7, #168
+ 410 0164 03F57763 		add	r3, r3, #3952
+ 411 0168 53E90223 		ldrd	r2, [r3, #-8]
+ 412 016c 1346     		mov	r3, r2
+ 413 016e 0A46     		mov	r2, r1
+ 414 0170 7649     		ldr	r1, .L22+16
+ 415 0172 7D48     		ldr	r0, .L22+44
+ 416 0174 FFF7FEFF 		bl	printf
+ 191:User/main.c   ****         uint8_t buf[13]= {0};
+ 417              		.loc 1 191 17
+ 418 0178 0023     		movs	r3, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 21
+
+
+ 419 017a 07F58252 		add	r2, r7, #4160
+ 420 017e 02F11C02 		add	r2, r2, #28
+ 421 0182 1360     		str	r3, [r2]
+ 422 0184 07F58353 		add	r3, r7, #4192
+ 423 0188 0022     		movs	r2, #0
+ 424 018a 1A60     		str	r2, [r3]
+ 425 018c 5A60     		str	r2, [r3, #4]
+ 426 018e 1A72     		strb	r2, [r3, #8]
+ 192:User/main.c   ****         uint8_t wrbuf[11]="hello word";
+ 427              		.loc 1 192 17
+ 428 0190 764A     		ldr	r2, .L22+48
+ 429 0192 07F58253 		add	r3, r7, #4160
+ 430 0196 03F11003 		add	r3, r3, #16
+ 431 019a 07CA     		ldm	r2, {r0, r1, r2}
+ 432 019c 03C3     		stmia	r3!, {r0, r1}
+ 433 019e 1A80     		strh	r2, [r3]	@ movhi
+ 434 01a0 0233     		adds	r3, r3, #2
+ 435 01a2 120C     		lsrs	r2, r2, #16
+ 436 01a4 1A70     		strb	r2, [r3]
+ 437              	.LBB15:
+ 193:User/main.c   ****         uint8_t mm[11];
+ 194:User/main.c   ****         int read_len;
+ 195:User/main.c   ****         for(int i=0 ; i<10; i++)
+ 438              		.loc 1 195 17
+ 439 01a6 0023     		movs	r3, #0
+ 440 01a8 07F58552 		add	r2, r7, #4256
+ 441 01ac 02F10402 		add	r2, r2, #4
+ 442 01b0 1360     		str	r3, [r2]
+ 443              		.loc 1 195 9
+ 444 01b2 3CE0     		b	.L10
+ 445              	.L11:
+ 196:User/main.c   ****         {
+ 197:User/main.c   ****             sprintf((char *)buf,"%s %d",wrbuf,i);
+ 446              		.loc 1 197 13 discriminator 3
+ 447 01b4 07F58252 		add	r2, r7, #4160
+ 448 01b8 02F11002 		add	r2, r2, #16
+ 449 01bc 07F58250 		add	r0, r7, #4160
+ 450 01c0 00F11C00 		add	r0, r0, #28
+ 451 01c4 07F58553 		add	r3, r7, #4256
+ 452 01c8 03F10403 		add	r3, r3, #4
+ 453 01cc 1B68     		ldr	r3, [r3]
+ 454 01ce 6849     		ldr	r1, .L22+52
+ 455 01d0 FFF7FEFF 		bl	sprintf
+ 198:User/main.c   ****             res = f_write(&fil, buf, sizeof(buf), &bw);
+ 456              		.loc 1 198 19 discriminator 3
+ 457 01d4 07F58453 		add	r3, r7, #4224
+ 458 01d8 03F10C03 		add	r3, r3, #12
+ 459 01dc 07F58251 		add	r1, r7, #4160
+ 460 01e0 01F11C01 		add	r1, r1, #28
+ 461 01e4 07F10800 		add	r0, r7, #8
+ 462 01e8 0838     		subs	r0, r0, #8
+ 463 01ea 0D22     		movs	r2, #13
+ 464 01ec FFF7FEFF 		bl	f_write
+ 465 01f0 0346     		mov	r3, r0
+ 466 01f2 07F58452 		add	r2, r7, #4224
+ 467 01f6 02F11B02 		add	r2, r2, #27
+ 468 01fa 1370     		strb	r3, [r2]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 22
+
+
+ 199:User/main.c   ****             log_info("write %d len %d\r\n",res,bw);
+ 469              		.loc 1 199 13 discriminator 3
+ 470 01fc 07F58453 		add	r3, r7, #4224
+ 471 0200 03F11B03 		add	r3, r3, #27
+ 472 0204 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 473 0206 07F58453 		add	r3, r7, #4224
+ 474 020a 03F10C03 		add	r3, r3, #12
+ 475 020e 1B68     		ldr	r3, [r3]
+ 476 0210 4E49     		ldr	r1, .L22+16
+ 477 0212 5848     		ldr	r0, .L22+56
+ 478 0214 FFF7FEFF 		bl	printf
+ 195:User/main.c   ****         {
+ 479              		.loc 1 195 30 discriminator 3
+ 480 0218 07F58553 		add	r3, r7, #4256
+ 481 021c 03F10403 		add	r3, r3, #4
+ 482 0220 1B68     		ldr	r3, [r3]
+ 483 0222 0133     		adds	r3, r3, #1
+ 484 0224 07F58552 		add	r2, r7, #4256
+ 485 0228 02F10402 		add	r2, r2, #4
+ 486 022c 1360     		str	r3, [r2]
+ 487              	.L10:
+ 195:User/main.c   ****         {
+ 488              		.loc 1 195 9 discriminator 1
+ 489 022e 07F58553 		add	r3, r7, #4256
+ 490 0232 03F10403 		add	r3, r3, #4
+ 491 0236 1B68     		ldr	r3, [r3]
+ 492 0238 092B     		cmp	r3, #9
+ 493 023a BBDD     		ble	.L11
+ 494              	.LBE15:
+ 200:User/main.c   ****         }
+ 201:User/main.c   **** 
+ 202:User/main.c   ****         f_close(&fil);
+ 495              		.loc 1 202 9
+ 496 023c 07F10803 		add	r3, r7, #8
+ 497 0240 083B     		subs	r3, r3, #8
+ 498 0242 1846     		mov	r0, r3
+ 499 0244 FFF7FEFF 		bl	f_close
+ 203:User/main.c   ****         res = f_open(&fil, "1:/test1.txt",FA_WRITE|FA_READ);
+ 500              		.loc 1 203 15
+ 501 0248 07F10803 		add	r3, r7, #8
+ 502 024c 083B     		subs	r3, r3, #8
+ 503 024e 0322     		movs	r2, #3
+ 504 0250 4449     		ldr	r1, .L22+40
+ 505 0252 1846     		mov	r0, r3
+ 506 0254 FFF7FEFF 		bl	f_open
+ 507 0258 0346     		mov	r3, r0
+ 508 025a 07F58452 		add	r2, r7, #4224
+ 509 025e 02F11B02 		add	r2, r2, #27
+ 510 0262 1370     		strb	r3, [r2]
+ 204:User/main.c   ****         log_info("open %d size %d\r\n",res,(uint32_t)f_size(&fil));
+ 511              		.loc 1 204 9
+ 512 0264 07F58453 		add	r3, r7, #4224
+ 513 0268 03F11B03 		add	r3, r3, #27
+ 514 026c 1978     		ldrb	r1, [r3]	@ zero_extendqisi2
+ 515 026e 07F1A803 		add	r3, r7, #168
+ 516 0272 03F57763 		add	r3, r3, #3952
+ 517 0276 53E90223 		ldrd	r2, [r3, #-8]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 23
+
+
+ 518 027a 1346     		mov	r3, r2
+ 519 027c 0A46     		mov	r2, r1
+ 520 027e 3349     		ldr	r1, .L22+16
+ 521 0280 3948     		ldr	r0, .L22+44
+ 522 0282 FFF7FEFF 		bl	printf
+ 523              	.LBB16:
+ 205:User/main.c   **** 
+ 206:User/main.c   ****         for(int i=0 ; i<10; i++)
+ 524              		.loc 1 206 17
+ 525 0286 0023     		movs	r3, #0
+ 526 0288 07F58552 		add	r2, r7, #4256
+ 527 028c 1360     		str	r3, [r2]
+ 528              		.loc 1 206 9
+ 529 028e 2AE0     		b	.L12
+ 530              	.L13:
+ 207:User/main.c   ****         {
+ 208:User/main.c   ****             res = f_read(&fil,mm,13,(UINT *)&read_len);
+ 531              		.loc 1 208 19 discriminator 3
+ 532 0290 07F58253 		add	r3, r7, #4160
+ 533 0294 07F58251 		add	r1, r7, #4160
+ 534 0298 01F10401 		add	r1, r1, #4
+ 535 029c 07F10800 		add	r0, r7, #8
+ 536 02a0 0838     		subs	r0, r0, #8
+ 537 02a2 0D22     		movs	r2, #13
+ 538 02a4 FFF7FEFF 		bl	f_read
+ 539 02a8 0346     		mov	r3, r0
+ 540 02aa 07F58452 		add	r2, r7, #4224
+ 541 02ae 02F11B02 		add	r2, r2, #27
+ 542 02b2 1370     		strb	r3, [r2]
+ 209:User/main.c   ****             log_info("read %s len %d res %d\r\n",(char*)mm,read_len,res);
+ 543              		.loc 1 209 13 discriminator 3
+ 544 02b4 07F58253 		add	r3, r7, #4160
+ 545 02b8 1968     		ldr	r1, [r3]
+ 546 02ba 07F58453 		add	r3, r7, #4224
+ 547 02be 03F11B03 		add	r3, r3, #27
+ 548 02c2 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 549 02c4 07F58252 		add	r2, r7, #4160
+ 550 02c8 02F10402 		add	r2, r2, #4
+ 551 02cc 0093     		str	r3, [sp]
+ 552 02ce 0B46     		mov	r3, r1
+ 553 02d0 1E49     		ldr	r1, .L22+16
+ 554 02d2 2948     		ldr	r0, .L22+60
+ 555 02d4 FFF7FEFF 		bl	printf
+ 206:User/main.c   ****         {
+ 556              		.loc 1 206 30 discriminator 3
+ 557 02d8 07F58553 		add	r3, r7, #4256
+ 558 02dc 1B68     		ldr	r3, [r3]
+ 559 02de 0133     		adds	r3, r3, #1
+ 560 02e0 07F58552 		add	r2, r7, #4256
+ 561 02e4 1360     		str	r3, [r2]
+ 562              	.L12:
+ 206:User/main.c   ****         {
+ 563              		.loc 1 206 9 discriminator 1
+ 564 02e6 07F58553 		add	r3, r7, #4256
+ 565 02ea 1B68     		ldr	r3, [r3]
+ 566 02ec 092B     		cmp	r3, #9
+ 567 02ee CFDD     		ble	.L13
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 24
+
+
+ 568              	.LBE16:
+ 210:User/main.c   ****         }
+ 211:User/main.c   **** 
+ 212:User/main.c   **** 
+ 213:User/main.c   ****         f_close(&fil);
+ 569              		.loc 1 213 9
+ 570 02f0 07F10803 		add	r3, r7, #8
+ 571 02f4 083B     		subs	r3, r3, #8
+ 572 02f6 1846     		mov	r0, r3
+ 573 02f8 FFF7FEFF 		bl	f_close
+ 214:User/main.c   ****         scan_files("1:");
+ 574              		.loc 1 214 9
+ 575 02fc 1648     		ldr	r0, .L22+28
+ 576 02fe FFF7FEFF 		bl	scan_files
+ 577              	.L9:
+ 578              	.LBE14:
+ 215:User/main.c   ****     }
+ 216:User/main.c   **** #if 0
+ 217:User/main.c   ****     FIL fil;
+ 218:User/main.c   ****     res = f_open(&fil, "1:/test2.txt",FA_OPEN_ALWAYS|FA_WRITE|FA_READ);
+ 219:User/main.c   ****     log_info("open %d size %d\r\n",res,f_size(&fil));
+ 220:User/main.c   ****     uint8_t buf[13]= {0};
+ 221:User/main.c   ****     uint8_t wrbuf[11]="hello word";
+ 222:User/main.c   ****     uint8_t mm[11];
+ 223:User/main.c   ****     int read_len;
+ 224:User/main.c   ****     for(int i=0 ; i<10; i++)
+ 225:User/main.c   ****     {
+ 226:User/main.c   ****         sprintf((char *)buf,"%s %d",wrbuf,i);
+ 227:User/main.c   ****         res = f_write(&fil, buf, sizeof(buf), &bw);
+ 228:User/main.c   ****         log_info("write %d len %d\r\n",res,bw);
+ 229:User/main.c   ****         //delay_1ms(20);
+ 230:User/main.c   ****     }
+ 231:User/main.c   **** 
+ 232:User/main.c   ****     f_close(&fil);
+ 233:User/main.c   ****     //f_lseek(&fil,0);
+ 234:User/main.c   ****     res = f_open(&fil, "1:/test1.txt",FA_WRITE|FA_READ);
+ 235:User/main.c   ****     log_info("open %d size %d\r\n",res,f_size(&fil));
+ 236:User/main.c   **** 
+ 237:User/main.c   ****     for(int i=0 ; i<12; i++)
+ 238:User/main.c   ****     {
+ 239:User/main.c   ****         res = f_read(&fil,mm,13,&read_len);
+ 240:User/main.c   ****         log_info("read %s len %d res %d\r\n",(char*)mm,read_len,res);
+ 241:User/main.c   ****         //delay_1ms(20);
+ 242:User/main.c   ****     }
+ 243:User/main.c   ****     f_close(&fil);
+ 244:User/main.c   **** #endif
+ 245:User/main.c   ****     scan_files("1:");
+ 579              		.loc 1 245 5
+ 580 0302 1548     		ldr	r0, .L22+28
+ 581 0304 FFF7FEFF 		bl	scan_files
+ 246:User/main.c   ****     uint8_t cont[30]= {0};
+ 582              		.loc 1 246 13
+ 583 0308 0023     		movs	r3, #0
+ 584 030a 07F58352 		add	r2, r7, #4192
+ 585 030e 02F10C02 		add	r2, r2, #12
+ 586 0312 1360     		str	r3, [r2]
+ 587 0314 07F58353 		add	r3, r7, #4192
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 25
+
+
+ 588 0318 03F11003 		add	r3, r3, #16
+ 589 031c 0022     		movs	r2, #0
+ 590 031e 1A60     		str	r2, [r3]
+ 591 0320 5A60     		str	r2, [r3, #4]
+ 592 0322 9A60     		str	r2, [r3, #8]
+ 593 0324 DA60     		str	r2, [r3, #12]
+ 594 0326 1A61     		str	r2, [r3, #16]
+ 595 0328 5A61     		str	r2, [r3, #20]
+ 596 032a 1A83     		strh	r2, [r3, #24]	@ movhi
+ 597              	.LBB17:
+ 247:User/main.c   ****     for(int i=0; i<60; i++)
+ 598              		.loc 1 247 13
+ 599 032c 0023     		movs	r3, #0
+ 600 032e 07F58452 		add	r2, r7, #4224
+ 601 0332 02F11C02 		add	r2, r2, #28
+ 602 0336 1360     		str	r3, [r2]
+ 603              		.loc 1 247 5
+ 604 0338 51E0     		b	.L14
+ 605              	.L23:
+ 606 033a 00BF     		.align	2
+ 607              	.L22:
+ 608 033c 00000000 		.word	System_Ready
+ 609 0340 3C000000 		.word	.LC3
+ 610 0344 00000000 		.word	temp_read_data
+ 611 0348 94000000 		.word	.LC4
+ 612 034c 00000000 		.word	.LC0
+ 613 0350 A8000000 		.word	.LC5
+ 614 0354 BC000000 		.word	.LC6
+ 615 0358 D4000000 		.word	.LC7
+ 616 035c 00000000 		.word	Flash
+ 617 0360 D8000000 		.word	.LC8
+ 618 0364 E8000000 		.word	.LC9
+ 619 0368 F8000000 		.word	.LC10
+ 620 036c 58010000 		.word	.LC11
+ 621 0370 10010000 		.word	.LC12
+ 622 0374 18010000 		.word	.LC13
+ 623 0378 30010000 		.word	.LC14
+ 624              	.L17:
+ 248:User/main.c   ****     {
+ 249:User/main.c   ****         if(strcmp((char *)app_name[i],(char *)cont)==0)
+ 625              		.loc 1 249 27
+ 626 037c 07F58453 		add	r3, r7, #4224
+ 627 0380 03F11C03 		add	r3, r3, #28
+ 628 0384 1A68     		ldr	r2, [r3]
+ 629 0386 1346     		mov	r3, r2
+ 630 0388 1B01     		lsls	r3, r3, #4
+ 631 038a 9B1A     		subs	r3, r3, r2
+ 632 038c 5B00     		lsls	r3, r3, #1
+ 633 038e 274A     		ldr	r2, .L24
+ 634 0390 1344     		add	r3, r3, r2
+ 635              		.loc 1 249 12
+ 636 0392 07F58352 		add	r2, r7, #4192
+ 637 0396 02F10C02 		add	r2, r2, #12
+ 638 039a 1146     		mov	r1, r2
+ 639 039c 1846     		mov	r0, r3
+ 640 039e FFF7FEFF 		bl	strcmp
+ 641 03a2 0346     		mov	r3, r0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 26
+
+
+ 642              		.loc 1 249 11
+ 643 03a4 002B     		cmp	r3, #0
+ 644 03a6 22D0     		beq	.L21
+ 250:User/main.c   ****             break;
+ 251:User/main.c   ****         log_info("%s",app_name[i]);
+ 645              		.loc 1 251 9 discriminator 2
+ 646 03a8 07F58453 		add	r3, r7, #4224
+ 647 03ac 03F11C03 		add	r3, r3, #28
+ 648 03b0 1A68     		ldr	r2, [r3]
+ 649 03b2 1346     		mov	r3, r2
+ 650 03b4 1B01     		lsls	r3, r3, #4
+ 651 03b6 9B1A     		subs	r3, r3, r2
+ 652 03b8 5B00     		lsls	r3, r3, #1
+ 653 03ba 1C4A     		ldr	r2, .L24
+ 654 03bc 1344     		add	r3, r3, r2
+ 655 03be 1A46     		mov	r2, r3
+ 656 03c0 1B49     		ldr	r1, .L24+4
+ 657 03c2 1C48     		ldr	r0, .L24+8
+ 658 03c4 FFF7FEFF 		bl	printf
+ 247:User/main.c   ****     {
+ 659              		.loc 1 247 25 discriminator 2
+ 660 03c8 07F58453 		add	r3, r7, #4224
+ 661 03cc 03F11C03 		add	r3, r3, #28
+ 662 03d0 1B68     		ldr	r3, [r3]
+ 663 03d2 0133     		adds	r3, r3, #1
+ 664 03d4 07F58452 		add	r2, r7, #4224
+ 665 03d8 02F11C02 		add	r2, r2, #28
+ 666 03dc 1360     		str	r3, [r2]
+ 667              	.L14:
+ 247:User/main.c   ****     {
+ 668              		.loc 1 247 5 discriminator 1
+ 669 03de 07F58453 		add	r3, r7, #4224
+ 670 03e2 03F11C03 		add	r3, r3, #28
+ 671 03e6 1B68     		ldr	r3, [r3]
+ 672 03e8 3B2B     		cmp	r3, #59
+ 673 03ea C7DD     		ble	.L17
+ 674 03ec 00E0     		b	.L16
+ 675              	.L21:
+ 250:User/main.c   ****             break;
+ 676              		.loc 1 250 13
+ 677 03ee 00BF     		nop
+ 678              	.L16:
+ 679              	.LBE17:
+ 252:User/main.c   ****     }
+ 253:User/main.c   **** /*
+ 254:User/main.c   ****     app_fatfs_init();
+ 255:User/main.c   ****     res = Fatfs_open(SDCard, "UPDATA/app.bin", FA_OPEN_ALWAYS | FA_WRITE);
+ 256:User/main.c   ****    res = f_open(&fs, "0:/UPDATA/app.bin", FA_OPEN_ALWAYS | FA_WRITE);
+ 257:User/main.c   ****    if(res != FR_OK)
+ 258:User/main.c   ****    {
+ 259:User/main.c   ****        log_info("open file  operation fail!!");
+ 260:User/main.c   ****     }
+ 261:User/main.c   ****     else ;
+ 262:User/main.c   ****     Main_Menu();  //测试YMODLE协议用
+ 263:User/main.c   ****     uint8_t *temp = (uint8_t *)0x8070000;
+ 264:User/main.c   ****     for(int i = 0; i < 200; i++)
+ 265:User/main.c   **** 		printf("number:[%03d  0x%02x ] ",i+1, temp[i]);
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 27
+
+
+ 266:User/main.c   **** */
+ 267:User/main.c   ****     ParameterDownload();
+ 680              		.loc 1 267 5
+ 681 03f0 FFF7FEFF 		bl	ParameterDownload
+ 268:User/main.c   ****     System_Ready=1;
+ 682              		.loc 1 268 17
+ 683 03f4 104B     		ldr	r3, .L24+12
+ 684 03f6 0122     		movs	r2, #1
+ 685 03f8 1A70     		strb	r2, [r3]
+ 686              	.L20:
+ 269:User/main.c   ****     while(1)
+ 270:User/main.c   ****     {
+ 271:User/main.c   ****         mainFunction();
+ 687              		.loc 1 271 9
+ 688 03fa FFF7FEFF 		bl	mainFunction
+ 272:User/main.c   **** 		if(modbusflag)
+ 689              		.loc 1 272 6
+ 690 03fe 0F4B     		ldr	r3, .L24+16
+ 691 0400 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 692              		.loc 1 272 5
+ 693 0402 002B     		cmp	r3, #0
+ 694 0404 02D0     		beq	.L18
+ 273:User/main.c   **** 		{
+ 274:User/main.c   ****         ( void )eMBPoll(  );
+ 695              		.loc 1 274 17
+ 696 0406 FFF7FEFF 		bl	eMBPoll
+ 697 040a 01E0     		b	.L19
+ 698              	.L18:
+ 275:User/main.c   **** 		}
+ 276:User/main.c   **** 		else
+ 277:User/main.c   **** 		{
+ 278:User/main.c   **** 			msg_read();
+ 699              		.loc 1 278 4
+ 700 040c FFF7FEFF 		bl	msg_read
+ 701              	.L19:
+ 279:User/main.c   **** 			
+ 280:User/main.c   **** 		}
+ 281:User/main.c   ****         CALIB_THREAD_Poll();
+ 702              		.loc 1 281 9
+ 703 0410 FFF7FEFF 		bl	CALIB_THREAD_Poll
+ 282:User/main.c   **** //        measurement();
+ 283:User/main.c   **** 					ina220_poll();
+ 704              		.loc 1 283 6
+ 705 0414 FFF7FEFF 		bl	ina220_poll
+ 284:User/main.c   **** 					reportinfo();
+ 706              		.loc 1 284 6
+ 707 0418 FFF7FEFF 		bl	reportinfo
+ 285:User/main.c   ****         led_poll();
+ 708              		.loc 1 285 9
+ 709 041c FFF7FEFF 		bl	led_poll
+ 286:User/main.c   **** 			
+ 287:User/main.c   **** 				debug_read();			
+ 710              		.loc 1 287 5
+ 711 0420 FFF7FEFF 		bl	debug_read
+ 288:User/main.c   **** 				mbapp_poll(	);
+ 712              		.loc 1 288 5
+ 713 0424 FFF7FEFF 		bl	mbapp_poll
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 28
+
+
+ 271:User/main.c   **** 		if(modbusflag)
+ 714              		.loc 1 271 9
+ 715 0428 E7E7     		b	.L20
+ 716              	.L25:
+ 717 042a 00BF     		.align	2
+ 718              	.L24:
+ 719 042c 00000000 		.word	app_name
+ 720 0430 00000000 		.word	.LC0
+ 721 0434 50010000 		.word	.LC15
+ 722 0438 00000000 		.word	System_Ready
+ 723 043c 00000000 		.word	modbusflag
+ 724              		.cfi_endproc
+ 725              	.LFE120:
+ 727              		.global	crc
+ 728              		.section	.bss.crc,"aw",%nobits
+ 731              	crc:
+ 732 0000 00       		.space	1
+ 733              		.global	file_creatflag
+ 734              		.section	.bss.file_creatflag,"aw",%nobits
+ 737              	file_creatflag:
+ 738 0000 00       		.space	1
+ 739              		.section	.text.app_fatfs_init,"ax",%progbits
+ 740              		.align	1
+ 741              		.global	app_fatfs_init
+ 742              		.syntax unified
+ 743              		.thumb
+ 744              		.thumb_func
+ 746              	app_fatfs_init:
+ 747              	.LFB121:
+ 289:User/main.c   ****     }
+ 290:User/main.c   **** }
+ 291:User/main.c   **** 
+ 292:User/main.c   **** uint8_t crc = 0;
+ 293:User/main.c   **** uint8_t file_creatflag = 0;
+ 294:User/main.c   **** extern uint32_t firmware_size;
+ 295:User/main.c   **** void app_fatfs_init(void)
+ 296:User/main.c   **** {
+ 748              		.loc 1 296 1
+ 749              		.cfi_startproc
+ 750              		@ args = 0, pretend = 0, frame = 0
+ 751              		@ frame_needed = 1, uses_anonymous_args = 0
+ 752 0000 80B5     		push	{r7, lr}
+ 753              	.LCFI9:
+ 754              		.cfi_def_cfa_offset 8
+ 755              		.cfi_offset 7, -8
+ 756              		.cfi_offset 14, -4
+ 757 0002 00AF     		add	r7, sp, #0
+ 758              	.LCFI10:
+ 759              		.cfi_def_cfa_register 7
+ 297:User/main.c   ****     MCU_GPU_ADDR = GPU_SDIO_CTRL;//enable sd ip
+ 760              		.loc 1 297 5
+ 761 0004 4FF0C043 		mov	r3, #1610612736
+ 762              		.loc 1 297 18
+ 763 0008 1022     		movs	r2, #16
+ 764 000a 1A80     		strh	r2, [r3]	@ movhi
+ 298:User/main.c   ****     MCU_GPU_DATA = 0x00;
+ 765              		.loc 1 298 5
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 29
+
+
+ 766 000c 044B     		ldr	r3, .L27
+ 767              		.loc 1 298 18
+ 768 000e 0022     		movs	r2, #0
+ 769 0010 1A80     		strh	r2, [r3]	@ movhi
+ 299:User/main.c   ****     bsp_DelayMS(2);
+ 770              		.loc 1 299 5
+ 771 0012 0220     		movs	r0, #2
+ 772 0014 FFF7FEFF 		bl	bsp_DelayMS
+ 300:User/main.c   ****     iap_init();
+ 773              		.loc 1 300 5
+ 774 0018 FFF7FEFF 		bl	iap_init
+ 301:User/main.c   **** }
+ 775              		.loc 1 301 1
+ 776 001c 00BF     		nop
+ 777 001e 80BD     		pop	{r7, pc}
+ 778              	.L28:
+ 779              		.align	2
+ 780              	.L27:
+ 781 0020 00000460 		.word	1610874880
+ 782              		.cfi_endproc
+ 783              	.LFE121:
+ 785              		.section	.text.bsp_Idle,"ax",%progbits
+ 786              		.align	1
+ 787              		.global	bsp_Idle
+ 788              		.syntax unified
+ 789              		.thumb
+ 790              		.thumb_func
+ 792              	bsp_Idle:
+ 793              	.LFB122:
+ 302:User/main.c   **** 
+ 303:User/main.c   **** 
+ 304:User/main.c   **** 
+ 305:User/main.c   **** ///************************************************************************************************
+ 306:User/main.c   **** // 函数名：bsp_Idle
+ 307:User/main.c   **** // 功能：在bsp_DelayMS时会调用此函数
+ 308:User/main.c   **** // 参数：无
+ 309:User/main.c   **** //返回：无
+ 310:User/main.c   **** //*************************************************************************************************
+ 311:User/main.c   **** 
+ 312:User/main.c   **** 
+ 313:User/main.c   **** 
+ 314:User/main.c   **** 
+ 315:User/main.c   **** void bsp_Idle  (void)
+ 316:User/main.c   **** {
+ 794              		.loc 1 316 1
+ 795              		.cfi_startproc
+ 796              		@ args = 0, pretend = 0, frame = 0
+ 797              		@ frame_needed = 1, uses_anonymous_args = 0
+ 798 0000 80B5     		push	{r7, lr}
+ 799              	.LCFI11:
+ 800              		.cfi_def_cfa_offset 8
+ 801              		.cfi_offset 7, -8
+ 802              		.cfi_offset 14, -4
+ 803 0002 00AF     		add	r7, sp, #0
+ 804              	.LCFI12:
+ 805              		.cfi_def_cfa_register 7
+ 317:User/main.c   ****     led_poll();
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 30
+
+
+ 806              		.loc 1 317 5
+ 807 0004 FFF7FEFF 		bl	led_poll
+ 318:User/main.c   **** 	  debug_read();	
+ 808              		.loc 1 318 4
+ 809 0008 FFF7FEFF 		bl	debug_read
+ 319:User/main.c   **** //		mainFunction();
+ 320:User/main.c   **** 		//( void )eMBPoll(  );
+ 321:User/main.c   **** 		CALIB_THREAD_Poll();
+ 810              		.loc 1 321 3
+ 811 000c FFF7FEFF 		bl	CALIB_THREAD_Poll
+ 322:User/main.c   **** 		ina220_poll();
+ 812              		.loc 1 322 3
+ 813 0010 FFF7FEFF 		bl	ina220_poll
+ 323:User/main.c   **** 		reportinfo();		
+ 814              		.loc 1 323 3
+ 815 0014 FFF7FEFF 		bl	reportinfo
+ 324:User/main.c   **** 		mbapp_poll(	);
+ 816              		.loc 1 324 3
+ 817 0018 FFF7FEFF 		bl	mbapp_poll
+ 325:User/main.c   **** }
+ 818              		.loc 1 325 1
+ 819 001c 00BF     		nop
+ 820 001e 80BD     		pop	{r7, pc}
+ 821              		.cfi_endproc
+ 822              	.LFE122:
+ 824              		.section	.rodata
+ 825 0163 00       		.align	2
+ 826              	.LC16:
+ 827 0164 25733A4C 		.ascii	"%s:LED init successfull\015\012\000"
+ 827      45442069 
+ 827      6E697420 
+ 827      73756363 
+ 827      65737366 
+ 828              		.section	.text.led_init,"ax",%progbits
+ 829              		.align	1
+ 830              		.global	led_init
+ 831              		.syntax unified
+ 832              		.thumb
+ 833              		.thumb_func
+ 835              	led_init:
+ 836              	.LFB123:
+ 326:User/main.c   **** 
+ 327:User/main.c   **** 
+ 328:User/main.c   **** ///************************************************************************************************
+ 329:User/main.c   **** // 函数名：led_init
+ 330:User/main.c   **** // 功能：初始化LED灯
+ 331:User/main.c   **** // 参数：无
+ 332:User/main.c   **** //返回：无
+ 333:User/main.c   **** //*************************************************************************************************
+ 334:User/main.c   **** 
+ 335:User/main.c   **** void led_init(void)
+ 336:User/main.c   **** {
+ 837              		.loc 1 336 1
+ 838              		.cfi_startproc
+ 839              		@ args = 0, pretend = 0, frame = 0
+ 840              		@ frame_needed = 1, uses_anonymous_args = 0
+ 841 0000 80B5     		push	{r7, lr}
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 31
+
+
+ 842              	.LCFI13:
+ 843              		.cfi_def_cfa_offset 8
+ 844              		.cfi_offset 7, -8
+ 845              		.cfi_offset 14, -4
+ 846 0002 00AF     		add	r7, sp, #0
+ 847              	.LCFI14:
+ 848              		.cfi_def_cfa_register 7
+ 337:User/main.c   ****     /* initialize the leds */
+ 338:User/main.c   ****     rcu_periph_clock_enable(RCU_GPIOB);
+ 849              		.loc 1 338 5
+ 850 0004 40F20360 		movw	r0, #1539
+ 851 0008 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 339:User/main.c   ****     gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9);
+ 852              		.loc 1 339 5
+ 853 000c 4FF40073 		mov	r3, #512
+ 854 0010 0322     		movs	r2, #3
+ 855 0012 1021     		movs	r1, #16
+ 856 0014 0448     		ldr	r0, .L31
+ 857 0016 FFF7FEFF 		bl	gpio_init
+ 340:User/main.c   ****     log_info("LED init successfull");
+ 858              		.loc 1 340 5
+ 859 001a 0449     		ldr	r1, .L31+4
+ 860 001c 0448     		ldr	r0, .L31+8
+ 861 001e FFF7FEFF 		bl	printf
+ 341:User/main.c   **** }
+ 862              		.loc 1 341 1
+ 863 0022 00BF     		nop
+ 864 0024 80BD     		pop	{r7, pc}
+ 865              	.L32:
+ 866 0026 00BF     		.align	2
+ 867              	.L31:
+ 868 0028 000C0140 		.word	1073810432
+ 869 002c 00000000 		.word	.LC0
+ 870 0030 64010000 		.word	.LC16
+ 871              		.cfi_endproc
+ 872              	.LFE123:
+ 874              		.section	.text.memory_compare,"ax",%progbits
+ 875              		.align	1
+ 876              		.global	memory_compare
+ 877              		.syntax unified
+ 878              		.thumb
+ 879              		.thumb_func
+ 881              	memory_compare:
+ 882              	.LFB124:
+ 342:User/main.c   **** 
+ 343:User/main.c   **** 
+ 344:User/main.c   **** ///************************************************************************************************
+ 345:User/main.c   **** // 函数名：memory_compare
+ 346:User/main.c   **** // 功能：内存对比函数
+ 347:User/main.c   **** // 参数：原目标，对比目标 ，长度
+ 348:User/main.c   **** //返回：成功 失败
+ 349:User/main.c   **** //*************************************************************************************************
+ 350:User/main.c   **** 
+ 351:User/main.c   **** ErrStatus memory_compare(uint8_t *src, uint8_t *dst, uint16_t length)
+ 352:User/main.c   **** {
+ 883              		.loc 1 352 1
+ 884              		.cfi_startproc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 32
+
+
+ 885              		@ args = 0, pretend = 0, frame = 16
+ 886              		@ frame_needed = 1, uses_anonymous_args = 0
+ 887              		@ link register save eliminated.
+ 888 0000 80B4     		push	{r7}
+ 889              	.LCFI15:
+ 890              		.cfi_def_cfa_offset 4
+ 891              		.cfi_offset 7, -4
+ 892 0002 85B0     		sub	sp, sp, #20
+ 893              	.LCFI16:
+ 894              		.cfi_def_cfa_offset 24
+ 895 0004 00AF     		add	r7, sp, #0
+ 896              	.LCFI17:
+ 897              		.cfi_def_cfa_register 7
+ 898 0006 F860     		str	r0, [r7, #12]
+ 899 0008 B960     		str	r1, [r7, #8]
+ 900 000a 1346     		mov	r3, r2
+ 901 000c FB80     		strh	r3, [r7, #6]	@ movhi
+ 353:User/main.c   ****     while(length --)
+ 902              		.loc 1 353 10
+ 903 000e 0BE0     		b	.L34
+ 904              	.L36:
+ 354:User/main.c   ****     {
+ 355:User/main.c   ****         if(*src++ != *dst++)
+ 905              		.loc 1 355 16
+ 906 0010 FB68     		ldr	r3, [r7, #12]
+ 907 0012 5A1C     		adds	r2, r3, #1
+ 908 0014 FA60     		str	r2, [r7, #12]
+ 909              		.loc 1 355 12
+ 910 0016 1A78     		ldrb	r2, [r3]	@ zero_extendqisi2
+ 911              		.loc 1 355 26
+ 912 0018 BB68     		ldr	r3, [r7, #8]
+ 913 001a 591C     		adds	r1, r3, #1
+ 914 001c B960     		str	r1, [r7, #8]
+ 915              		.loc 1 355 22
+ 916 001e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 917              		.loc 1 355 11
+ 918 0020 9A42     		cmp	r2, r3
+ 919 0022 01D0     		beq	.L34
+ 356:User/main.c   ****             return ERROR;
+ 920              		.loc 1 356 20
+ 921 0024 0023     		movs	r3, #0
+ 922 0026 05E0     		b	.L35
+ 923              	.L34:
+ 353:User/main.c   ****     while(length --)
+ 924              		.loc 1 353 18
+ 925 0028 FB88     		ldrh	r3, [r7, #6]
+ 926 002a 5A1E     		subs	r2, r3, #1
+ 927 002c FA80     		strh	r2, [r7, #6]	@ movhi
+ 353:User/main.c   ****     while(length --)
+ 928              		.loc 1 353 10
+ 929 002e 002B     		cmp	r3, #0
+ 930 0030 EED1     		bne	.L36
+ 357:User/main.c   ****     }
+ 358:User/main.c   ****     return SUCCESS;
+ 931              		.loc 1 358 12
+ 932 0032 0123     		movs	r3, #1
+ 933              	.L35:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 33
+
+
+ 359:User/main.c   **** }
+ 934              		.loc 1 359 1
+ 935 0034 1846     		mov	r0, r3
+ 936 0036 1437     		adds	r7, r7, #20
+ 937              	.LCFI18:
+ 938              		.cfi_def_cfa_offset 4
+ 939 0038 BD46     		mov	sp, r7
+ 940              	.LCFI19:
+ 941              		.cfi_def_cfa_register 13
+ 942              		@ sp needed
+ 943 003a 80BC     		pop	{r7}
+ 944              	.LCFI20:
+ 945              		.cfi_restore 7
+ 946              		.cfi_def_cfa_offset 0
+ 947 003c 7047     		bx	lr
+ 948              		.cfi_endproc
+ 949              	.LFE124:
+ 951              		.text
+ 952              	.Letext0:
+ 953              		.file 3 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 954              		.file 4 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 955              		.file 5 "Firmware/CMSIS/GD/GD32F30x/Include/gd32f30x.h"
+ 956              		.file 6 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_rcu.h"
+ 957              		.file 7 "FatFs/src/integer.h"
+ 958              		.file 8 "FatFs/src/ff.h"
+ 959              		.file 9 "MB/modbus/include/mbport.h"
+ 960              		.file 10 "MB/modbus/include/mb.h"
+ 961              		.file 11 "Soft_Drive/usart.h"
+ 962              		.file 12 "Soft_Drive/file_opration.h"
+ 963              		.file 13 "sdio/fatfs.h"
+ 964              		.file 14 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 34
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:21     .bss.System_Ready:00000000 System_Ready
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:22     .bss.System_Ready:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:24     .rodata:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:34     .text.bsp_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:40     .text.bsp_init:00000000 bsp_init
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:835    .text.led_init:00000000 led_init
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:148    .text.bsp_init:0000009c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:165    .data.pixcolor:00000000 pixcolor
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:162    .data.pixcolor:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:210    .text.main:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:216    .text.main:00000000 main
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:608    .text.main:0000033c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:626    .text.main:0000037c $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:719    .text.main:0000042c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:731    .bss.crc:00000000 crc
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:732    .bss.crc:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:737    .bss.file_creatflag:00000000 file_creatflag
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:738    .bss.file_creatflag:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:740    .text.app_fatfs_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:746    .text.app_fatfs_init:00000000 app_fatfs_init
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:781    .text.app_fatfs_init:00000020 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:786    .text.bsp_Idle:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:792    .text.bsp_Idle:00000000 bsp_Idle
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:829    .text.led_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:868    .text.led_init:00000028 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:875    .text.memory_compare:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s:881    .text.memory_compare:00000000 memory_compare
+
+UNDEFINED SYMBOLS
+systick_config
+gd_eval_com_init
+time_config
+spi_flash_init
+GPIO_Configuration
+MCU_GPU_FSMCConfig
+eMBInit
+eMBEnable
+msgfifo_init
+msg_init
+CHIP_IIC_Init
+MEMORY_Init
+InitDac
+Ina220_Iint
+spi_flash_read_id
+printf
+read_pass_num
+modbusflag
+temp_read_data
+nvic_vector_table_set
+ringbuffer_init
+Fpga_Start
+mainInit
+GPU_Beep
+O_PWR_5V_EN
+GPU_SDIO_INIT
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\cclYuRPu.s 			page 35
+
+
+GPU_FindBmp
+GPU_PIC_Init
+CALIB_THREAD_Init
+Init_Alarm
+puts
+printk
+FATFS_Init
+mem_init
+Fatfs_init
+f_mount
+f_mkfs
+f_open
+sprintf
+f_write
+f_close
+f_read
+scan_files
+Flash
+strcmp
+ParameterDownload
+mainFunction
+eMBPoll
+msg_read
+CALIB_THREAD_Poll
+ina220_poll
+reportinfo
+led_poll
+debug_read
+mbapp_poll
+app_name
+bsp_DelayMS
+iap_init
+rcu_periph_clock_enable
+gpio_init

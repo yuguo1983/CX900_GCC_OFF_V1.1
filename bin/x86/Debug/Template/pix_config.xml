@@ -1,0 +1,31 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <pix>
+    <HBW>8</HBW>
+    <HFW>8</HFW>
+    <HACT>1000</HACT>
+    <HSW>6</HSW>
+    <VBW>40</VBW>
+    <VFW>202</VFW>
+    <VACT>1524</VACT>
+    <VSW>6</VSW>
+    <LCDNAME>FT8201P_BOE8.07</LCDNAME>
+    <ICNAME>GTF1000x1524</ICNAME>
+    <CODEZIP>GTF480640-0240G3</CODEZIP>
+    <PCLK>110</PCLK>
+    <MIPILAN>4</MIPILAN>
+    <AENABLE>False</AENABLE>
+    <BENABLE>False</BENABLE>
+    <ALLMODE>11</ALLMODE>
+    <DESET>1:高电平</DESET>
+    <VSSET>1:高电平</VSSET>
+    <HSSET>1:高电平</HSSET>
+    <MIPISWAP>False</MIPISWAP>
+    <ODLR>False</ODLR>
+    <MIPIMODE>2:Burst mode</MIPIMODE>
+    <DUALPORT>False</DUALPORT>
+    <DELAY>500</DELAY>
+    <TimeLock>1</TimeLock>
+    <AlarmFlag>False</AlarmFlag>
+  </pix>
+</DocumentElement>

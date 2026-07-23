@@ -1,0 +1,511 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f30x_it.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.NMI_Handler,"ax",%progbits
+  18              		.align	1
+  19              		.global	NMI_Handler
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	NMI_Handler:
+  25              	.LFB116:
+  26              		.file 1 "User/gd32f30x_it.c"
+   1:User/gd32f30x_it.c **** /*!
+   2:User/gd32f30x_it.c ****     \file  gd32f30x_it.c
+   3:User/gd32f30x_it.c ****     \brief interrupt service routines
+   4:User/gd32f30x_it.c **** 
+   5:User/gd32f30x_it.c ****     \version 2021-03-23, V2.0.0, demo for GD32F30x
+   6:User/gd32f30x_it.c **** */
+   7:User/gd32f30x_it.c **** 
+   8:User/gd32f30x_it.c **** /*
+   9:User/gd32f30x_it.c ****     Copyright (c) 2021, GigaDevice Semiconductor Inc.
+  10:User/gd32f30x_it.c **** 
+  11:User/gd32f30x_it.c ****     Redistribution and use in source and binary forms, with or without modification, 
+  12:User/gd32f30x_it.c **** are permitted provided that the following conditions are met:
+  13:User/gd32f30x_it.c **** 
+  14:User/gd32f30x_it.c ****     1. Redistributions of source code must retain the above copyright notice, this 
+  15:User/gd32f30x_it.c ****        list of conditions and the following disclaimer.
+  16:User/gd32f30x_it.c ****     2. Redistributions in binary form must reproduce the above copyright notice, 
+  17:User/gd32f30x_it.c ****        this list of conditions and the following disclaimer in the documentation 
+  18:User/gd32f30x_it.c ****        and/or other materials provided with the distribution.
+  19:User/gd32f30x_it.c ****     3. Neither the name of the copyright holder nor the names of its contributors 
+  20:User/gd32f30x_it.c ****        may be used to endorse or promote products derived from this software without 
+  21:User/gd32f30x_it.c ****        specific prior written permission.
+  22:User/gd32f30x_it.c **** 
+  23:User/gd32f30x_it.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+  24:User/gd32f30x_it.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+  25:User/gd32f30x_it.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+  26:User/gd32f30x_it.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+  27:User/gd32f30x_it.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  28:User/gd32f30x_it.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+  29:User/gd32f30x_it.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+  30:User/gd32f30x_it.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31:User/gd32f30x_it.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+  32:User/gd32f30x_it.c **** OF SUCH DAMAGE.
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 2
+
+
+  33:User/gd32f30x_it.c **** */
+  34:User/gd32f30x_it.c **** 
+  35:User/gd32f30x_it.c **** #include "gd32f30x_it.h"
+  36:User/gd32f30x_it.c **** #include "systick.h"
+  37:User/gd32f30x_it.c **** #include "timer.h"
+  38:User/gd32f30x_it.c **** #include "sdcard.h"
+  39:User/gd32f30x_it.c **** 
+  40:User/gd32f30x_it.c **** /*!
+  41:User/gd32f30x_it.c ****     \brief      this function handles NMI exception
+  42:User/gd32f30x_it.c ****     \param[in]  none
+  43:User/gd32f30x_it.c ****     \param[out] none
+  44:User/gd32f30x_it.c ****     \retval     none
+  45:User/gd32f30x_it.c **** */
+  46:User/gd32f30x_it.c **** void NMI_Handler(void)
+  47:User/gd32f30x_it.c **** {
+  27              		.loc 1 47 1
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32 0000 80B4     		push	{r7}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 7, -4
+  36 0002 00AF     		add	r7, sp, #0
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_register 7
+  48:User/gd32f30x_it.c **** }
+  39              		.loc 1 48 1
+  40 0004 00BF     		nop
+  41 0006 BD46     		mov	sp, r7
+  42              	.LCFI2:
+  43              		.cfi_def_cfa_register 13
+  44              		@ sp needed
+  45 0008 80BC     		pop	{r7}
+  46              	.LCFI3:
+  47              		.cfi_restore 7
+  48              		.cfi_def_cfa_offset 0
+  49 000a 7047     		bx	lr
+  50              		.cfi_endproc
+  51              	.LFE116:
+  53              		.section	.text.HardFault_Handler,"ax",%progbits
+  54              		.align	1
+  55              		.global	HardFault_Handler
+  56              		.syntax unified
+  57              		.thumb
+  58              		.thumb_func
+  60              	HardFault_Handler:
+  61              	.LFB117:
+  49:User/gd32f30x_it.c **** 
+  50:User/gd32f30x_it.c **** /*!
+  51:User/gd32f30x_it.c ****     \brief      this function handles HardFault exception
+  52:User/gd32f30x_it.c ****     \param[in]  none
+  53:User/gd32f30x_it.c ****     \param[out] none
+  54:User/gd32f30x_it.c ****     \retval     none
+  55:User/gd32f30x_it.c **** */
+  56:User/gd32f30x_it.c **** void HardFault_Handler(void)
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 3
+
+
+  57:User/gd32f30x_it.c **** {
+  62              		.loc 1 57 1
+  63              		.cfi_startproc
+  64              		@ args = 0, pretend = 0, frame = 0
+  65              		@ frame_needed = 1, uses_anonymous_args = 0
+  66              		@ link register save eliminated.
+  67 0000 80B4     		push	{r7}
+  68              	.LCFI4:
+  69              		.cfi_def_cfa_offset 4
+  70              		.cfi_offset 7, -4
+  71 0002 00AF     		add	r7, sp, #0
+  72              	.LCFI5:
+  73              		.cfi_def_cfa_register 7
+  74              	.L3:
+  58:User/gd32f30x_it.c ****     /* if Hard Fault exception occurs, go to infinite loop */
+  59:User/gd32f30x_it.c ****     while (1);
+  75              		.loc 1 59 11 discriminator 1
+  76 0004 FEE7     		b	.L3
+  77              		.cfi_endproc
+  78              	.LFE117:
+  80              		.section	.text.MemManage_Handler,"ax",%progbits
+  81              		.align	1
+  82              		.global	MemManage_Handler
+  83              		.syntax unified
+  84              		.thumb
+  85              		.thumb_func
+  87              	MemManage_Handler:
+  88              	.LFB118:
+  60:User/gd32f30x_it.c **** }
+  61:User/gd32f30x_it.c **** 
+  62:User/gd32f30x_it.c **** /*!
+  63:User/gd32f30x_it.c ****     \brief      this function handles MemManage exception
+  64:User/gd32f30x_it.c ****     \param[in]  none
+  65:User/gd32f30x_it.c ****     \param[out] none
+  66:User/gd32f30x_it.c ****     \retval     none
+  67:User/gd32f30x_it.c **** */
+  68:User/gd32f30x_it.c **** void MemManage_Handler(void)
+  69:User/gd32f30x_it.c **** {
+  89              		.loc 1 69 1
+  90              		.cfi_startproc
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 1, uses_anonymous_args = 0
+  93              		@ link register save eliminated.
+  94 0000 80B4     		push	{r7}
+  95              	.LCFI6:
+  96              		.cfi_def_cfa_offset 4
+  97              		.cfi_offset 7, -4
+  98 0002 00AF     		add	r7, sp, #0
+  99              	.LCFI7:
+ 100              		.cfi_def_cfa_register 7
+ 101              	.L5:
+  70:User/gd32f30x_it.c ****     /* if Memory Manage exception occurs, go to infinite loop */
+  71:User/gd32f30x_it.c ****     while (1);
+ 102              		.loc 1 71 11 discriminator 1
+ 103 0004 FEE7     		b	.L5
+ 104              		.cfi_endproc
+ 105              	.LFE118:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 4
+
+
+ 107              		.section	.text.BusFault_Handler,"ax",%progbits
+ 108              		.align	1
+ 109              		.global	BusFault_Handler
+ 110              		.syntax unified
+ 111              		.thumb
+ 112              		.thumb_func
+ 114              	BusFault_Handler:
+ 115              	.LFB119:
+  72:User/gd32f30x_it.c **** }
+  73:User/gd32f30x_it.c **** 
+  74:User/gd32f30x_it.c **** /*!
+  75:User/gd32f30x_it.c ****     \brief      this function handles BusFault exception
+  76:User/gd32f30x_it.c ****     \param[in]  none
+  77:User/gd32f30x_it.c ****     \param[out] none
+  78:User/gd32f30x_it.c ****     \retval     none
+  79:User/gd32f30x_it.c **** */
+  80:User/gd32f30x_it.c **** void BusFault_Handler(void)
+  81:User/gd32f30x_it.c **** {
+ 116              		.loc 1 81 1
+ 117              		.cfi_startproc
+ 118              		@ args = 0, pretend = 0, frame = 0
+ 119              		@ frame_needed = 1, uses_anonymous_args = 0
+ 120              		@ link register save eliminated.
+ 121 0000 80B4     		push	{r7}
+ 122              	.LCFI8:
+ 123              		.cfi_def_cfa_offset 4
+ 124              		.cfi_offset 7, -4
+ 125 0002 00AF     		add	r7, sp, #0
+ 126              	.LCFI9:
+ 127              		.cfi_def_cfa_register 7
+ 128              	.L7:
+  82:User/gd32f30x_it.c ****     /* if Bus Fault exception occurs, go to infinite loop */
+  83:User/gd32f30x_it.c ****     while (1);
+ 129              		.loc 1 83 11 discriminator 1
+ 130 0004 FEE7     		b	.L7
+ 131              		.cfi_endproc
+ 132              	.LFE119:
+ 134              		.section	.text.UsageFault_Handler,"ax",%progbits
+ 135              		.align	1
+ 136              		.global	UsageFault_Handler
+ 137              		.syntax unified
+ 138              		.thumb
+ 139              		.thumb_func
+ 141              	UsageFault_Handler:
+ 142              	.LFB120:
+  84:User/gd32f30x_it.c **** }
+  85:User/gd32f30x_it.c **** 
+  86:User/gd32f30x_it.c **** /*!
+  87:User/gd32f30x_it.c ****     \brief      this function handles UsageFault exception
+  88:User/gd32f30x_it.c ****     \param[in]  none
+  89:User/gd32f30x_it.c ****     \param[out] none
+  90:User/gd32f30x_it.c ****     \retval     none
+  91:User/gd32f30x_it.c **** */
+  92:User/gd32f30x_it.c **** void UsageFault_Handler(void)
+  93:User/gd32f30x_it.c **** {
+ 143              		.loc 1 93 1
+ 144              		.cfi_startproc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 5
+
+
+ 145              		@ args = 0, pretend = 0, frame = 0
+ 146              		@ frame_needed = 1, uses_anonymous_args = 0
+ 147              		@ link register save eliminated.
+ 148 0000 80B4     		push	{r7}
+ 149              	.LCFI10:
+ 150              		.cfi_def_cfa_offset 4
+ 151              		.cfi_offset 7, -4
+ 152 0002 00AF     		add	r7, sp, #0
+ 153              	.LCFI11:
+ 154              		.cfi_def_cfa_register 7
+ 155              	.L9:
+  94:User/gd32f30x_it.c ****     /* if Usage Fault exception occurs, go to infinite loop */
+  95:User/gd32f30x_it.c ****     while (1);
+ 156              		.loc 1 95 11 discriminator 1
+ 157 0004 FEE7     		b	.L9
+ 158              		.cfi_endproc
+ 159              	.LFE120:
+ 161              		.section	.text.SVC_Handler,"ax",%progbits
+ 162              		.align	1
+ 163              		.global	SVC_Handler
+ 164              		.syntax unified
+ 165              		.thumb
+ 166              		.thumb_func
+ 168              	SVC_Handler:
+ 169              	.LFB121:
+  96:User/gd32f30x_it.c **** }
+  97:User/gd32f30x_it.c **** 
+  98:User/gd32f30x_it.c **** /*!
+  99:User/gd32f30x_it.c ****     \brief      this function handles SVC exception
+ 100:User/gd32f30x_it.c ****     \param[in]  none
+ 101:User/gd32f30x_it.c ****     \param[out] none
+ 102:User/gd32f30x_it.c ****     \retval     none
+ 103:User/gd32f30x_it.c **** */
+ 104:User/gd32f30x_it.c **** void SVC_Handler(void)
+ 105:User/gd32f30x_it.c **** {
+ 170              		.loc 1 105 1
+ 171              		.cfi_startproc
+ 172              		@ args = 0, pretend = 0, frame = 0
+ 173              		@ frame_needed = 1, uses_anonymous_args = 0
+ 174              		@ link register save eliminated.
+ 175 0000 80B4     		push	{r7}
+ 176              	.LCFI12:
+ 177              		.cfi_def_cfa_offset 4
+ 178              		.cfi_offset 7, -4
+ 179 0002 00AF     		add	r7, sp, #0
+ 180              	.LCFI13:
+ 181              		.cfi_def_cfa_register 7
+ 106:User/gd32f30x_it.c **** }
+ 182              		.loc 1 106 1
+ 183 0004 00BF     		nop
+ 184 0006 BD46     		mov	sp, r7
+ 185              	.LCFI14:
+ 186              		.cfi_def_cfa_register 13
+ 187              		@ sp needed
+ 188 0008 80BC     		pop	{r7}
+ 189              	.LCFI15:
+ 190              		.cfi_restore 7
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 6
+
+
+ 191              		.cfi_def_cfa_offset 0
+ 192 000a 7047     		bx	lr
+ 193              		.cfi_endproc
+ 194              	.LFE121:
+ 196              		.section	.text.DebugMon_Handler,"ax",%progbits
+ 197              		.align	1
+ 198              		.global	DebugMon_Handler
+ 199              		.syntax unified
+ 200              		.thumb
+ 201              		.thumb_func
+ 203              	DebugMon_Handler:
+ 204              	.LFB122:
+ 107:User/gd32f30x_it.c **** 
+ 108:User/gd32f30x_it.c **** /*!
+ 109:User/gd32f30x_it.c ****     \brief      this function handles DebugMon exception
+ 110:User/gd32f30x_it.c ****     \param[in]  none
+ 111:User/gd32f30x_it.c ****     \param[out] none
+ 112:User/gd32f30x_it.c ****     \retval     none
+ 113:User/gd32f30x_it.c **** */
+ 114:User/gd32f30x_it.c **** void DebugMon_Handler(void)
+ 115:User/gd32f30x_it.c **** {
+ 205              		.loc 1 115 1
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 0
+ 208              		@ frame_needed = 1, uses_anonymous_args = 0
+ 209              		@ link register save eliminated.
+ 210 0000 80B4     		push	{r7}
+ 211              	.LCFI16:
+ 212              		.cfi_def_cfa_offset 4
+ 213              		.cfi_offset 7, -4
+ 214 0002 00AF     		add	r7, sp, #0
+ 215              	.LCFI17:
+ 216              		.cfi_def_cfa_register 7
+ 116:User/gd32f30x_it.c **** }
+ 217              		.loc 1 116 1
+ 218 0004 00BF     		nop
+ 219 0006 BD46     		mov	sp, r7
+ 220              	.LCFI18:
+ 221              		.cfi_def_cfa_register 13
+ 222              		@ sp needed
+ 223 0008 80BC     		pop	{r7}
+ 224              	.LCFI19:
+ 225              		.cfi_restore 7
+ 226              		.cfi_def_cfa_offset 0
+ 227 000a 7047     		bx	lr
+ 228              		.cfi_endproc
+ 229              	.LFE122:
+ 231              		.section	.text.PendSV_Handler,"ax",%progbits
+ 232              		.align	1
+ 233              		.global	PendSV_Handler
+ 234              		.syntax unified
+ 235              		.thumb
+ 236              		.thumb_func
+ 238              	PendSV_Handler:
+ 239              	.LFB123:
+ 117:User/gd32f30x_it.c **** 
+ 118:User/gd32f30x_it.c **** /*!
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 7
+
+
+ 119:User/gd32f30x_it.c ****     \brief      this function handles PendSV exception
+ 120:User/gd32f30x_it.c ****     \param[in]  none
+ 121:User/gd32f30x_it.c ****     \param[out] none
+ 122:User/gd32f30x_it.c ****     \retval     none
+ 123:User/gd32f30x_it.c **** */
+ 124:User/gd32f30x_it.c **** void PendSV_Handler(void)
+ 125:User/gd32f30x_it.c **** {
+ 240              		.loc 1 125 1
+ 241              		.cfi_startproc
+ 242              		@ args = 0, pretend = 0, frame = 0
+ 243              		@ frame_needed = 1, uses_anonymous_args = 0
+ 244              		@ link register save eliminated.
+ 245 0000 80B4     		push	{r7}
+ 246              	.LCFI20:
+ 247              		.cfi_def_cfa_offset 4
+ 248              		.cfi_offset 7, -4
+ 249 0002 00AF     		add	r7, sp, #0
+ 250              	.LCFI21:
+ 251              		.cfi_def_cfa_register 7
+ 126:User/gd32f30x_it.c **** }
+ 252              		.loc 1 126 1
+ 253 0004 00BF     		nop
+ 254 0006 BD46     		mov	sp, r7
+ 255              	.LCFI22:
+ 256              		.cfi_def_cfa_register 13
+ 257              		@ sp needed
+ 258 0008 80BC     		pop	{r7}
+ 259              	.LCFI23:
+ 260              		.cfi_restore 7
+ 261              		.cfi_def_cfa_offset 0
+ 262 000a 7047     		bx	lr
+ 263              		.cfi_endproc
+ 264              	.LFE123:
+ 266              		.section	.text.SysTick_Handler,"ax",%progbits
+ 267              		.align	1
+ 268              		.global	SysTick_Handler
+ 269              		.syntax unified
+ 270              		.thumb
+ 271              		.thumb_func
+ 273              	SysTick_Handler:
+ 274              	.LFB124:
+ 127:User/gd32f30x_it.c **** 
+ 128:User/gd32f30x_it.c **** /*!
+ 129:User/gd32f30x_it.c ****     \brief      this function handles SysTick exception
+ 130:User/gd32f30x_it.c ****     \param[in]  none
+ 131:User/gd32f30x_it.c ****     \param[out] none
+ 132:User/gd32f30x_it.c ****     \retval     none
+ 133:User/gd32f30x_it.c **** */
+ 134:User/gd32f30x_it.c **** 
+ 135:User/gd32f30x_it.c **** void SysTick_Handler(void)
+ 136:User/gd32f30x_it.c **** {
+ 275              		.loc 1 136 1
+ 276              		.cfi_startproc
+ 277              		@ args = 0, pretend = 0, frame = 0
+ 278              		@ frame_needed = 1, uses_anonymous_args = 0
+ 279 0000 80B5     		push	{r7, lr}
+ 280              	.LCFI24:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 8
+
+
+ 281              		.cfi_def_cfa_offset 8
+ 282              		.cfi_offset 7, -8
+ 283              		.cfi_offset 14, -4
+ 284 0002 00AF     		add	r7, sp, #0
+ 285              	.LCFI25:
+ 286              		.cfi_def_cfa_register 7
+ 137:User/gd32f30x_it.c **** //    delay_decrement();
+ 138:User/gd32f30x_it.c **** 		SysTick_ISR();
+ 287              		.loc 1 138 3
+ 288 0004 FFF7FEFF 		bl	SysTick_ISR
+ 139:User/gd32f30x_it.c **** 		
+ 140:User/gd32f30x_it.c **** }
+ 289              		.loc 1 140 1
+ 290 0008 00BF     		nop
+ 291 000a 80BD     		pop	{r7, pc}
+ 292              		.cfi_endproc
+ 293              	.LFE124:
+ 295              		.section	.text.USBD_LP_CAN0_RX0_IRQHandler,"ax",%progbits
+ 296              		.align	1
+ 297              		.global	USBD_LP_CAN0_RX0_IRQHandler
+ 298              		.syntax unified
+ 299              		.thumb
+ 300              		.thumb_func
+ 302              	USBD_LP_CAN0_RX0_IRQHandler:
+ 303              	.LFB125:
+ 141:User/gd32f30x_it.c **** 
+ 142:User/gd32f30x_it.c **** void USBD_LP_CAN0_RX0_IRQHandler (void)
+ 143:User/gd32f30x_it.c **** {
+ 304              		.loc 1 143 1
+ 305              		.cfi_startproc
+ 306              		@ args = 0, pretend = 0, frame = 0
+ 307              		@ frame_needed = 1, uses_anonymous_args = 0
+ 308              		@ link register save eliminated.
+ 309 0000 80B4     		push	{r7}
+ 310              	.LCFI26:
+ 311              		.cfi_def_cfa_offset 4
+ 312              		.cfi_offset 7, -4
+ 313 0002 00AF     		add	r7, sp, #0
+ 314              	.LCFI27:
+ 315              		.cfi_def_cfa_register 7
+ 144:User/gd32f30x_it.c **** //    usbd_isr();
+ 145:User/gd32f30x_it.c **** }
+ 316              		.loc 1 145 1
+ 317 0004 00BF     		nop
+ 318 0006 BD46     		mov	sp, r7
+ 319              	.LCFI28:
+ 320              		.cfi_def_cfa_register 13
+ 321              		@ sp needed
+ 322 0008 80BC     		pop	{r7}
+ 323              	.LCFI29:
+ 324              		.cfi_restore 7
+ 325              		.cfi_def_cfa_offset 0
+ 326 000a 7047     		bx	lr
+ 327              		.cfi_endproc
+ 328              	.LFE125:
+ 330              		.text
+ 331              	.Letext0:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 9
+
+
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 gd32f30x_it.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:18     .text.NMI_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:24     .text.NMI_Handler:00000000 NMI_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:54     .text.HardFault_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:60     .text.HardFault_Handler:00000000 HardFault_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:81     .text.MemManage_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:87     .text.MemManage_Handler:00000000 MemManage_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:108    .text.BusFault_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:114    .text.BusFault_Handler:00000000 BusFault_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:135    .text.UsageFault_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:141    .text.UsageFault_Handler:00000000 UsageFault_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:162    .text.SVC_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:168    .text.SVC_Handler:00000000 SVC_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:197    .text.DebugMon_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:203    .text.DebugMon_Handler:00000000 DebugMon_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:232    .text.PendSV_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:238    .text.PendSV_Handler:00000000 PendSV_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:267    .text.SysTick_Handler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:273    .text.SysTick_Handler:00000000 SysTick_Handler
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:296    .text.USBD_LP_CAN0_RX0_IRQHandler:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccrq7TtV.s:302    .text.USBD_LP_CAN0_RX0_IRQHandler:00000000 USBD_LP_CAN0_RX0_IRQHandler
+
+UNDEFINED SYMBOLS
+SysTick_ISR

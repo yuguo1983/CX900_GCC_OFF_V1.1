@@ -1,0 +1,956 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f303e_eval.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.data.GPIO_PORT,"aw"
+  18              		.align	2
+  21              	GPIO_PORT:
+  22 0000 000C0140 		.word	1073810432
+  23              		.section	.data.GPIO_PIN,"aw"
+  24              		.align	2
+  27              	GPIO_PIN:
+  28 0000 00020000 		.word	512
+  29              		.section	.data.COM_CLK,"aw"
+  30              		.align	2
+  33              	COM_CLK:
+  34 0000 0E06     		.short	1550
+  35 0002 1107     		.short	1809
+  36 0004 1207     		.short	1810
+  37              		.section	.data.COM_TX_PIN,"aw"
+  38              		.align	2
+  41              	COM_TX_PIN:
+  42 0000 00020000 		.word	512
+  43 0004 04000000 		.word	4
+  44 0008 00040000 		.word	1024
+  45              		.section	.data.COM_RX_PIN,"aw"
+  46              		.align	2
+  49              	COM_RX_PIN:
+  50 0000 00040000 		.word	1024
+  51 0004 08000000 		.word	8
+  52 0008 00080000 		.word	2048
+  53              		.section	.data.COM_GPIO_PORT,"aw"
+  54              		.align	2
+  57              	COM_GPIO_PORT:
+  58 0000 00080140 		.word	1073809408
+  59 0004 00080140 		.word	1073809408
+  60 0008 000C0140 		.word	1073810432
+  61              		.section	.data.COM_GPIO_CLK,"aw"
+  62              		.align	2
+  65              	COM_GPIO_CLK:
+  66 0000 0206     		.short	1538
+  67 0002 0206     		.short	1538
+  68 0004 0306     		.short	1539
+  69              		.section	.data.GPIO_CLK,"aw"
+  70              		.align	2
+  73              	GPIO_CLK:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 2
+
+
+  74 0000 0306     		.short	1539
+  75              		.section	.text.gd_eval_led_on,"ax",%progbits
+  76              		.align	1
+  77              		.global	gd_eval_led_on
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  82              	gd_eval_led_on:
+  83              	.LFB119:
+  84              		.file 1 "User/gd32f303e_eval.c"
+   1:User/gd32f303e_eval.c **** /*!
+   2:User/gd32f303e_eval.c ****     \file    gd32f303e_eval.c
+   3:User/gd32f303e_eval.c ****     \brief   functions to manage leds, keys, COM ports
+   4:User/gd32f303e_eval.c **** 
+   5:User/gd32f303e_eval.c ****     \version 2021-03-23, V2.0.0, demo for GD32F30x
+   6:User/gd32f303e_eval.c **** */
+   7:User/gd32f303e_eval.c **** 
+   8:User/gd32f303e_eval.c **** /*
+   9:User/gd32f303e_eval.c ****     Copyright (c) 2021, GigaDevice Semiconductor Inc.
+  10:User/gd32f303e_eval.c **** 
+  11:User/gd32f303e_eval.c ****     Redistribution and use in source and binary forms, with or without modification, 
+  12:User/gd32f303e_eval.c **** are permitted provided that the following conditions are met:
+  13:User/gd32f303e_eval.c **** 
+  14:User/gd32f303e_eval.c ****     1. Redistributions of source code must retain the above copyright notice, this 
+  15:User/gd32f303e_eval.c ****        list of conditions and the following disclaimer.
+  16:User/gd32f303e_eval.c ****     2. Redistributions in binary form must reproduce the above copyright notice, 
+  17:User/gd32f303e_eval.c ****        this list of conditions and the following disclaimer in the documentation 
+  18:User/gd32f303e_eval.c ****        and/or other materials provided with the distribution.
+  19:User/gd32f303e_eval.c ****     3. Neither the name of the copyright holder nor the names of its contributors 
+  20:User/gd32f303e_eval.c ****        may be used to endorse or promote products derived from this software without 
+  21:User/gd32f303e_eval.c ****        specific prior written permission.
+  22:User/gd32f303e_eval.c **** 
+  23:User/gd32f303e_eval.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+  24:User/gd32f303e_eval.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+  25:User/gd32f303e_eval.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+  26:User/gd32f303e_eval.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+  27:User/gd32f303e_eval.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  28:User/gd32f303e_eval.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+  29:User/gd32f303e_eval.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+  30:User/gd32f303e_eval.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31:User/gd32f303e_eval.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+  32:User/gd32f303e_eval.c **** OF SUCH DAMAGE.
+  33:User/gd32f303e_eval.c **** */
+  34:User/gd32f303e_eval.c **** 
+  35:User/gd32f303e_eval.c **** #include <gd32f30x.h>
+  36:User/gd32f303e_eval.c **** #include "gd32f303e_eval.h"
+  37:User/gd32f303e_eval.c **** #include "display.h"
+  38:User/gd32f303e_eval.c **** #include "ina220.h"
+  39:User/gd32f303e_eval.c **** /* private variables */
+  40:User/gd32f303e_eval.c **** 
+  41:User/gd32f303e_eval.c **** 
+  42:User/gd32f303e_eval.c **** 
+  43:User/gd32f303e_eval.c **** static uint32_t GPIO_PORT[LEDn] = {LED1_GPIO_PORT};
+  44:User/gd32f303e_eval.c **** static uint32_t GPIO_PIN[LEDn] = {LED1_PIN};
+  45:User/gd32f303e_eval.c **** 
+  46:User/gd32f303e_eval.c **** 
+  47:User/gd32f303e_eval.c **** 
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 3
+
+
+  48:User/gd32f303e_eval.c **** static rcu_periph_enum COM_CLK[COMn] = {EVAL_COM1_CLK, EVAL_COM2_CLK,EVAL_COM3_CLK};
+  49:User/gd32f303e_eval.c **** static uint32_t COM_TX_PIN[COMn] = {EVAL_COM1_TX_PIN, EVAL_COM2_TX_PIN,EVAL_COM3_TX_PIN};
+  50:User/gd32f303e_eval.c **** static uint32_t COM_RX_PIN[COMn] = {EVAL_COM1_RX_PIN, EVAL_COM2_RX_PIN,EVAL_COM3_RX_PIN};
+  51:User/gd32f303e_eval.c **** static uint32_t COM_GPIO_PORT[COMn] = {EVAL_COM1_GPIO_PORT, EVAL_COM2_GPIO_PORT,EVAL_COM3_GPIO_PORT
+  52:User/gd32f303e_eval.c **** static rcu_periph_enum COM_GPIO_CLK[COMn] = {EVAL_COM1_GPIO_CLK, EVAL_COM2_GPIO_CLK,EVAL_COM3_GPIO_
+  53:User/gd32f303e_eval.c **** 
+  54:User/gd32f303e_eval.c **** static rcu_periph_enum GPIO_CLK[LEDn] = {LED1_GPIO_CLK};
+  55:User/gd32f303e_eval.c **** 
+  56:User/gd32f303e_eval.c **** 
+  57:User/gd32f303e_eval.c **** /*!
+  58:User/gd32f303e_eval.c ****     \brief      configure led GPIO
+  59:User/gd32f303e_eval.c ****     \param[in]  lednum: specify the led to be configured
+  60:User/gd32f303e_eval.c ****       \arg        LED2
+  61:User/gd32f303e_eval.c ****       \arg        LED3
+  62:User/gd32f303e_eval.c ****       \arg        LED4
+  63:User/gd32f303e_eval.c ****       \arg        LED5
+  64:User/gd32f303e_eval.c ****     \param[out] none
+  65:User/gd32f303e_eval.c ****     \retval     none
+  66:User/gd32f303e_eval.c **** */
+  67:User/gd32f303e_eval.c **** 															 
+  68:User/gd32f303e_eval.c **** 
+  69:User/gd32f303e_eval.c **** 
+  70:User/gd32f303e_eval.c **** void gd_eval_led_on(led_typedef_enum lednum)
+  71:User/gd32f303e_eval.c **** {
+  85              		.loc 1 71 1
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 8
+  88              		@ frame_needed = 1, uses_anonymous_args = 0
+  89              		@ link register save eliminated.
+  90 0000 80B4     		push	{r7}
+  91              	.LCFI0:
+  92              		.cfi_def_cfa_offset 4
+  93              		.cfi_offset 7, -4
+  94 0002 83B0     		sub	sp, sp, #12
+  95              	.LCFI1:
+  96              		.cfi_def_cfa_offset 16
+  97 0004 00AF     		add	r7, sp, #0
+  98              	.LCFI2:
+  99              		.cfi_def_cfa_register 7
+ 100 0006 0346     		mov	r3, r0
+ 101 0008 FB71     		strb	r3, [r7, #7]
+  72:User/gd32f303e_eval.c ****     GPIO_BOP(GPIO_PORT[lednum]) = GPIO_PIN[lednum];
+ 102              		.loc 1 72 43
+ 103 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 104              		.loc 1 72 5
+ 105 000c FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 106 000e 0749     		ldr	r1, .L2
+ 107 0010 51F82220 		ldr	r2, [r1, r2, lsl #2]
+ 108 0014 1032     		adds	r2, r2, #16
+ 109 0016 1146     		mov	r1, r2
+ 110              		.loc 1 72 43
+ 111 0018 054A     		ldr	r2, .L2+4
+ 112 001a 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 113              		.loc 1 72 33
+ 114 001e 0B60     		str	r3, [r1]
+  73:User/gd32f303e_eval.c **** }
+ 115              		.loc 1 73 1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 4
+
+
+ 116 0020 00BF     		nop
+ 117 0022 0C37     		adds	r7, r7, #12
+ 118              	.LCFI3:
+ 119              		.cfi_def_cfa_offset 4
+ 120 0024 BD46     		mov	sp, r7
+ 121              	.LCFI4:
+ 122              		.cfi_def_cfa_register 13
+ 123              		@ sp needed
+ 124 0026 80BC     		pop	{r7}
+ 125              	.LCFI5:
+ 126              		.cfi_restore 7
+ 127              		.cfi_def_cfa_offset 0
+ 128 0028 7047     		bx	lr
+ 129              	.L3:
+ 130 002a 00BF     		.align	2
+ 131              	.L2:
+ 132 002c 00000000 		.word	GPIO_PORT
+ 133 0030 00000000 		.word	GPIO_PIN
+ 134              		.cfi_endproc
+ 135              	.LFE119:
+ 137              		.section	.text.gd_eval_led_init,"ax",%progbits
+ 138              		.align	1
+ 139              		.global	gd_eval_led_init
+ 140              		.syntax unified
+ 141              		.thumb
+ 142              		.thumb_func
+ 144              	gd_eval_led_init:
+ 145              	.LFB120:
+  74:User/gd32f303e_eval.c **** 
+  75:User/gd32f303e_eval.c **** 
+  76:User/gd32f303e_eval.c **** void  gd_eval_led_init (led_typedef_enum lednum)
+  77:User/gd32f303e_eval.c **** {
+ 146              		.loc 1 77 1
+ 147              		.cfi_startproc
+ 148              		@ args = 0, pretend = 0, frame = 8
+ 149              		@ frame_needed = 1, uses_anonymous_args = 0
+ 150 0000 80B5     		push	{r7, lr}
+ 151              	.LCFI6:
+ 152              		.cfi_def_cfa_offset 8
+ 153              		.cfi_offset 7, -8
+ 154              		.cfi_offset 14, -4
+ 155 0002 82B0     		sub	sp, sp, #8
+ 156              	.LCFI7:
+ 157              		.cfi_def_cfa_offset 16
+ 158 0004 00AF     		add	r7, sp, #0
+ 159              	.LCFI8:
+ 160              		.cfi_def_cfa_register 7
+ 161 0006 0346     		mov	r3, r0
+ 162 0008 FB71     		strb	r3, [r7, #7]
+  78:User/gd32f303e_eval.c ****     /* enable the led clock */
+  79:User/gd32f303e_eval.c ****     rcu_periph_clock_enable(GPIO_CLK[lednum]);
+ 163              		.loc 1 79 5
+ 164 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 165 000c 104A     		ldr	r2, .L5
+ 166 000e 32F81330 		ldrh	r3, [r2, r3, lsl #1]
+ 167 0012 1846     		mov	r0, r3
+ 168 0014 FFF7FEFF 		bl	rcu_periph_clock_enable
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 5
+
+
+  80:User/gd32f303e_eval.c **** 
+  81:User/gd32f303e_eval.c ****     /* configure led GPIO port */ 
+  82:User/gd32f303e_eval.c ****     gpio_init(GPIO_PORT[lednum], GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ,GPIO_PIN[lednum]);
+ 169              		.loc 1 82 5
+ 170 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 171 001a 0E4A     		ldr	r2, .L5+4
+ 172 001c 52F82300 		ldr	r0, [r2, r3, lsl #2]
+ 173 0020 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 174 0022 0D4A     		ldr	r2, .L5+8
+ 175 0024 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 176 0028 0322     		movs	r2, #3
+ 177 002a 1021     		movs	r1, #16
+ 178 002c FFF7FEFF 		bl	gpio_init
+  83:User/gd32f303e_eval.c **** 
+  84:User/gd32f303e_eval.c ****     GPIO_BC(GPIO_PORT[lednum]) = GPIO_PIN[lednum];
+ 179              		.loc 1 84 42
+ 180 0030 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 181              		.loc 1 84 5
+ 182 0032 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 183 0034 0749     		ldr	r1, .L5+4
+ 184 0036 51F82220 		ldr	r2, [r1, r2, lsl #2]
+ 185 003a 1432     		adds	r2, r2, #20
+ 186 003c 1146     		mov	r1, r2
+ 187              		.loc 1 84 42
+ 188 003e 064A     		ldr	r2, .L5+8
+ 189 0040 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 190              		.loc 1 84 32
+ 191 0044 0B60     		str	r3, [r1]
+  85:User/gd32f303e_eval.c **** }
+ 192              		.loc 1 85 1
+ 193 0046 00BF     		nop
+ 194 0048 0837     		adds	r7, r7, #8
+ 195              	.LCFI9:
+ 196              		.cfi_def_cfa_offset 8
+ 197 004a BD46     		mov	sp, r7
+ 198              	.LCFI10:
+ 199              		.cfi_def_cfa_register 13
+ 200              		@ sp needed
+ 201 004c 80BD     		pop	{r7, pc}
+ 202              	.L6:
+ 203 004e 00BF     		.align	2
+ 204              	.L5:
+ 205 0050 00000000 		.word	GPIO_CLK
+ 206 0054 00000000 		.word	GPIO_PORT
+ 207 0058 00000000 		.word	GPIO_PIN
+ 208              		.cfi_endproc
+ 209              	.LFE120:
+ 211              		.section	.text.gd_eval_led_off,"ax",%progbits
+ 212              		.align	1
+ 213              		.global	gd_eval_led_off
+ 214              		.syntax unified
+ 215              		.thumb
+ 216              		.thumb_func
+ 218              	gd_eval_led_off:
+ 219              	.LFB121:
+  86:User/gd32f303e_eval.c **** 
+  87:User/gd32f303e_eval.c **** /*!
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 6
+
+
+  88:User/gd32f303e_eval.c ****     \brief      turn on selected led
+  89:User/gd32f303e_eval.c ****     \param[in]  lednum: specify the led to be turned on
+  90:User/gd32f303e_eval.c ****       \arg        LED2
+  91:User/gd32f303e_eval.c ****       \arg        LED3
+  92:User/gd32f303e_eval.c ****       \arg        LED4
+  93:User/gd32f303e_eval.c ****       \arg        LED5
+  94:User/gd32f303e_eval.c ****     \param[out] none
+  95:User/gd32f303e_eval.c ****     \retval     none
+  96:User/gd32f303e_eval.c **** */
+  97:User/gd32f303e_eval.c **** 
+  98:User/gd32f303e_eval.c **** 
+  99:User/gd32f303e_eval.c **** 
+ 100:User/gd32f303e_eval.c **** 
+ 101:User/gd32f303e_eval.c **** 
+ 102:User/gd32f303e_eval.c **** 
+ 103:User/gd32f303e_eval.c **** /*!
+ 104:User/gd32f303e_eval.c ****     \brief      turn off selected led
+ 105:User/gd32f303e_eval.c ****     \param[in]  lednum: specify the led to be turned off
+ 106:User/gd32f303e_eval.c ****       \arg        LED2
+ 107:User/gd32f303e_eval.c ****       \arg        LED3
+ 108:User/gd32f303e_eval.c ****       \arg        LED4
+ 109:User/gd32f303e_eval.c ****       \arg        LED5
+ 110:User/gd32f303e_eval.c ****     \param[out] none
+ 111:User/gd32f303e_eval.c ****     \retval     none
+ 112:User/gd32f303e_eval.c **** */
+ 113:User/gd32f303e_eval.c **** void gd_eval_led_off(led_typedef_enum lednum)
+ 114:User/gd32f303e_eval.c **** {
+ 220              		.loc 1 114 1
+ 221              		.cfi_startproc
+ 222              		@ args = 0, pretend = 0, frame = 8
+ 223              		@ frame_needed = 1, uses_anonymous_args = 0
+ 224              		@ link register save eliminated.
+ 225 0000 80B4     		push	{r7}
+ 226              	.LCFI11:
+ 227              		.cfi_def_cfa_offset 4
+ 228              		.cfi_offset 7, -4
+ 229 0002 83B0     		sub	sp, sp, #12
+ 230              	.LCFI12:
+ 231              		.cfi_def_cfa_offset 16
+ 232 0004 00AF     		add	r7, sp, #0
+ 233              	.LCFI13:
+ 234              		.cfi_def_cfa_register 7
+ 235 0006 0346     		mov	r3, r0
+ 236 0008 FB71     		strb	r3, [r7, #7]
+ 115:User/gd32f303e_eval.c ****     GPIO_BC(GPIO_PORT[lednum]) = GPIO_PIN[lednum];
+ 237              		.loc 1 115 42
+ 238 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 239              		.loc 1 115 5
+ 240 000c FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 241 000e 0749     		ldr	r1, .L8
+ 242 0010 51F82220 		ldr	r2, [r1, r2, lsl #2]
+ 243 0014 1432     		adds	r2, r2, #20
+ 244 0016 1146     		mov	r1, r2
+ 245              		.loc 1 115 42
+ 246 0018 054A     		ldr	r2, .L8+4
+ 247 001a 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 248              		.loc 1 115 32
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 7
+
+
+ 249 001e 0B60     		str	r3, [r1]
+ 116:User/gd32f303e_eval.c **** }
+ 250              		.loc 1 116 1
+ 251 0020 00BF     		nop
+ 252 0022 0C37     		adds	r7, r7, #12
+ 253              	.LCFI14:
+ 254              		.cfi_def_cfa_offset 4
+ 255 0024 BD46     		mov	sp, r7
+ 256              	.LCFI15:
+ 257              		.cfi_def_cfa_register 13
+ 258              		@ sp needed
+ 259 0026 80BC     		pop	{r7}
+ 260              	.LCFI16:
+ 261              		.cfi_restore 7
+ 262              		.cfi_def_cfa_offset 0
+ 263 0028 7047     		bx	lr
+ 264              	.L9:
+ 265 002a 00BF     		.align	2
+ 266              	.L8:
+ 267 002c 00000000 		.word	GPIO_PORT
+ 268 0030 00000000 		.word	GPIO_PIN
+ 269              		.cfi_endproc
+ 270              	.LFE121:
+ 272              		.section	.text.gd_eval_led_toggle,"ax",%progbits
+ 273              		.align	1
+ 274              		.global	gd_eval_led_toggle
+ 275              		.syntax unified
+ 276              		.thumb
+ 277              		.thumb_func
+ 279              	gd_eval_led_toggle:
+ 280              	.LFB122:
+ 117:User/gd32f303e_eval.c **** 
+ 118:User/gd32f303e_eval.c **** /*!
+ 119:User/gd32f303e_eval.c ****     \brief      toggle selected led
+ 120:User/gd32f303e_eval.c ****     \param[in]  lednum: specify the led to be toggled
+ 121:User/gd32f303e_eval.c ****       \arg        LED2
+ 122:User/gd32f303e_eval.c ****       \arg        LED3
+ 123:User/gd32f303e_eval.c ****       \arg        LED4
+ 124:User/gd32f303e_eval.c ****       \arg        LED5
+ 125:User/gd32f303e_eval.c ****     \param[out] none
+ 126:User/gd32f303e_eval.c ****     \retval     none
+ 127:User/gd32f303e_eval.c **** */
+ 128:User/gd32f303e_eval.c **** void gd_eval_led_toggle(led_typedef_enum lednum)
+ 129:User/gd32f303e_eval.c **** {
+ 281              		.loc 1 129 1
+ 282              		.cfi_startproc
+ 283              		@ args = 0, pretend = 0, frame = 8
+ 284              		@ frame_needed = 1, uses_anonymous_args = 0
+ 285 0000 B0B5     		push	{r4, r5, r7, lr}
+ 286              	.LCFI17:
+ 287              		.cfi_def_cfa_offset 16
+ 288              		.cfi_offset 4, -16
+ 289              		.cfi_offset 5, -12
+ 290              		.cfi_offset 7, -8
+ 291              		.cfi_offset 14, -4
+ 292 0002 82B0     		sub	sp, sp, #8
+ 293              	.LCFI18:
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 8
+
+
+ 294              		.cfi_def_cfa_offset 24
+ 295 0004 00AF     		add	r7, sp, #0
+ 296              	.LCFI19:
+ 297              		.cfi_def_cfa_register 7
+ 298 0006 0346     		mov	r3, r0
+ 299 0008 FB71     		strb	r3, [r7, #7]
+ 130:User/gd32f303e_eval.c ****     gpio_bit_write(GPIO_PORT[lednum], GPIO_PIN[lednum], 
+ 300              		.loc 1 130 5
+ 301 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 302 000c 0F4A     		ldr	r2, .L11
+ 303 000e 52F82340 		ldr	r4, [r2, r3, lsl #2]
+ 304 0012 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 305 0014 0E4A     		ldr	r2, .L11+4
+ 306 0016 52F82350 		ldr	r5, [r2, r3, lsl #2]
+ 131:User/gd32f303e_eval.c ****                     (bit_status)(1 - gpio_input_bit_get(GPIO_PORT[lednum], GPIO_PIN[lednum])));
+ 307              		.loc 1 131 38
+ 308 001a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 309 001c 0B4A     		ldr	r2, .L11
+ 310 001e 52F82320 		ldr	r2, [r2, r3, lsl #2]
+ 311 0022 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 312 0024 0A49     		ldr	r1, .L11+4
+ 313 0026 51F82330 		ldr	r3, [r1, r3, lsl #2]
+ 314 002a 1946     		mov	r1, r3
+ 315 002c 1046     		mov	r0, r2
+ 316 002e FFF7FEFF 		bl	gpio_input_bit_get
+ 317 0032 0346     		mov	r3, r0
+ 318              		.loc 1 131 36
+ 319 0034 C3F10103 		rsb	r3, r3, #1
+ 320 0038 DBB2     		uxtb	r3, r3
+ 130:User/gd32f303e_eval.c ****     gpio_bit_write(GPIO_PORT[lednum], GPIO_PIN[lednum], 
+ 321              		.loc 1 130 5
+ 322 003a 1A46     		mov	r2, r3
+ 323 003c 2946     		mov	r1, r5
+ 324 003e 2046     		mov	r0, r4
+ 325 0040 FFF7FEFF 		bl	gpio_bit_write
+ 132:User/gd32f303e_eval.c **** }
+ 326              		.loc 1 132 1
+ 327 0044 00BF     		nop
+ 328 0046 0837     		adds	r7, r7, #8
+ 329              	.LCFI20:
+ 330              		.cfi_def_cfa_offset 16
+ 331 0048 BD46     		mov	sp, r7
+ 332              	.LCFI21:
+ 333              		.cfi_def_cfa_register 13
+ 334              		@ sp needed
+ 335 004a B0BD     		pop	{r4, r5, r7, pc}
+ 336              	.L12:
+ 337              		.align	2
+ 338              	.L11:
+ 339 004c 00000000 		.word	GPIO_PORT
+ 340 0050 00000000 		.word	GPIO_PIN
+ 341              		.cfi_endproc
+ 342              	.LFE122:
+ 344              		.section	.text.gd_eval_com_init,"ax",%progbits
+ 345              		.align	1
+ 346              		.global	gd_eval_com_init
+ 347              		.syntax unified
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 9
+
+
+ 348              		.thumb
+ 349              		.thumb_func
+ 351              	gd_eval_com_init:
+ 352              	.LFB123:
+ 133:User/gd32f303e_eval.c **** 
+ 134:User/gd32f303e_eval.c **** 
+ 135:User/gd32f303e_eval.c **** 
+ 136:User/gd32f303e_eval.c **** 
+ 137:User/gd32f303e_eval.c **** void gd_eval_com_init(uint32_t com)
+ 138:User/gd32f303e_eval.c **** {
+ 353              		.loc 1 138 1
+ 354              		.cfi_startproc
+ 355              		@ args = 0, pretend = 0, frame = 16
+ 356              		@ frame_needed = 1, uses_anonymous_args = 0
+ 357 0000 80B5     		push	{r7, lr}
+ 358              	.LCFI22:
+ 359              		.cfi_def_cfa_offset 8
+ 360              		.cfi_offset 7, -8
+ 361              		.cfi_offset 14, -4
+ 362 0002 84B0     		sub	sp, sp, #16
+ 363              	.LCFI23:
+ 364              		.cfi_def_cfa_offset 24
+ 365 0004 00AF     		add	r7, sp, #0
+ 366              	.LCFI24:
+ 367              		.cfi_def_cfa_register 7
+ 368 0006 7860     		str	r0, [r7, #4]
+ 139:User/gd32f303e_eval.c ****     uint32_t com_id = 0U;
+ 369              		.loc 1 139 14
+ 370 0008 0023     		movs	r3, #0
+ 371 000a FB60     		str	r3, [r7, #12]
+ 140:User/gd32f303e_eval.c ****     if(EVAL_COM1 == com){
+ 372              		.loc 1 140 7
+ 373 000c 7B68     		ldr	r3, [r7, #4]
+ 374 000e 504A     		ldr	r2, .L29
+ 375 0010 9342     		cmp	r3, r2
+ 376 0012 02D1     		bne	.L14
+ 141:User/gd32f303e_eval.c ****         com_id = 0U;
+ 377              		.loc 1 141 16
+ 378 0014 0023     		movs	r3, #0
+ 379 0016 FB60     		str	r3, [r7, #12]
+ 380 0018 0CE0     		b	.L15
+ 381              	.L14:
+ 142:User/gd32f303e_eval.c ****     }else if(EVAL_COM2 == com){
+ 382              		.loc 1 142 13
+ 383 001a 7B68     		ldr	r3, [r7, #4]
+ 384 001c 4D4A     		ldr	r2, .L29+4
+ 385 001e 9342     		cmp	r3, r2
+ 386 0020 02D1     		bne	.L16
+ 143:User/gd32f303e_eval.c ****         com_id = 1U;
+ 387              		.loc 1 143 16
+ 388 0022 0123     		movs	r3, #1
+ 389 0024 FB60     		str	r3, [r7, #12]
+ 390 0026 05E0     		b	.L15
+ 391              	.L16:
+ 144:User/gd32f303e_eval.c ****     }
+ 145:User/gd32f303e_eval.c **** 		else if(EVAL_COM3 == com)
+ 392              		.loc 1 145 10
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 10
+
+
+ 393 0028 7B68     		ldr	r3, [r7, #4]
+ 394 002a 4B4A     		ldr	r2, .L29+8
+ 395 002c 9342     		cmp	r3, r2
+ 396 002e 01D1     		bne	.L15
+ 146:User/gd32f303e_eval.c **** 		{
+ 147:User/gd32f303e_eval.c **** 				com_id = 2U;
+ 397              		.loc 1 147 12
+ 398 0030 0223     		movs	r3, #2
+ 399 0032 FB60     		str	r3, [r7, #12]
+ 400              	.L15:
+ 148:User/gd32f303e_eval.c **** 		}
+ 149:User/gd32f303e_eval.c ****     
+ 150:User/gd32f303e_eval.c ****     /* enable GPIO clock */
+ 151:User/gd32f303e_eval.c ****     rcu_periph_clock_enable(COM_GPIO_CLK[com_id]);
+ 401              		.loc 1 151 5
+ 402 0034 494A     		ldr	r2, .L29+12
+ 403 0036 FB68     		ldr	r3, [r7, #12]
+ 404 0038 32F81330 		ldrh	r3, [r2, r3, lsl #1]
+ 405 003c 1846     		mov	r0, r3
+ 406 003e FFF7FEFF 		bl	rcu_periph_clock_enable
+ 152:User/gd32f303e_eval.c **** //		rcu_periph_clock_enable(COM_GPIO_CLK[com_id]);
+ 153:User/gd32f303e_eval.c ****     /* enable USART clock */
+ 154:User/gd32f303e_eval.c ****     rcu_periph_clock_enable(COM_CLK[com_id]);
+ 407              		.loc 1 154 5
+ 408 0042 474A     		ldr	r2, .L29+16
+ 409 0044 FB68     		ldr	r3, [r7, #12]
+ 410 0046 32F81330 		ldrh	r3, [r2, r3, lsl #1]
+ 411 004a 1846     		mov	r0, r3
+ 412 004c FFF7FEFF 		bl	rcu_periph_clock_enable
+ 155:User/gd32f303e_eval.c **** 		rcu_periph_clock_enable( RCU_AF);
+ 413              		.loc 1 155 3
+ 414 0050 4FF4C060 		mov	r0, #1536
+ 415 0054 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 156:User/gd32f303e_eval.c **** 		gpio_pin_remap_config( GPIO_USART0_REMAP,DISABLE); 
+ 416              		.loc 1 156 3
+ 417 0058 0021     		movs	r1, #0
+ 418 005a 0420     		movs	r0, #4
+ 419 005c FFF7FEFF 		bl	gpio_pin_remap_config
+ 157:User/gd32f303e_eval.c ****     /* connect port to USARTx_Tx */
+ 158:User/gd32f303e_eval.c ****     gpio_init(COM_GPIO_PORT[com_id], GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, COM_TX_PIN[com_id]);
+ 420              		.loc 1 158 5
+ 421 0060 404A     		ldr	r2, .L29+20
+ 422 0062 FB68     		ldr	r3, [r7, #12]
+ 423 0064 52F82300 		ldr	r0, [r2, r3, lsl #2]
+ 424 0068 3F4A     		ldr	r2, .L29+24
+ 425 006a FB68     		ldr	r3, [r7, #12]
+ 426 006c 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 427 0070 0322     		movs	r2, #3
+ 428 0072 1821     		movs	r1, #24
+ 429 0074 FFF7FEFF 		bl	gpio_init
+ 159:User/gd32f303e_eval.c **** 
+ 160:User/gd32f303e_eval.c ****     /* connect port to USARTx_Rx */
+ 161:User/gd32f303e_eval.c ****     gpio_init(COM_GPIO_PORT[com_id], GPIO_MODE_IPU, GPIO_OSPEED_50MHZ, COM_RX_PIN[com_id]);
+ 430              		.loc 1 161 5
+ 431 0078 3A4A     		ldr	r2, .L29+20
+ 432 007a FB68     		ldr	r3, [r7, #12]
+ 433 007c 52F82300 		ldr	r0, [r2, r3, lsl #2]
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 11
+
+
+ 434 0080 3A4A     		ldr	r2, .L29+28
+ 435 0082 FB68     		ldr	r3, [r7, #12]
+ 436 0084 52F82330 		ldr	r3, [r2, r3, lsl #2]
+ 437 0088 0322     		movs	r2, #3
+ 438 008a 4821     		movs	r1, #72
+ 439 008c FFF7FEFF 		bl	gpio_init
+ 162:User/gd32f303e_eval.c **** 
+ 163:User/gd32f303e_eval.c **** 		switch(com)
+ 440              		.loc 1 163 3
+ 441 0090 7B68     		ldr	r3, [r7, #4]
+ 442 0092 2F4A     		ldr	r2, .L29
+ 443 0094 9342     		cmp	r3, r2
+ 444 0096 0CD0     		beq	.L17
+ 445 0098 7B68     		ldr	r3, [r7, #4]
+ 446 009a 2D4A     		ldr	r2, .L29
+ 447 009c 9342     		cmp	r3, r2
+ 448 009e 1AD8     		bhi	.L27
+ 449 00a0 7B68     		ldr	r3, [r7, #4]
+ 450 00a2 2C4A     		ldr	r2, .L29+4
+ 451 00a4 9342     		cmp	r3, r2
+ 452 00a6 0AD0     		beq	.L19
+ 453 00a8 7B68     		ldr	r3, [r7, #4]
+ 454 00aa 2B4A     		ldr	r2, .L29+8
+ 455 00ac 9342     		cmp	r3, r2
+ 456 00ae 0CD0     		beq	.L20
+ 164:User/gd32f303e_eval.c **** 		{
+ 165:User/gd32f303e_eval.c **** 			case EVAL_COM1:nvic_irq_enable(USART0_IRQn, 0, 1);break;
+ 166:User/gd32f303e_eval.c **** 			case EVAL_COM2:nvic_irq_enable(USART1_IRQn, 0, 0);break;
+ 167:User/gd32f303e_eval.c **** 			case EVAL_COM3:nvic_irq_enable(USART2_IRQn, 0, 0);break;
+ 168:User/gd32f303e_eval.c **** 			default:;break;
+ 457              		.loc 1 168 4
+ 458 00b0 11E0     		b	.L27
+ 459              	.L17:
+ 165:User/gd32f303e_eval.c **** 			case EVAL_COM2:nvic_irq_enable(USART1_IRQn, 0, 0);break;
+ 460              		.loc 1 165 19
+ 461 00b2 0122     		movs	r2, #1
+ 462 00b4 0021     		movs	r1, #0
+ 463 00b6 2520     		movs	r0, #37
+ 464 00b8 FFF7FEFF 		bl	nvic_irq_enable
+ 165:User/gd32f303e_eval.c **** 			case EVAL_COM2:nvic_irq_enable(USART1_IRQn, 0, 0);break;
+ 465              		.loc 1 165 4
+ 466 00bc 0CE0     		b	.L21
+ 467              	.L19:
+ 166:User/gd32f303e_eval.c **** 			case EVAL_COM3:nvic_irq_enable(USART2_IRQn, 0, 0);break;
+ 468              		.loc 1 166 19
+ 469 00be 0022     		movs	r2, #0
+ 470 00c0 0021     		movs	r1, #0
+ 471 00c2 2620     		movs	r0, #38
+ 472 00c4 FFF7FEFF 		bl	nvic_irq_enable
+ 166:User/gd32f303e_eval.c **** 			case EVAL_COM3:nvic_irq_enable(USART2_IRQn, 0, 0);break;
+ 473              		.loc 1 166 4
+ 474 00c8 06E0     		b	.L21
+ 475              	.L20:
+ 167:User/gd32f303e_eval.c **** 			default:;break;
+ 476              		.loc 1 167 19
+ 477 00ca 0022     		movs	r2, #0
+ 478 00cc 0021     		movs	r1, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 12
+
+
+ 479 00ce 2720     		movs	r0, #39
+ 480 00d0 FFF7FEFF 		bl	nvic_irq_enable
+ 167:User/gd32f303e_eval.c **** 			default:;break;
+ 481              		.loc 1 167 4
+ 482 00d4 00E0     		b	.L21
+ 483              	.L27:
+ 484              		.loc 1 168 4
+ 485 00d6 00BF     		nop
+ 486              	.L21:
+ 169:User/gd32f303e_eval.c **** 		}	
+ 170:User/gd32f303e_eval.c ****     /* USART configure */
+ 171:User/gd32f303e_eval.c ****     usart_deinit(com);
+ 487              		.loc 1 171 5
+ 488 00d8 7868     		ldr	r0, [r7, #4]
+ 489 00da FFF7FEFF 		bl	usart_deinit
+ 172:User/gd32f303e_eval.c **** 		switch(com)
+ 490              		.loc 1 172 3
+ 491 00de 7B68     		ldr	r3, [r7, #4]
+ 492 00e0 1B4A     		ldr	r2, .L29
+ 493 00e2 9342     		cmp	r3, r2
+ 494 00e4 0CD0     		beq	.L22
+ 495 00e6 7B68     		ldr	r3, [r7, #4]
+ 496 00e8 194A     		ldr	r2, .L29
+ 497 00ea 9342     		cmp	r3, r2
+ 498 00ec 1AD8     		bhi	.L28
+ 499 00ee 7B68     		ldr	r3, [r7, #4]
+ 500 00f0 184A     		ldr	r2, .L29+4
+ 501 00f2 9342     		cmp	r3, r2
+ 502 00f4 0AD0     		beq	.L24
+ 503 00f6 7B68     		ldr	r3, [r7, #4]
+ 504 00f8 174A     		ldr	r2, .L29+8
+ 505 00fa 9342     		cmp	r3, r2
+ 506 00fc 0CD0     		beq	.L25
+ 173:User/gd32f303e_eval.c **** 		{
+ 174:User/gd32f303e_eval.c **** 			case EVAL_COM1:usart_baudrate_set(com, 115200);break;
+ 175:User/gd32f303e_eval.c **** 			case EVAL_COM2:usart_baudrate_set(com, 115200);break;
+ 176:User/gd32f303e_eval.c **** 			case EVAL_COM3:usart_baudrate_set(com, 460800);break;
+ 177:User/gd32f303e_eval.c **** 			default:;break;
+ 507              		.loc 1 177 4
+ 508 00fe 11E0     		b	.L28
+ 509              	.L22:
+ 174:User/gd32f303e_eval.c **** 			case EVAL_COM2:usart_baudrate_set(com, 115200);break;
+ 510              		.loc 1 174 19
+ 511 0100 4FF4E131 		mov	r1, #115200
+ 512 0104 7868     		ldr	r0, [r7, #4]
+ 513 0106 FFF7FEFF 		bl	usart_baudrate_set
+ 174:User/gd32f303e_eval.c **** 			case EVAL_COM2:usart_baudrate_set(com, 115200);break;
+ 514              		.loc 1 174 4
+ 515 010a 0CE0     		b	.L26
+ 516              	.L24:
+ 175:User/gd32f303e_eval.c **** 			case EVAL_COM3:usart_baudrate_set(com, 460800);break;
+ 517              		.loc 1 175 19
+ 518 010c 4FF4E131 		mov	r1, #115200
+ 519 0110 7868     		ldr	r0, [r7, #4]
+ 520 0112 FFF7FEFF 		bl	usart_baudrate_set
+ 175:User/gd32f303e_eval.c **** 			case EVAL_COM3:usart_baudrate_set(com, 460800);break;
+ 521              		.loc 1 175 4
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 13
+
+
+ 522 0116 06E0     		b	.L26
+ 523              	.L25:
+ 176:User/gd32f303e_eval.c **** 			default:;break;
+ 524              		.loc 1 176 19
+ 525 0118 4FF4E121 		mov	r1, #460800
+ 526 011c 7868     		ldr	r0, [r7, #4]
+ 527 011e FFF7FEFF 		bl	usart_baudrate_set
+ 176:User/gd32f303e_eval.c **** 			default:;break;
+ 528              		.loc 1 176 4
+ 529 0122 00E0     		b	.L26
+ 530              	.L28:
+ 531              		.loc 1 177 4
+ 532 0124 00BF     		nop
+ 533              	.L26:
+ 178:User/gd32f303e_eval.c **** 		}	
+ 179:User/gd32f303e_eval.c ****     usart_receive_config(com, USART_RECEIVE_ENABLE);
+ 534              		.loc 1 179 5
+ 535 0126 0421     		movs	r1, #4
+ 536 0128 7868     		ldr	r0, [r7, #4]
+ 537 012a FFF7FEFF 		bl	usart_receive_config
+ 180:User/gd32f303e_eval.c ****     usart_transmit_config(com, USART_TRANSMIT_ENABLE);
+ 538              		.loc 1 180 5
+ 539 012e 0821     		movs	r1, #8
+ 540 0130 7868     		ldr	r0, [r7, #4]
+ 541 0132 FFF7FEFF 		bl	usart_transmit_config
+ 181:User/gd32f303e_eval.c ****     usart_enable(com);
+ 542              		.loc 1 181 5
+ 543 0136 7868     		ldr	r0, [r7, #4]
+ 544 0138 FFF7FEFF 		bl	usart_enable
+ 182:User/gd32f303e_eval.c **** 		usart_interrupt_enable(com, USART_INT_RBNE);
+ 545              		.loc 1 182 3
+ 546 013c 40F20531 		movw	r1, #773
+ 547 0140 7868     		ldr	r0, [r7, #4]
+ 548 0142 FFF7FEFF 		bl	usart_interrupt_enable
+ 183:User/gd32f303e_eval.c **** }
+ 549              		.loc 1 183 1
+ 550 0146 00BF     		nop
+ 551 0148 1037     		adds	r7, r7, #16
+ 552              	.LCFI25:
+ 553              		.cfi_def_cfa_offset 8
+ 554 014a BD46     		mov	sp, r7
+ 555              	.LCFI26:
+ 556              		.cfi_def_cfa_register 13
+ 557              		@ sp needed
+ 558 014c 80BD     		pop	{r7, pc}
+ 559              	.L30:
+ 560 014e 00BF     		.align	2
+ 561              	.L29:
+ 562 0150 00380140 		.word	1073821696
+ 563 0154 00440040 		.word	1073759232
+ 564 0158 00480040 		.word	1073760256
+ 565 015c 00000000 		.word	COM_GPIO_CLK
+ 566 0160 00000000 		.word	COM_CLK
+ 567 0164 00000000 		.word	COM_GPIO_PORT
+ 568 0168 00000000 		.word	COM_TX_PIN
+ 569 016c 00000000 		.word	COM_RX_PIN
+ 570              		.cfi_endproc
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 14
+
+
+ 571              	.LFE123:
+ 573              		.global	led_type
+ 574              		.section	.bss.led_type,"aw",%nobits
+ 575              		.align	2
+ 578              	led_type:
+ 579 0000 00000000 		.space	16
+ 579      00000000 
+ 579      00000000 
+ 579      00000000 
+ 580              		.section	.text.led_poll,"ax",%progbits
+ 581              		.align	1
+ 582              		.global	led_poll
+ 583              		.syntax unified
+ 584              		.thumb
+ 585              		.thumb_func
+ 587              	led_poll:
+ 588              	.LFB124:
+ 184:User/gd32f303e_eval.c **** 
+ 185:User/gd32f303e_eval.c **** 
+ 186:User/gd32f303e_eval.c **** 
+ 187:User/gd32f303e_eval.c **** led_type_t  led_type={
+ 188:User/gd32f303e_eval.c **** .lcd_flag=0,
+ 189:User/gd32f303e_eval.c **** };
+ 190:User/gd32f303e_eval.c **** extern _ADC_port adc_volue;
+ 191:User/gd32f303e_eval.c **** void led_poll(void)
+ 192:User/gd32f303e_eval.c **** {
+ 589              		.loc 1 192 1
+ 590              		.cfi_startproc
+ 591              		@ args = 0, pretend = 0, frame = 0
+ 592              		@ frame_needed = 1, uses_anonymous_args = 0
+ 593 0000 80B5     		push	{r7, lr}
+ 594              	.LCFI27:
+ 595              		.cfi_def_cfa_offset 8
+ 596              		.cfi_offset 7, -8
+ 597              		.cfi_offset 14, -4
+ 598 0002 00AF     		add	r7, sp, #0
+ 599              	.LCFI28:
+ 600              		.cfi_def_cfa_register 7
+ 193:User/gd32f303e_eval.c **** 	if(led_type.trige)
+ 601              		.loc 1 193 13
+ 602 0004 0E4B     		ldr	r3, .L35
+ 603 0006 1B68     		ldr	r3, [r3]
+ 604              		.loc 1 193 4
+ 605 0008 002B     		cmp	r3, #0
+ 606 000a 17D0     		beq	.L34
+ 194:User/gd32f303e_eval.c **** 	{
+ 195:User/gd32f303e_eval.c **** 		led_type.trige=0;
+ 607              		.loc 1 195 17
+ 608 000c 0C4B     		ldr	r3, .L35
+ 609 000e 0022     		movs	r2, #0
+ 610 0010 1A60     		str	r2, [r3]
+ 196:User/gd32f303e_eval.c **** 		if(led_type.lcd_flag==0)
+ 611              		.loc 1 196 14
+ 612 0012 0B4B     		ldr	r3, .L35
+ 613 0014 DB68     		ldr	r3, [r3, #12]
+ 614              		.loc 1 196 5
+ 615 0016 002B     		cmp	r3, #0
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 15
+
+
+ 616 0018 08D1     		bne	.L33
+ 197:User/gd32f303e_eval.c **** 		{
+ 198:User/gd32f303e_eval.c **** 			led_type.lcd_flag=1;
+ 617              		.loc 1 198 21
+ 618 001a 094B     		ldr	r3, .L35
+ 619 001c 0122     		movs	r2, #1
+ 620 001e DA60     		str	r2, [r3, #12]
+ 199:User/gd32f303e_eval.c **** 			gpio_bit_set(GPIOB, GPIO_PIN_9);
+ 621              		.loc 1 199 4
+ 622 0020 4FF40071 		mov	r1, #512
+ 623 0024 0748     		ldr	r0, .L35+4
+ 624 0026 FFF7FEFF 		bl	gpio_bit_set
+ 200:User/gd32f303e_eval.c **** 		}
+ 201:User/gd32f303e_eval.c **** 		else 
+ 202:User/gd32f303e_eval.c **** 		{
+ 203:User/gd32f303e_eval.c **** 			led_type.lcd_flag=0;
+ 204:User/gd32f303e_eval.c **** 			gpio_bit_reset(GPIOB, GPIO_PIN_9);	
+ 205:User/gd32f303e_eval.c **** 		}
+ 206:User/gd32f303e_eval.c **** 	}
+ 207:User/gd32f303e_eval.c **** 
+ 208:User/gd32f303e_eval.c **** 
+ 209:User/gd32f303e_eval.c **** }
+ 625              		.loc 1 209 1
+ 626 002a 07E0     		b	.L34
+ 627              	.L33:
+ 203:User/gd32f303e_eval.c **** 			gpio_bit_reset(GPIOB, GPIO_PIN_9);	
+ 628              		.loc 1 203 21
+ 629 002c 044B     		ldr	r3, .L35
+ 630 002e 0022     		movs	r2, #0
+ 631 0030 DA60     		str	r2, [r3, #12]
+ 204:User/gd32f303e_eval.c **** 		}
+ 632              		.loc 1 204 4
+ 633 0032 4FF40071 		mov	r1, #512
+ 634 0036 0348     		ldr	r0, .L35+4
+ 635 0038 FFF7FEFF 		bl	gpio_bit_reset
+ 636              	.L34:
+ 637              		.loc 1 209 1
+ 638 003c 00BF     		nop
+ 639 003e 80BD     		pop	{r7, pc}
+ 640              	.L36:
+ 641              		.align	2
+ 642              	.L35:
+ 643 0040 00000000 		.word	led_type
+ 644 0044 000C0140 		.word	1073810432
+ 645              		.cfi_endproc
+ 646              	.LFE124:
+ 648              		.text
+ 649              	.Letext0:
+ 650              		.file 2 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 651              		.file 3 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 652              		.file 4 "Firmware/CMSIS/GD/GD32F30x/Include/gd32f30x.h"
+ 653              		.file 5 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_rcu.h"
+ 654              		.file 6 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ 655              		.file 7 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_gpio.h"
+ 656              		.file 8 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_usart.h"
+ 657              		.file 9 "User/gd32f303e_eval.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 gd32f303e_eval.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:18     .data.GPIO_PORT:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:21     .data.GPIO_PORT:00000000 GPIO_PORT
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:24     .data.GPIO_PIN:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:27     .data.GPIO_PIN:00000000 GPIO_PIN
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:30     .data.COM_CLK:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:33     .data.COM_CLK:00000000 COM_CLK
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:38     .data.COM_TX_PIN:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:41     .data.COM_TX_PIN:00000000 COM_TX_PIN
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:46     .data.COM_RX_PIN:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:49     .data.COM_RX_PIN:00000000 COM_RX_PIN
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:54     .data.COM_GPIO_PORT:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:57     .data.COM_GPIO_PORT:00000000 COM_GPIO_PORT
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:62     .data.COM_GPIO_CLK:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:65     .data.COM_GPIO_CLK:00000000 COM_GPIO_CLK
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:70     .data.GPIO_CLK:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:73     .data.GPIO_CLK:00000000 GPIO_CLK
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:76     .text.gd_eval_led_on:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:82     .text.gd_eval_led_on:00000000 gd_eval_led_on
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:132    .text.gd_eval_led_on:0000002c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:138    .text.gd_eval_led_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:144    .text.gd_eval_led_init:00000000 gd_eval_led_init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:205    .text.gd_eval_led_init:00000050 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:212    .text.gd_eval_led_off:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:218    .text.gd_eval_led_off:00000000 gd_eval_led_off
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:267    .text.gd_eval_led_off:0000002c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:273    .text.gd_eval_led_toggle:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:279    .text.gd_eval_led_toggle:00000000 gd_eval_led_toggle
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:339    .text.gd_eval_led_toggle:0000004c $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:345    .text.gd_eval_com_init:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:351    .text.gd_eval_com_init:00000000 gd_eval_com_init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:562    .text.gd_eval_com_init:00000150 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:578    .bss.led_type:00000000 led_type
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:575    .bss.led_type:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:581    .text.led_poll:00000000 $t
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:587    .text.led_poll:00000000 led_poll
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnbnn1H.s:643    .text.led_poll:00000040 $d
+
+UNDEFINED SYMBOLS
+rcu_periph_clock_enable
+gpio_init
+gpio_input_bit_get
+gpio_bit_write
+gpio_pin_remap_config
+nvic_irq_enable
+usart_deinit
+usart_baudrate_set
+usart_receive_config
+usart_transmit_config
+usart_enable
+usart_interrupt_enable
+gpio_bit_set
+gpio_bit_reset

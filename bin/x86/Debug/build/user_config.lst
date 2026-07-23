@@ -1,0 +1,178 @@
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"user_config.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	SSD2828Init
+  18              		.section	.rodata.SSD2828Init,"a"
+  21              	SSD2828Init:
+  22 0000 00       		.space	1
+  23              		.global	HWSSD2828
+  24              		.section	.rodata.HWSSD2828,"a"
+  27              	HWSSD2828:
+  28 0000 00       		.space	1
+  29              		.global	PARA_MIPI_VedioMode
+  30              		.section	.data.PARA_MIPI_VedioMode,"aw"
+  31              		.align	2
+  34              	PARA_MIPI_VedioMode:
+  35 0000 4A585F37 		.ascii	"JX_7.9_CPHY_10801920\000"
+  35      2E395F43 
+  35      5048595F 
+  35      31303830 
+  35      31393230 
+  36 0015 00000000 		.space	8
+  36      00000000 
+  37 001d 4E543433 		.ascii	"NT435r3453\000"
+  37      35723334 
+  37      353300
+  38 0028 00000000 		.space	18
+  38      00000000 
+  38      00000000 
+  38      00000000 
+  38      0000
+  39 003a 32303234 		.ascii	"20240829\000"
+  39      30383239 
+  39      00
+  40 0043 00000000 		.space	20
+  40      00000000 
+  40      00000000 
+  40      00000000 
+  40      00000000 
+  41 0057 00       		.byte	0
+  42 0058 00       		.byte	0
+  43 0059 00       		.byte	0
+  44 005a 4600     		.short	70
+  45 005c 04       		.byte	4
+  46 005d 01       		.byte	1
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s 			page 2
+
+
+  47 005e 01       		.byte	1
+  48 005f 01       		.byte	1
+  49 0060 00       		.byte	0
+  50 0061 02       		.byte	2
+  51 0062 2003     		.short	800
+  52 0064 0005     		.short	1280
+  53 0066 4600     		.short	70
+  54 0068 4600     		.short	70
+  55 006a 0200     		.short	2
+  56 006c 3C00     		.short	60
+  57 006e 1400     		.short	20
+  58 0070 0200     		.short	2
+  59 0072 3A07     		.short	1850
+  60 0074 D606     		.short	1750
+  61 0076 9E07     		.short	1950
+  62 0078 0000     		.short	0
+  63 007a 2C01     		.short	300
+  64 007c AC0D     		.short	3500
+  65 007e 480D     		.short	3400
+  66 0080 100E     		.short	3600
+  67 0082 0000     		.short	0
+  68 0084 2C01     		.short	300
+  69 0086 E40C     		.short	3300
+  70 0088 800C     		.short	3200
+  71 008a 480D     		.short	3400
+  72 008c 0000     		.short	0
+  73 008e 2C01     		.short	300
+  74 0090 E40C     		.short	3300
+  75 0092 800C     		.short	3200
+  76 0094 480D     		.short	3400
+  77 0096 0000     		.short	0
+  78 0098 2C01     		.short	300
+  79 009a E40C     		.short	3300
+  80 009c 800C     		.short	3200
+  81 009e 480D     		.short	3400
+  82 00a0 0000     		.short	0
+  83 00a2 2C01     		.short	300
+  84 00a4 E40C     		.short	3300
+  85 00a6 800C     		.short	3200
+  86 00a8 480D     		.short	3400
+  87 00aa 0000     		.short	0
+  88 00ac 2C01     		.short	300
+  89 00ae 7C15     		.short	5500
+  90 00b0 1815     		.short	5400
+  91 00b2 E015     		.short	5600
+  92 00b4 0000     		.short	0
+  93 00b6 6400     		.short	100
+  94 00b8 7C15     		.short	5500
+  95 00ba 1815     		.short	5400
+  96 00bc E015     		.short	5600
+  97 00be 0000     		.short	0
+  98 00c0 6400     		.short	100
+  99 00c2 0000     		.short	0
+ 100 00c4 0000     		.short	0
+ 101 00c6 409C     		.short	-25536
+ 102 00c8 0000     		.short	0
+ 103 00ca 6400     		.short	100
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s 			page 3
+
+
+ 104 00cc 0A00     		.short	10
+ 105 00ce 0000     		.space	2
+ 106 00d0 32002000 		.word	2097202
+ 107 00d4 32002000 		.word	2097202
+ 108 00d8 32002000 		.word	2097202
+ 109 00dc 32002000 		.word	2097202
+ 110 00e0 32002000 		.word	2097202
+ 111 00e4 32002000 		.word	2097202
+ 112 00e8 32002000 		.word	2097202
+ 113 00ec 32002000 		.word	2097202
+ 114 00f0 2C01     		.short	300
+ 115 00f2 0C00     		.short	12
+ 116 00f4 00       		.byte	0
+ 117 00f5 00       		.space	1
+ 118 00f6 0100     		.short	1
+ 119 00f8 6400     		.short	100
+ 120 00fa 6400     		.short	100
+ 121 00fc 6400     		.short	100
+ 122 00fe 6400     		.short	100
+ 123 0100 6400     		.short	100
+ 124 0102 00       		.byte	0
+ 125 0103 00       		.byte	0
+ 126 0104 00       		.byte	0
+ 127 0105 00000000 		.space	243
+ 127      00000000 
+ 127      00000000 
+ 127      00000000 
+ 127      00000000 
+ 128              		.global	ptr_MIPI_TABLE
+ 129              		.section	.data.ptr_MIPI_TABLE,"aw"
+ 130              		.align	2
+ 133              	ptr_MIPI_TABLE:
+ 134 0000 00000000 		.word	PARA_MIPI_VedioMode
+ 135              		.text
+ 136              	.Letext0:
+ 137              		.file 1 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 138              		.file 2 "f:\\cx900_gcc_off_v1.1\\bin\\x86\\debug\\gcc-arm-none-eabi-10.3-2021.10\\arm-none-eabi\\i
+ 139              		.file 3 "Module/user_config.h"
+ 140              		.file 4 "Module/user_config.c"
+ 141              		.file 5 "Firmware/GD32F30x_standard_peripheral/Include/gd32f30x_dbg.h"
+ARM GAS  C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 user_config.c
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:21     .rodata.SSD2828Init:00000000 SSD2828Init
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:22     .rodata.SSD2828Init:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:27     .rodata.HWSSD2828:00000000 HWSSD2828
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:28     .rodata.HWSSD2828:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:34     .data.PARA_MIPI_VedioMode:00000000 PARA_MIPI_VedioMode
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:31     .data.PARA_MIPI_VedioMode:00000000 $d
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:133    .data.ptr_MIPI_TABLE:00000000 ptr_MIPI_TABLE
+C:\Users\ADMINI~1\AppData\Local\Temp\ccnYAfHa.s:130    .data.ptr_MIPI_TABLE:00000000 $d
+
+NO UNDEFINED SYMBOLS

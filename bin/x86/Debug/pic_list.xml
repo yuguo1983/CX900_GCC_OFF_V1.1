@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<piclist>
+  <图片0>Color(0xffff0000)</图片0>
+  <图片1>Checkerboard(8)</图片1>
+  <图片2>Color(0xffffffff)</图片2>
+  <图片3>BlackWight(0xffffffff,0xff000000)</图片3>
+  <图片4>ColorBarRow(8)</图片4>
+  <图片5>Flicker(0xffff00ff,0xff00ff00)</图片5>
+  <图片6>Picture(1)</图片6>
+  <图片7>GradientCol(0xffffffff,8)</图片7>
+  <图片8>GradientRow(0xffffffff,8)</图片8>
+  <图片9>CrossTalk(0xff000000,0xffffffff)</图片9>
+  <图片10>ColorBarRow(8)</图片10>
+  <图片11>ColorBarCol(8)</图片11>
+</piclist>
