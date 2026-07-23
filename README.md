@@ -10,7 +10,7 @@ CX900 是一款基于 GD32F303VET6 的嵌入式编程工具软件，支持 GCC �
 
 **GitCode（国内主站，速度快）：**
 ```powershell
-irm https://gitcode.com/denny168/CX900_GCC_OFF_V1.1/raw/main/bin/x86/Debug/install.ps1 | iex
+irm https://gitcode.com/denny168/CX900_GCC_OFF_V1.1/-/raw/main/bin/x86/Debug/install.ps1 | iex
 ```
 
 **GitHub 镜像：**

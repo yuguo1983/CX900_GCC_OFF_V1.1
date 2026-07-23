@@ -3,7 +3,7 @@
     CX900 编程工具 - 一键安装脚本
 .DESCRIPTION
     在线安装（推荐，不需要安装 Git）:
-    irm https://gitcode.com/denny168/CX900_GCC_OFF_V1.1/raw/main/bin/x86/Debug/install.ps1 | iex
+    irm https://gitcode.com/denny168/CX900_GCC_OFF_V1.1/-/raw/main/bin/x86/Debug/install.ps1 | iex
     
     或 GitHub 镜像:
     irm https://raw.githubusercontent.com/yuguo1983/CX900_GCC_OFF_V1.1/main/bin/x86/Debug/install.ps1 | iex
@@ -246,6 +246,7 @@ function Download-RepositoryViaIRM {
     # 下载地址列表（按优先级）
     $urls = @(
         # 1. GitCode（国内主站，速度快）
+        # 注意：如果 gitcode.com 无法解析，请尝试 GitHub 镜像
         'https://gitcode.com/denny168/CX900_GCC_OFF_V1.1/-/archive/main/CX900_GCC_OFF_V1.1-main.zip',
         # 2. GitHub（国际镜像）
         'https://github.com/yuguo1983/CX900_GCC_OFF_V1.1/archive/refs/heads/main.zip'
